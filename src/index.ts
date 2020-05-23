@@ -36,7 +36,7 @@ async function run(): Promise<void> {
       const { pull_request } = context.payload;
 
       const base = pull_request!.base.sha;
-      const head = pull_request!.head.sha;
+      const head = process.env.GITHUB_SHA;
 
       core.info(
         JSON.stringify({ base, head, GITHUB_SHA: process.env.GITHUB_SHA })
