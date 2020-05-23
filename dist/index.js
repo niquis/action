@@ -10621,13 +10621,9 @@ async function run() {
         // core.info(JSON.stringify(context.payload));
         const octokit = new github.GitHub(process.env.GITHUB_TOKEN);
         const workspace = process.env.GITHUB_WORKSPACE;
-        core.info("Using glob.sync");
-        core.info(workspace);
-        core.info(`${workspace}/.next/static/*/pages/**/*.js`);
         const entries = await fg(`.next/static/*/pages/**/*.js`, {
             cwd: workspace,
         });
-        core.info(JSON.stringify(entries));
         for (const page of entries) {
             const value = fs.statSync(page).size;
             const series = page.match(/(pages\/.*)\.js$/)[1];

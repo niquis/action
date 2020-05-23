@@ -4,7 +4,6 @@ import * as fs from "fs";
 import * as https from "https";
 import fetch from "node-fetch";
 import * as path from "path";
-import * as glob from "glob";
 import * as fg from "fast-glob";
 
 async function run(): Promise<void> {
@@ -21,7 +20,6 @@ async function run(): Promise<void> {
     const entries = await fg(`.next/static/*/pages/**/*.js`, {
       cwd: workspace,
     });
-    core.info(JSON.stringify(entries));
     for (const page of entries) {
       const value = fs.statSync(page).size;
       const series = page.match(/(pages\/.*)\.js$/)![1];
