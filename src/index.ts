@@ -84,7 +84,7 @@ async function run(): Promise<void> {
       await octokit.issues.createComment({
         owner: context.payload.repository!.owner.login,
         repo: context.payload.repository!.name,
-        issue_number: pull_request!.id,
+        issue_number: pull_request!.number,
         body: JSON.stringify(res),
       });
     }
