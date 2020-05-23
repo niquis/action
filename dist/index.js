@@ -7574,6 +7574,7 @@ const fs = __webpack_require__(747);
 const https = __webpack_require__(211);
 const node_fetch_1 = __webpack_require__(454);
 const path = __webpack_require__(622);
+const child_process_1 = __webpack_require__(129);
 async function run() {
     const time = Date.now() / 1000;
     try {
@@ -7591,6 +7592,13 @@ async function run() {
             const value = files.reduce((a, f) => a + fs.statSync(path.join(workspace, ".next", f)).size, 0);
             upload({ time, series: `pages${k}`, value });
         }
+        const baseRef = (() => {
+            var child = child_process_1.spawnSync("git", ["rev-parse", "HEAD"], {
+                encoding: "utf8",
+                cwd: workspace,
+            });
+            return child.stdout.trim();
+        })();
         const res = await node_fetch_1.default("https://europe-west3-endless-empire-169618.cloudfunctions.net/graphql", {
             method: "POST",
             headers: {
@@ -7622,7 +7630,7 @@ async function run() {
         `,
                 variables: {
                     dataSet: `github.com/${process.env.GITHUB_REPOSITORY}`,
-                    base: "b4b16c698adf209d2df0ef02bf5d65aed50fe5a4",
+                    base: baseRef,
                     head: process.env.GITHUB_SHA,
                 },
             }),

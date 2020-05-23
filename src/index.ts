@@ -4,6 +4,7 @@ import * as fs from "fs";
 import * as https from "https";
 import fetch from "node-fetch";
 import * as path from "path";
+import { spawnSync } from "child_process";
 
 async function run(): Promise<void> {
   const time = Date.now() / 1000;
@@ -32,6 +33,14 @@ async function run(): Promise<void> {
       );
       upload({ time, series: `pages${k}`, value });
     }
+
+    const baseRef = (() => {
+      var child = spawnSync("git", ["rev-parse", "HEAD"], {
+        encoding: "utf8",
+        cwd: workspace,
+      });
+      return child.stdout.trim();
+    })();
 
     const res = await fetch(
       "https://europe-west3-endless-empire-169618.cloudfunctions.net/graphql",
@@ -66,7 +75,7 @@ async function run(): Promise<void> {
         `,
           variables: {
             dataSet: `github.com/${process.env.GITHUB_REPOSITORY!}`,
-            base: "b4b16c698adf209d2df0ef02bf5d65aed50fe5a4",
+            base: baseRef,
             head: process.env.GITHUB_SHA!,
           },
         }),
