@@ -37,6 +37,10 @@ async function run(): Promise<void> {
       const base = pull_request!.base.sha;
       const head = pull_request!.head.sha;
 
+      core.info(
+        JSON.stringify({ base, head, GITHUB_SHA: process.env.GITHUB_SHA })
+      );
+
       const res = await fetch("https://api.niquis.im/graphql", {
         method: "POST",
         headers: {
