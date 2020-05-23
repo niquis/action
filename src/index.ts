@@ -86,8 +86,11 @@ async function run(): Promise<void> {
 
 ${res.data.comparison.observations
   .map((obs: any) => {
-    const d = Math.round(obs.diff.relative * 10) / 10;
-    return ` - **${obs.series.name}**: ${d}%`;
+    const abs = obs.diff.absolute;
+    const pct = Math.round(obs.diff.relative * 10) / 10;
+
+    const sign = { [-1]: "-", [0]: "", [1]: "+" }[Math.sign(pct) as -1 | 0 | 1];
+    return ` - **${obs.series.name}**: ${sign}${abs} (${sign}${pct}%)`;
   })
   .join("\n")}
 `,
