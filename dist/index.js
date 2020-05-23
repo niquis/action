@@ -7593,7 +7593,7 @@ async function run() {
             upload({ time, series: `pages${k}`, value });
         }
         const baseRef = (() => {
-            var child = child_process_1.spawnSync("git", ["rev-parse", "HEAD"], {
+            var child = child_process_1.spawnSync("git", ["rev-parse", "origin/master"], {
                 encoding: "utf8",
                 cwd: workspace,
             });

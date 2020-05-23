@@ -35,7 +35,7 @@ async function run(): Promise<void> {
     }
 
     const baseRef = (() => {
-      var child = spawnSync("git", ["rev-parse", "master"], {
+      var child = spawnSync("git", ["rev-parse", "origin/master"], {
         encoding: "utf8",
         cwd: workspace,
       });
