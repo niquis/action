@@ -10621,6 +10621,7 @@ async function run() {
         // core.info(JSON.stringify(context.payload));
         const octokit = new github.GitHub(process.env.GITHUB_TOKEN);
         const workspace = process.env.GITHUB_WORKSPACE;
+        core.info(workspace);
         const entries = await fg(`${workspace}/.next/static/*/pages/**/*.js`);
         core.info(JSON.stringify(entries));
         for (const page of entries) {
