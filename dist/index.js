@@ -7574,19 +7574,13 @@ const fs = __webpack_require__(747);
 const https = __webpack_require__(211);
 const node_fetch_1 = __webpack_require__(454);
 const path = __webpack_require__(622);
-const child_process_1 = __webpack_require__(129);
 async function run() {
     const time = Date.now() / 1000;
     try {
         const context = github.context;
-        core.info(context.eventName);
-        core.info(JSON.stringify(context.payload));
+        // core.info(context.eventName);
+        // core.info(JSON.stringify(context.payload));
         const octokit = new github.GitHub(process.env.GITHUB_TOKEN);
-        // await octokit.issues.create({
-        //   ...context.repo,
-        //   title: "New issue!",
-        //   body: "Hello Universe!",
-        // });
         const workspace = process.env.GITHUB_WORKSPACE;
         const { pages } = require(path.join(workspace, ".next/build-manifest.json"));
         for (const k in pages) {
@@ -7594,20 +7588,17 @@ async function run() {
             const value = files.reduce((a, f) => a + fs.statSync(path.join(workspace, ".next", f)).size, 0);
             upload({ time, series: `pages${k}`, value });
         }
-        const baseRef = (() => {
-            var child = child_process_1.spawnSync("git", ["rev-parse", "origin/master"], {
-                encoding: "utf8",
-                cwd: workspace,
-            });
-            return child.stdout.trim();
-        })();
-        const res = await node_fetch_1.default("https://api.niquis.im/graphql", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                query: `
+        if (context.eventName === "pull_request") {
+            const { pull_request } = context.payload;
+            const base = pull_request.base.sha;
+            const head = pull_request.head.sha;
+            const res = await node_fetch_1.default("https://api.niquis.im/graphql", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    query: `
           query comparisonQuery($dataSet: String!, $base: String!, $head: String!) {
             comparison(dataSet: $dataSet, base: $base, head: $head) {
               observations {
@@ -7630,19 +7621,15 @@ async function run() {
             }
           }
         `,
-                variables: {
-                    dataSet: `github.com/${process.env.GITHUB_REPOSITORY}`,
-                    base: baseRef,
-                    head: process.env.GITHUB_SHA,
-                },
-            }),
-        }).then((res) => res.json());
-        core.info(JSON.stringify({
-            dataSet: `github.com/${process.env.GITHUB_REPOSITORY}`,
-            base: baseRef,
-            head: process.env.GITHUB_SHA,
-        }));
-        core.info(JSON.stringify(res));
+                    variables: {
+                        dataSet: `github.com/${process.env.GITHUB_REPOSITORY}`,
+                        base,
+                        head,
+                    },
+                }),
+            }).then((res) => res.json());
+            core.info(JSON.stringify(res));
+        }
     }
     catch (error) {
         core.setFailed(error.message);

@@ -11,15 +11,10 @@ async function run(): Promise<void> {
 
   try {
     const context = github.context;
-    core.info(context.eventName);
-    core.info(JSON.stringify(context.payload));
+    // core.info(context.eventName);
+    // core.info(JSON.stringify(context.payload));
 
     const octokit = new github.GitHub(process.env.GITHUB_TOKEN!);
-    // await octokit.issues.create({
-    //   ...context.repo,
-    //   title: "New issue!",
-    //   body: "Hello Universe!",
-    // });
 
     const workspace = process.env.GITHUB_WORKSPACE!;
     const { pages } = require(path.join(
@@ -36,21 +31,19 @@ async function run(): Promise<void> {
       upload({ time, series: `pages${k}`, value });
     }
 
-    const baseRef = (() => {
-      var child = spawnSync("git", ["rev-parse", "origin/master"], {
-        encoding: "utf8",
-        cwd: workspace,
-      });
-      return child.stdout.trim();
-    })();
+    if (context.eventName === "pull_request") {
+      const { pull_request } = context.payload;
 
-    const res = await fetch("https://api.niquis.im/graphql", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        query: `
+      const base = pull_request!.base.sha;
+      const head = pull_request!.head.sha;
+
+      const res = await fetch("https://api.niquis.im/graphql", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          query: `
           query comparisonQuery($dataSet: String!, $base: String!, $head: String!) {
             comparison(dataSet: $dataSet, base: $base, head: $head) {
               observations {
@@ -73,21 +66,16 @@ async function run(): Promise<void> {
             }
           }
         `,
-        variables: {
-          dataSet: `github.com/${process.env.GITHUB_REPOSITORY!}`,
-          base: baseRef,
-          head: process.env.GITHUB_SHA!,
-        },
-      }),
-    }).then((res) => res.json());
-    core.info(
-      JSON.stringify({
-        dataSet: `github.com/${process.env.GITHUB_REPOSITORY!}`,
-        base: baseRef,
-        head: process.env.GITHUB_SHA!,
-      })
-    );
-    core.info(JSON.stringify(res));
+          variables: {
+            dataSet: `github.com/${process.env.GITHUB_REPOSITORY!}`,
+            base,
+            head,
+          },
+        }),
+      }).then((res) => res.json());
+
+      core.info(JSON.stringify(res));
+    }
   } catch (error) {
     core.setFailed(error.message);
   }
