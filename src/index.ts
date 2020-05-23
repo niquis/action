@@ -43,7 +43,7 @@ async function run(): Promise<void> {
     })();
 
     const res = await fetch(
-      "https://europe-west3-endless-empire-169618.cloudfunctions.net/graphql",
+      "https://api.niquis.im/graphql",
       {
         method: "POST",
         headers: {
@@ -107,7 +107,7 @@ function upload({ time, series, value }: any) {
   });
 
   const options = {
-    hostname: "europe-west3-endless-empire-169618.cloudfunctions.net",
+    hostname: "api.niquis.im",
     port: 443,
     path: "/ingress",
     method: "POST",

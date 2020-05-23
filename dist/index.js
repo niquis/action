@@ -7599,7 +7599,7 @@ async function run() {
             });
             return child.stdout.trim();
         })();
-        const res = await node_fetch_1.default("https://europe-west3-endless-empire-169618.cloudfunctions.net/graphql", {
+        const res = await node_fetch_1.default("https://api.niquis.im/graphql", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -7657,7 +7657,7 @@ function upload({ time, series, value }) {
         value,
     });
     const options = {
-        hostname: "europe-west3-endless-empire-169618.cloudfunctions.net",
+        hostname: "api.niquis.im",
         port: 443,
         path: "/ingress",
         method: "POST",
