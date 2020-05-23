@@ -66,7 +66,7 @@ async function run(): Promise<void> {
         `,
           variables: {
             dataSet: `github.com/${process.env.GITHUB_REPOSITORY!}`,
-            base: "HEAD",
+            base: "b4b16c698adf209d2df0ef02bf5d65aed50fe5a4",
             head: process.env.GITHUB_SHA!,
           },
         }),
