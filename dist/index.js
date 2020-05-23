@@ -56,6 +56,21 @@ module.exports = require("os");
 
 /***/ }),
 
+/***/ 169:
+/***/ (function(module) {
+
+module.exports = eval("require")("./.next/build-manifest.json");
+
+
+/***/ }),
+
+/***/ 211:
+/***/ (function(module) {
+
+module.exports = require("https");
+
+/***/ }),
+
 /***/ 431:
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
@@ -391,19 +406,54 @@ exports.getState = getState;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const core = __webpack_require__(470);
+const https = __webpack_require__(211);
+const fs = __webpack_require__(747);
+const path = __webpack_require__(622);
 async function run() {
+    const time = Date.now() / 1000;
     try {
-        const ms = core.getInput("milliseconds");
-        core.debug(`Waiting ${ms} milliseconds ...`);
-        core.debug(new Date().toTimeString());
-        core.debug(new Date().toTimeString());
-        core.setOutput("time", new Date().toTimeString());
+        const { pages } = __webpack_require__(169);
+        for (const k in pages) {
+            const files = pages[k];
+            const value = files.reduce((a, f) => a + fs.statSync(path.join(".next", f)).size, 0);
+            upload({ time, series: `pages${k}`, value });
+        }
     }
     catch (error) {
         core.setFailed(error.message);
     }
 }
 run();
+function upload({ time, series, value }) {
+    const data = JSON.stringify({
+        dataSet: `github.com/${process.env.GITHUB_REPOSITORY}`,
+        series,
+        version: process.env.GITHUB_SHA,
+        measure: "size",
+        time,
+        value,
+    });
+    const options = {
+        hostname: "europe-west3-endless-empire-169618.cloudfunctions.net",
+        port: 443,
+        path: "/ingress",
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Content-Length": data.length,
+        },
+    };
+    const req = https.request(options, (res) => {
+        res.on("data", (d) => {
+            process.stdout.write(d);
+        });
+    });
+    req.on("error", (error) => {
+        core.debug(error.message);
+    });
+    req.write(data);
+    req.end();
+}
 
 
 /***/ }),
@@ -412,6 +462,13 @@ run();
 /***/ (function(module) {
 
 module.exports = require("path");
+
+/***/ }),
+
+/***/ 747:
+/***/ (function(module) {
+
+module.exports = require("fs");
 
 /***/ })
 
