@@ -7640,7 +7640,8 @@ async function run() {
 
 ${res.data.comparison.observations
                     .map((obs) => {
-                    return ` - **${obs.series.name}**: ${Math.round(obs.diff.relative * 10) / 10}%`;
+                    const d = Math.round(obs.diff.relative * 10) / 10;
+                    return ` - **${obs.series.name}**: ${d}%`;
                 })
                     .join("\n")}
 `,

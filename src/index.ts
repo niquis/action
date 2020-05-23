@@ -90,9 +90,8 @@ async function run(): Promise<void> {
 
 ${res.data.comparison.observations
   .map((obs: any) => {
-    return ` - **${obs.series.name}**: ${
-      Math.round(obs.diff.relative * 10) / 10
-    }%`;
+    const d = Math.round(obs.diff.relative * 10) / 10;
+    return ` - **${obs.series.name}**: ${d}%`;
   })
   .join("\n")}
 `,
