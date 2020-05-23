@@ -4,7 +4,7 @@ import * as fs from "fs";
 import * as https from "https";
 import fetch from "node-fetch";
 import * as path from "path";
-import { spawnSync } from "child_process";
+import * as fg from "fast-glob";
 
 async function run(): Promise<void> {
   const time = Date.now() / 1000;
@@ -17,18 +17,12 @@ async function run(): Promise<void> {
     const octokit = new github.GitHub(process.env.GITHUB_TOKEN!);
 
     const workspace = process.env.GITHUB_WORKSPACE!;
-    const { pages } = require(path.join(
-      workspace,
-      ".next/build-manifest.json"
-    ));
 
-    for (const k in pages) {
-      const files: any[] = pages[k];
-      const value = files.reduce(
-        (a, f) => a + fs.statSync(path.join(workspace, ".next", f)).size,
-        0
-      );
-      upload({ time, series: `pages${k}`, value });
+    const entries = await fg(`${workspace}/.next/static/*/pages/**/*.js`);
+    for (const page of entries) {
+      const value = fs.statSync(page).size;
+      const series = page.match(/(pages\/.*)\.js$/)![1];
+      upload({ time, series, value });
     }
 
     core.info(context.eventName);

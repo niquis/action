@@ -9,6 +9,7 @@
     "@actions/github": "^2.2.0",
     "@types/node-fetch": "^2.5.7",
     "@zeit/ncc": "^0.22.3",
+    "fast-glob": "^3.2.2",
     "node-fetch": "^2.6.0",
     "typescript": "^3.9.3"
   }
