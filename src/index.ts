@@ -20,7 +20,9 @@ async function run(): Promise<void> {
     core.info(workspace);
     core.info(`${workspace}/.next/static/*/pages/**/*.js`);
 
-    const entries = await fg(`${workspace}/.next/static/*/pages/**/*.js`);
+    const entries = await fg(`${workspace}/.next/static/*/pages/**/*.js`, {
+      stats: false,
+    });
     core.info(JSON.stringify(entries));
     for (const page of entries) {
       const value = fs.statSync(page).size;
