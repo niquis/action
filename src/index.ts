@@ -18,6 +18,7 @@ async function run(): Promise<void> {
 
     const workspace = process.env.GITHUB_WORKSPACE!;
     core.info(workspace);
+    core.info(`${workspace}/.next/static/*/pages/**/*.js`);
 
     const entries = await fg(`${workspace}/.next/static/*/pages/**/*.js`);
     core.info(JSON.stringify(entries));
