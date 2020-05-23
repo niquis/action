@@ -4,7 +4,7 @@ import * as fs from "fs";
 import * as https from "https";
 import fetch from "node-fetch";
 import * as path from "path";
-import * as fg from "fast-glob";
+import * as glob from 'glob';
 
 async function run(): Promise<void> {
   const time = Date.now() / 1000;
@@ -20,13 +20,11 @@ async function run(): Promise<void> {
     core.info(workspace);
     core.info(`${workspace}/.next/static/*/pages/**/*.js`);
 
-    const entries = await fg(`${workspace}/.next/static/*/pages/**/*.js`, {
-      stats: true,
-    });
+    const entries = glob.sync(`${workspace}/.next/static/*/pages/**/*.js`);
     core.info(JSON.stringify(entries));
     for (const page of entries) {
-      const value = fs.statSync(page.path).size;
-      const series = page.path.match(/(pages\/.*)\.js$/)![1];
+      const value = fs.statSync(page).size;
+      const series = page.match(/(pages\/.*)\.js$/)![1];
       upload({ time, series, value });
     }
 
