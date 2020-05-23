@@ -3,8 +3,8 @@ import * as github from "@actions/github";
 import * as fs from "fs";
 import * as https from "https";
 import fetch from "node-fetch";
-import * as path from "path";
 import * as fg from "fast-glob";
+import { format } from "d3-format";
 
 async function run(): Promise<void> {
   const time = Date.now() / 1000;
@@ -86,7 +86,7 @@ async function run(): Promise<void> {
 
 ${res.data.comparison.observations
   .map((obs: any) => {
-    const abs = obs.diff.absolute;
+    const abs = bytesToString(obs.diff.absolute);
     const pct = Math.round(obs.diff.relative * 10) / 10;
 
     const sign = { [-1]: "-", [0]: "", [1]: "+" }[Math.sign(pct) as -1 | 0 | 1];
@@ -137,4 +137,17 @@ function upload({ time, series, value }: any) {
 
   req.write(data);
   req.end();
+}
+
+const fmt = format(".0f");
+function bytesToString(bytes: number) {
+  if (bytes < 1024) {
+    return fmt(bytes) + "B";
+  } else if (bytes < 1024 * 1024) {
+    return fmt(bytes / 1024) + "kB";
+  } else if (bytes < 1024 * 1024 * 1024) {
+    return fmt(bytes / 1024 / 1024) + "MB";
+  } else {
+    return fmt(bytes / 1024 / 1024 / 1024) + "GB";
+  }
 }
