@@ -56,14 +56,6 @@ module.exports = require("os");
 
 /***/ }),
 
-/***/ 169:
-/***/ (function(module) {
-
-module.exports = eval("require")("./.next/build-manifest.json");
-
-
-/***/ }),
-
 /***/ 211:
 /***/ (function(module) {
 
@@ -412,10 +404,11 @@ const path = __webpack_require__(622);
 async function run() {
     const time = Date.now() / 1000;
     try {
-        const { pages } = __webpack_require__(169);
+        const workspace = process.env.GITHUB_WORKSPACE;
+        const { pages } = require(path.join(workspace, ".next/build-manifest.json"));
         for (const k in pages) {
             const files = pages[k];
-            const value = files.reduce((a, f) => a + fs.statSync(path.join(".next", f)).size, 0);
+            const value = files.reduce((a, f) => a + fs.statSync(path.join(workspace, ".next", f)).size, 0);
             upload({ time, series: `pages${k}`, value });
         }
     }
