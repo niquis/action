@@ -7598,7 +7598,7 @@ async function run() {
             },
             body: JSON.stringify({
                 query: `
-          query comparisonQuery(dataSet: String!, base: String!, head: String!) {
+          query comparisonQuery($dataSet: String!, $base: String!, $head: String!) {
             comparison(dataSet: $dataSet, base: $base, head: $head) {
               observations {
                 id
