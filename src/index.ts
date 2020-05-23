@@ -12,11 +12,11 @@ async function run(): Promise<void> {
     const context = github.context;
 
     const octokit = new github.GitHub(process.env.GITHUB_TOKEN!);
-    await octokit.issues.create({
-      ...context.repo,
-      title: "New issue!",
-      body: "Hello Universe!",
-    });
+    // await octokit.issues.create({
+    //   ...context.repo,
+    //   title: "New issue!",
+    //   body: "Hello Universe!",
+    // });
 
     const workspace = process.env.GITHUB_WORKSPACE!;
     const { pages } = require(path.join(
