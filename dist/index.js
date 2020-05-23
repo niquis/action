@@ -10624,12 +10624,12 @@ async function run() {
         core.info(workspace);
         core.info(`${workspace}/.next/static/*/pages/**/*.js`);
         const entries = await fg(`${workspace}/.next/static/*/pages/**/*.js`, {
-            stats: false,
+            stats: true,
         });
         core.info(JSON.stringify(entries));
         for (const page of entries) {
-            const value = fs.statSync(page).size;
-            const series = page.match(/(pages\/.*)\.js$/)[1];
+            const value = fs.statSync(page.path).size;
+            const series = page.path.match(/(pages\/.*)\.js$/)[1];
             upload({ time, series, value });
         }
         core.info(context.eventName);
