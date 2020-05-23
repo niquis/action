@@ -31,6 +31,7 @@ async function run(): Promise<void> {
       upload({ time, series: `pages${k}`, value });
     }
 
+    core.info(context.eventName);
     if (context.eventName === "pull_request") {
       const { pull_request } = context.payload;
 

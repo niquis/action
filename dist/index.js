@@ -7588,6 +7588,7 @@ async function run() {
             const value = files.reduce((a, f) => a + fs.statSync(path.join(workspace, ".next", f)).size, 0);
             upload({ time, series: `pages${k}`, value });
         }
+        core.info(context.eventName);
         if (context.eventName === "pull_request") {
             const { pull_request } = context.payload;
             const base = pull_request.base.sha;
