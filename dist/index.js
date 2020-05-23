@@ -7635,7 +7635,13 @@ async function run() {
                 owner: context.payload.repository.owner.login,
                 repo: context.payload.repository.name,
                 issue_number: pull_request.number,
-                body: JSON.stringify(res),
+                body: `
+# Comparison
+
+${res.data.comparison.observations.map((obs) => {
+                    return ` - **${obs.series.name}**: ${Math.round(obs.diff.relative * 10) / 10}%`;
+                })}
+`,
             });
         }
     }
