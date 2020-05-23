@@ -19,6 +19,7 @@ async function run(): Promise<void> {
     const workspace = process.env.GITHUB_WORKSPACE!;
 
     const entries = await fg(`${workspace}/.next/static/*/pages/**/*.js`);
+    core.info(JSON.stringify(entries));
     for (const page of entries) {
       const value = fs.statSync(page).size;
       const series = page.match(/(pages\/.*)\.js$/)![1];
