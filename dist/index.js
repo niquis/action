@@ -10494,6 +10494,7 @@ async function run() {
         // core.info(JSON.stringify(context.payload));
         const octokit = new github.GitHub(process.env.GITHUB_TOKEN);
         const workspace = process.env.GITHUB_WORKSPACE;
+        core.info("Using glob.sync");
         core.info(workspace);
         core.info(`${workspace}/.next/static/*/pages/**/*.js`);
         const entries = glob.sync(`${workspace}/.next/static/*/pages/**/*.js`);
