@@ -10635,6 +10635,7 @@ async function run() {
             const base = pull_request.base.sha;
             const head = process.env.GITHUB_SHA;
             core.info(JSON.stringify({ base, head, GITHUB_SHA: process.env.GITHUB_SHA }));
+            await new Promise((resolve) => setTimeout(resolve, 1000));
             const res = await node_fetch_1.default("https://api.niquis.im/graphql", {
                 method: "POST",
                 headers: {
