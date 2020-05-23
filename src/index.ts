@@ -99,6 +99,7 @@ ${res.data.comparison.observations
 run();
 
 function upload({ time, series, value }: any) {
+  core.info(`Series ${series}`);
   const data = JSON.stringify({
     dataSet: `github.com/${process.env.GITHUB_REPOSITORY!}`,
     series,
