@@ -7579,6 +7579,8 @@ async function run() {
     const time = Date.now() / 1000;
     try {
         const context = github.context;
+        core.info(context.eventName);
+        core.info(JSON.stringify(context.payload));
         const octokit = new github.GitHub(process.env.GITHUB_TOKEN);
         // await octokit.issues.create({
         //   ...context.repo,

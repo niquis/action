@@ -11,6 +11,8 @@ async function run(): Promise<void> {
 
   try {
     const context = github.context;
+    core.info(context.eventName);
+    core.info(JSON.stringify(context.payload));
 
     const octokit = new github.GitHub(process.env.GITHUB_TOKEN!);
     // await octokit.issues.create({
@@ -42,15 +44,13 @@ async function run(): Promise<void> {
       return child.stdout.trim();
     })();
 
-    const res = await fetch(
-      "https://api.niquis.im/graphql",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          query: `
+    const res = await fetch("https://api.niquis.im/graphql", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        query: `
           query comparisonQuery($dataSet: String!, $base: String!, $head: String!) {
             comparison(dataSet: $dataSet, base: $base, head: $head) {
               observations {
@@ -73,14 +73,13 @@ async function run(): Promise<void> {
             }
           }
         `,
-          variables: {
-            dataSet: `github.com/${process.env.GITHUB_REPOSITORY!}`,
-            base: baseRef,
-            head: process.env.GITHUB_SHA!,
-          },
-        }),
-      }
-    ).then((res) => res.json());
+        variables: {
+          dataSet: `github.com/${process.env.GITHUB_REPOSITORY!}`,
+          base: baseRef,
+          head: process.env.GITHUB_SHA!,
+        },
+      }),
+    }).then((res) => res.json());
     core.info(
       JSON.stringify({
         dataSet: `github.com/${process.env.GITHUB_REPOSITORY!}`,
