@@ -4,7 +4,8 @@ import * as fs from "fs";
 import * as https from "https";
 import fetch from "node-fetch";
 import * as path from "path";
-import * as glob from 'glob';
+import * as glob from "glob";
+import * as fg from "fast-glob";
 
 async function run(): Promise<void> {
   const time = Date.now() / 1000;
@@ -17,11 +18,9 @@ async function run(): Promise<void> {
     const octokit = new github.GitHub(process.env.GITHUB_TOKEN!);
 
     const workspace = process.env.GITHUB_WORKSPACE!;
-    core.info("Using glob.sync")
-    core.info(workspace);
-    core.info(`${workspace}/.next/static/*/pages/**/*.js`);
-
-    const entries = glob.sync(`${workspace}/.next/static/*/pages/**/*.js`);
+    const entries = await fg(`.next/static/*/pages/**/*.js`, {
+      cwd: workspace,
+    });
     core.info(JSON.stringify(entries));
     for (const page of entries) {
       const value = fs.statSync(page).size;
