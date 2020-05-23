@@ -7631,6 +7631,12 @@ async function run() {
                 }),
             }).then((res) => res.json());
             core.info(JSON.stringify(res));
+            octokit.issues.createComment({
+                owner: context.payload.repository.owner.name,
+                repo: context.payload.repository.name,
+                issue_number: pull_request.id,
+                body: JSON.stringify(res),
+            });
         }
     }
     catch (error) {
