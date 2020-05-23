@@ -7627,7 +7627,7 @@ async function run() {
                 },
             }),
         }).then((res) => res.json());
-        core.info(res);
+        core.info(JSON.stringify(res));
     }
     catch (error) {
         core.setFailed(error.message);
