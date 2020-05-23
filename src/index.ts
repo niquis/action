@@ -7,12 +7,16 @@ async function run(): Promise<void> {
   const time = Date.now() / 1000;
 
   try {
-    const { pages } = require("./.next/build-manifest.json");
+    const workspace = process.env.GITHUB_WORKSPACE!;
+    const { pages } = require(path.join(
+      workspace,
+      ".next/build-manifest.json"
+    ));
 
     for (const k in pages) {
       const files: any[] = pages[k];
       const value = files.reduce(
-        (a, f) => a + fs.statSync(path.join(".next", f)).size,
+        (a, f) => a + fs.statSync(path.join(workspace, ".next", f)).size,
         0
       );
       upload({ time, series: `pages${k}`, value });
