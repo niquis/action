@@ -7639,8 +7639,8 @@ async function run() {
 # Comparison
 
 ${res.data.comparison.observations.map((obs) => {
-                    return ` - **${obs.series.name}**: ${Math.round(obs.diff.relative * 10) / 10}%\n`;
-                })}
+                    return ` - **${obs.series.name}**: ${Math.round(obs.diff.relative * 10) / 10}%`;
+                }).join('\n')}
 `,
             });
         }
