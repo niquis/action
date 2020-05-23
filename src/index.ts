@@ -81,6 +81,13 @@ async function run(): Promise<void> {
         }),
       }
     ).then((res) => res.json());
+    core.info(
+      JSON.stringify({
+        dataSet: `github.com/${process.env.GITHUB_REPOSITORY!}`,
+        base: baseRef,
+        head: process.env.GITHUB_SHA!,
+      })
+    );
     core.info(JSON.stringify(res));
   } catch (error) {
     core.setFailed(error.message);
