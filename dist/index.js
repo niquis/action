@@ -438,7 +438,7 @@ function upload({ time, series, value }) {
     };
     const req = https.request(options, (res) => {
         res.on("data", (d) => {
-            process.stdout.write(d);
+            core.info(d);
         });
     });
     req.on("error", (error) => {
