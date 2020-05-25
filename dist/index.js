@@ -10702,10 +10702,11 @@ function upload({ time, series, value }) {
     core.info(`Series ${series}`);
     const data = JSON.stringify({
         dataSet: `github.com/${process.env.GITHUB_REPOSITORY}`,
+        lineage: process.env.GITHUB_REF.replace("refs/heads/", ""),
         series,
-        version: process.env.GITHUB_SHA,
         measure: "size",
         time,
+        version: process.env.GITHUB_SHA,
         value,
     });
     const options = {
