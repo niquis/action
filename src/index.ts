@@ -123,6 +123,7 @@ function upload({ time, series, value }: any) {
     headers: {
       "Content-Type": "application/json",
       "Content-Length": data.length,
+      Authorization: `token ${process.env.NIQUIS_TOKEN}`,
     },
   };
 
