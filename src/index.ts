@@ -12,7 +12,8 @@ async function run(): Promise<void> {
     // core.info(context.eventName);
     // core.info(JSON.stringify(context.payload));
 
-    await Promise.all([plugins.next({ time }), plugins.npm({ time })]);
+    plugins.next({ time });
+    plugins.npm({ time });
 
     core.info(context.eventName);
     if (context.eventName === "pull_request") {

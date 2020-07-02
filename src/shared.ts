@@ -11,7 +11,8 @@ interface Observation {
 export async function upload(obs: Observation) {
   const { time, series, measure, value } = obs;
 
-  core.info(`Series ${series}`);
+  core.info(`upload: series ${series}, measure ${measure}, value ${value}`);
+
   const data = JSON.stringify({
     dataSet: `github.com/${process.env.GITHUB_REPOSITORY!}`,
     lineage: process.env.GITHUB_REF!.replace("refs/heads/", ""),
@@ -34,20 +35,16 @@ export async function upload(obs: Observation) {
     },
   };
 
-  return new Promise((resolve, reject) => {
-    const req = https.request(options, (res) => {
-      res.on("data", (d) => {
-        core.info(d);
-        resolve();
-      });
+  const req = https.request(options, (res) => {
+    res.on("data", (d) => {
+      core.info(d);
     });
-
-    req.on("error", (error) => {
-      core.debug(error.message);
-      reject(new Error(error.message));
-    });
-
-    req.write(data);
-    req.end();
   });
+
+  req.on("error", (error) => {
+    core.debug(error.message);
+  });
+
+  req.write(data);
+  req.end();
 }
