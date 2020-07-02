@@ -10609,33 +10609,22 @@ module.exports.Collection = Hook.Collection
 Object.defineProperty(exports, "__esModule", { value: true });
 const core = __webpack_require__(470);
 const github = __webpack_require__(469);
-const fs = __webpack_require__(747);
-const https = __webpack_require__(211);
-const node_fetch_1 = __webpack_require__(454);
-const fg = __webpack_require__(406);
 const d3_format_1 = __webpack_require__(663);
+const node_fetch_1 = __webpack_require__(454);
+const plugins = __webpack_require__(811);
 async function run() {
     const time = Date.now() / 1000;
     try {
         const context = github.context;
         // core.info(context.eventName);
         // core.info(JSON.stringify(context.payload));
-        const octokit = new github.GitHub(process.env.GITHUB_TOKEN);
-        const workspace = process.env.GITHUB_WORKSPACE;
-        const entries = await fg(`.next/static/*/pages/**/*.js`, {
-            cwd: workspace,
-        });
-        for (const page of entries) {
-            const value = fs.statSync(page).size;
-            const series = page.match(/(pages\/.*)\.js$/)[1];
-            upload({ time, series, value });
-        }
+        await Promise.all([plugins.next({ time }), plugins.npm({ time })]);
         core.info(context.eventName);
         if (context.eventName === "pull_request") {
             const { pull_request } = context.payload;
             const base = pull_request.base.sha;
             const head = process.env.GITHUB_SHA;
-            core.info(JSON.stringify({ base, head, GITHUB_SHA: process.env.GITHUB_SHA }));
+            // core.info(JSON.stringify({ base, head, GITHUB_SHA: process.env.GITHUB_SHA });
             await new Promise((resolve) => setTimeout(resolve, 1000));
             const res = await node_fetch_1.default("https://api.niquis.im/graphql", {
                 method: "POST",
@@ -10674,6 +10663,7 @@ async function run() {
                 }),
             }).then((res) => res.json());
             core.info(JSON.stringify(res));
+            const octokit = new github.GitHub(process.env.GITHUB_TOKEN);
             await octokit.issues.createComment({
                 owner: context.payload.repository.owner.login,
                 repo: context.payload.repository.name,
@@ -10698,38 +10688,6 @@ ${res.data.comparison.observations
     }
 }
 run();
-function upload({ time, series, value }) {
-    core.info(`Series ${series}`);
-    const data = JSON.stringify({
-        dataSet: `github.com/${process.env.GITHUB_REPOSITORY}`,
-        lineage: process.env.GITHUB_REF.replace("refs/heads/", ""),
-        series,
-        measure: "size",
-        time,
-        version: process.env.GITHUB_SHA,
-        value,
-    });
-    const options = {
-        hostname: "api.niquis.im",
-        port: 443,
-        path: "/ingress",
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Content-Length": data.length,
-        },
-    };
-    const req = https.request(options, (res) => {
-        res.on("data", (d) => {
-            core.info(d);
-        });
-    });
-    req.on("error", (error) => {
-        core.debug(error.message);
-    });
-    req.write(data);
-    req.end();
-}
 const fmt = d3_format_1.format(".0f");
 function bytesToString(bytes) {
     if (bytes < 1024) {
@@ -11834,6 +11792,29 @@ function getNextPage (octokit, link, headers) {
 
 /***/ }),
 
+/***/ 553:
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const fg = __webpack_require__(406);
+const fs = __webpack_require__(747);
+const shared_1 = __webpack_require__(739);
+exports.default = async ({ time }) => {
+    const entries = await fg(`.next/static/*/pages/**/*.js`, {
+        cwd: process.env.GITHUB_WORKSPACE,
+    });
+    for (const page of entries) {
+        const value = fs.statSync(page).size;
+        const series = page.match(/(pages\/.*)\.js$/)[1];
+        await shared_1.upload({ time, series, measure: "size", value });
+    }
+};
+
+
+/***/ }),
+
 /***/ 558:
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
@@ -11847,6 +11828,25 @@ function hasPreviousPage (link) {
   return getPageLinks(link).prev
 }
 
+
+/***/ }),
+
+/***/ 561:
+/***/ (function(module) {
+
+function webpackEmptyContext(req) {
+	if (typeof req === 'number' && __webpack_require__.m[req])
+  return __webpack_require__(req);
+try { return require(req) }
+catch (e) { if (e.code !== 'MODULE_NOT_FOUND') throw e }
+var e = new Error("Cannot find module '" + req + "'");
+	e.code = 'MODULE_NOT_FOUND';
+	throw e;
+}
+webpackEmptyContext.keys = function() { return []; };
+webpackEmptyContext.resolve = webpackEmptyContext;
+module.exports = webpackEmptyContext;
+webpackEmptyContext.id = 561;
 
 /***/ }),
 
@@ -13642,6 +13642,58 @@ const fill = (start, end, step, options = {}) => {
 };
 
 module.exports = fill;
+
+
+/***/ }),
+
+/***/ 739:
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.upload = void 0;
+const core = __webpack_require__(470);
+const https = __webpack_require__(211);
+async function upload(obs) {
+    const { time, series, measure, value } = obs;
+    core.info(`Series ${series}`);
+    const data = JSON.stringify({
+        dataSet: `github.com/${process.env.GITHUB_REPOSITORY}`,
+        lineage: process.env.GITHUB_REF.replace("refs/heads/", ""),
+        series,
+        measure,
+        time,
+        version: process.env.GITHUB_SHA,
+        value,
+    });
+    const options = {
+        hostname: "api.niquis.im",
+        port: 443,
+        path: "/ingress",
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Content-Length": data.length,
+            Authorization: `token ${process.env.NIQUIS_TOKEN}`,
+        },
+    };
+    return new Promise((resolve, reject) => {
+        const req = https.request(options, (res) => {
+            res.on("data", (d) => {
+                core.info(d);
+                resolve();
+            });
+        });
+        req.on("error", (error) => {
+            core.debug(error.message);
+            reject(new Error(error.message));
+        });
+        req.write(data);
+        req.end();
+    });
+}
+exports.upload = upload;
 
 
 /***/ }),
@@ -15669,6 +15721,20 @@ module.exports = {
   CHAR_VERTICAL_LINE: '|', /* | */
   CHAR_ZERO_WIDTH_NOBREAK_SPACE: '\uFEFF' /* \uFEFF */
 };
+
+
+/***/ }),
+
+/***/ 811:
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var next_1 = __webpack_require__(553);
+Object.defineProperty(exports, "next", { enumerable: true, get: function () { return next_1.default; } });
+var npm_1 = __webpack_require__(877);
+Object.defineProperty(exports, "npm", { enumerable: true, get: function () { return npm_1.default; } });
 
 
 /***/ }),
@@ -30321,6 +30387,31 @@ function createFileSystemAdapter(fsMethods) {
     return Object.assign(Object.assign({}, exports.FILE_SYSTEM_ADAPTER), fsMethods);
 }
 exports.createFileSystemAdapter = createFileSystemAdapter;
+
+
+/***/ }),
+
+/***/ 877:
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const path = __webpack_require__(622);
+const fs = __webpack_require__(747);
+const shared_1 = __webpack_require__(739);
+exports.default = async ({ time }) => {
+    const workspace = process.env.GITHUB_WORKSPACE;
+    const series = "dependencies";
+    if (fs.existsSync(path.join(workspace, "package-lock.json"))) {
+        const { dependencies } = __webpack_require__(561)(path.join(workspace, "package-lock.json"));
+        const value = (function count(deps) {
+            const values = Object.values(deps);
+            return values.reduce((a, v) => a + count(v.dependencies || {}), values.length);
+        })(dependencies);
+        await shared_1.upload({ time, series, measure: "count", value });
+    }
+};
 
 
 /***/ }),
