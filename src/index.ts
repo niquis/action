@@ -64,7 +64,7 @@ async function run(): Promise<void> {
 
       core.info(JSON.stringify(res));
 
-      const octokit = new github.GitHub(process.env.GITHUB_TOKEN!);
+      const octokit = github.getOctokit(process.env.GITHUB_TOKEN!);
       await octokit.issues.createComment({
         owner: context.payload.repository!.owner.login,
         repo: context.payload.repository!.name,
