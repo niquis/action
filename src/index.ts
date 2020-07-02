@@ -77,7 +77,7 @@ ${res.data.comparison.observations
     const abs = bytesToString(obs.diff.absolute);
     const pct = Math.round(obs.diff.relative * 10) / 10;
 
-    const sign = { [-1]: "-", [0]: "", [1]: "+" }[Math.sign(pct) as -1 | 0 | 1];
+    const sign = { [-1]: "", [0]: "", [1]: "+" }[Math.sign(pct) as -1 | 0 | 1];
     return ` - **${obs.series.name}**: ${sign}${abs} (${sign}${pct}%)`;
   })
   .join("\n")}
@@ -94,12 +94,12 @@ run();
 const fmt = format(".0f");
 function bytesToString(bytes: number) {
   if (bytes < 1024) {
-    return fmt(bytes) + "B";
+    return fmt(bytes) + "";
   } else if (bytes < 1024 * 1024) {
-    return fmt(bytes / 1024) + "kB";
+    return fmt(bytes / 1024) + "k";
   } else if (bytes < 1024 * 1024 * 1024) {
-    return fmt(bytes / 1024 / 1024) + "MB";
+    return fmt(bytes / 1024 / 1024) + "M";
   } else {
-    return fmt(bytes / 1024 / 1024 / 1024) + "GB";
+    return fmt(bytes / 1024 / 1024 / 1024) + "G";
   }
 }
