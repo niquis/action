@@ -15,6 +15,6 @@
     "fast-glob": "^3.2.2",
     "glob": "^7.1.6",
     "node-fetch": "^2.6.0",
-    "typescript": "^3.9.3"
+    "typescript": "^3.9.6"
   }
 }
