@@ -1,10 +1,8 @@
 import * as core from "@actions/core";
 import * as github from "@actions/github";
-import * as fs from "fs";
-import * as https from "https";
-import fetch from "node-fetch";
-import * as fg from "fast-glob";
 import { format } from "d3-format";
+import fetch from "node-fetch";
+import * as plugins from "./plugins";
 
 async function run(): Promise<void> {
   const time = Date.now() / 1000;
@@ -14,17 +12,7 @@ async function run(): Promise<void> {
     // core.info(context.eventName);
     // core.info(JSON.stringify(context.payload));
 
-    const octokit = new github.GitHub(process.env.GITHUB_TOKEN!);
-
-    const workspace = process.env.GITHUB_WORKSPACE!;
-    const entries = await fg(`.next/static/*/pages/**/*.js`, {
-      cwd: workspace,
-    });
-    for (const page of entries) {
-      const value = fs.statSync(page).size;
-      const series = page.match(/(pages\/.*)\.js$/)![1];
-      upload({ time, series, value });
-    }
+    await Promise.all([plugins.next({ time }), plugins.npm({ time })]);
 
     core.info(context.eventName);
     if (context.eventName === "pull_request") {
@@ -33,9 +21,7 @@ async function run(): Promise<void> {
       const base = pull_request!.base.sha;
       const head = process.env.GITHUB_SHA;
 
-      core.info(
-        JSON.stringify({ base, head, GITHUB_SHA: process.env.GITHUB_SHA })
-      );
+      // core.info(JSON.stringify({ base, head, GITHUB_SHA: process.env.GITHUB_SHA });
 
       await new Promise((resolve) => setTimeout(resolve, 1000));
       const res = await fetch("https://api.niquis.im/graphql", {
@@ -77,6 +63,7 @@ async function run(): Promise<void> {
 
       core.info(JSON.stringify(res));
 
+      const octokit = new github.GitHub(process.env.GITHUB_TOKEN!);
       await octokit.issues.createComment({
         owner: context.payload.repository!.owner.login,
         repo: context.payload.repository!.name,
@@ -102,44 +89,6 @@ ${res.data.comparison.observations
 }
 
 run();
-
-function upload({ time, series, value }: any) {
-  core.info(`Series ${series}`);
-  const data = JSON.stringify({
-    dataSet: `github.com/${process.env.GITHUB_REPOSITORY!}`,
-    lineage: process.env.GITHUB_REF!.replace("refs/heads/", ""),
-    series,
-    measure: "size",
-    time,
-    version: process.env.GITHUB_SHA!,
-    value,
-  });
-
-  const options = {
-    hostname: "api.niquis.im",
-    port: 443,
-    path: "/ingress",
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Content-Length": data.length,
-      Authorization: `token ${process.env.NIQUIS_TOKEN}`,
-    },
-  };
-
-  const req = https.request(options, (res) => {
-    res.on("data", (d) => {
-      core.info(d);
-    });
-  });
-
-  req.on("error", (error) => {
-    core.debug(error.message);
-  });
-
-  req.write(data);
-  req.end();
-}
 
 const fmt = format(".0f");
 function bytesToString(bytes: number) {
