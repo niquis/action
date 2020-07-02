@@ -996,6 +996,95 @@ module.exports = require("os");
 
 /***/ }),
 
+/***/ 105:
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.comment = void 0;
+const core_1 = __webpack_require__(470);
+const github_1 = __webpack_require__(469);
+const d3_format_1 = __webpack_require__(663);
+const node_fetch_1 = __webpack_require__(454);
+async function comment(pull_request) {
+    const base = pull_request.base.sha;
+    const head = process.env.GITHUB_SHA;
+    const dataSet = `github.com/${process.env.GITHUB_REPOSITORY}`;
+    // core.info(JSON.stringify({ base, head, GITHUB_SHA: process.env.GITHUB_SHA });
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    const res = await node_fetch_1.default("https://api.niquis.im/graphql", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            query: `
+          query comparisonQuery($dataSet: String!, $base: String!, $head: String!) {
+            comparison(dataSet: $dataSet, base: $base, head: $head) {
+              observations {
+                id
+                series {
+                  name
+                }
+                measure {
+                  name
+                }
+                value
+                diff {
+                  base {
+                    value
+                  }
+                  absolute
+                  relative
+                }
+              }
+            }
+          }
+        `,
+            variables: { dataSet, base, head },
+        }),
+    }).then((res) => res.json());
+    core_1.info(JSON.stringify(res));
+    const octokit = github_1.getOctokit(process.env.GITHUB_TOKEN);
+    await octokit.issues.createComment({
+        owner: github_1.context.payload.repository.owner.login,
+        repo: github_1.context.payload.repository.name,
+        issue_number: pull_request.number,
+        body: `
+# Comparison
+
+${res.data.comparison.observations
+            .map((obs) => {
+            const abs = bytesToString(obs.diff.absolute);
+            const pct = Math.round(obs.diff.relative * 10) / 10;
+            const sign = { [-1]: "", [0]: "", [1]: "+" }[Math.sign(pct)];
+            return ` - **${obs.series.name}**: ${sign}${abs} (${sign}${pct}%)`;
+        })
+            .join("\n")}
+`,
+    });
+}
+exports.comment = comment;
+const fmt = d3_format_1.format(".0f");
+function bytesToString(bytes) {
+    if (bytes < 1024) {
+        return fmt(bytes) + "";
+    }
+    else if (bytes < 1024 * 1024) {
+        return fmt(bytes / 1024) + "k";
+    }
+    else if (bytes < 1024 * 1024 * 1024) {
+        return fmt(bytes / 1024 / 1024) + "M";
+    }
+    else {
+        return fmt(bytes / 1024 / 1024 / 1024) + "G";
+    }
+}
+
+
+/***/ }),
+
 /***/ 113:
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
@@ -9025,103 +9114,25 @@ module.exports.Collection = Hook.Collection
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const core = __webpack_require__(470);
-const github = __webpack_require__(469);
-const d3_format_1 = __webpack_require__(663);
-const node_fetch_1 = __webpack_require__(454);
+const core_1 = __webpack_require__(470);
+const github_1 = __webpack_require__(469);
+const comment_1 = __webpack_require__(105);
 const plugins = __webpack_require__(954);
 async function run() {
     const time = Date.now() / 1000;
     try {
-        const context = github.context;
-        // core.info(context.eventName);
-        // core.info(JSON.stringify(context.payload));
         plugins.next({ time });
         plugins.npm({ time });
-        core.info(context.eventName);
-        if (context.eventName === "pull_request") {
-            const { pull_request } = context.payload;
-            const base = pull_request.base.sha;
-            const head = process.env.GITHUB_SHA;
-            // core.info(JSON.stringify({ base, head, GITHUB_SHA: process.env.GITHUB_SHA });
-            await new Promise((resolve) => setTimeout(resolve, 1000));
-            const res = await node_fetch_1.default("https://api.niquis.im/graphql", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    query: `
-          query comparisonQuery($dataSet: String!, $base: String!, $head: String!) {
-            comparison(dataSet: $dataSet, base: $base, head: $head) {
-              observations {
-                id
-                series {
-                  name
-                }
-                measure {
-                  name
-                }
-                value
-                diff {
-                  base {
-                    value
-                  }
-                  absolute
-                  relative
-                }
-              }
-            }
-          }
-        `,
-                    variables: {
-                        dataSet: `github.com/${process.env.GITHUB_REPOSITORY}`,
-                        base,
-                        head,
-                    },
-                }),
-            }).then((res) => res.json());
-            core.info(JSON.stringify(res));
-            const octokit = github.getOctokit(process.env.GITHUB_TOKEN);
-            await octokit.issues.createComment({
-                owner: context.payload.repository.owner.login,
-                repo: context.payload.repository.name,
-                issue_number: pull_request.number,
-                body: `
-# Comparison
-
-${res.data.comparison.observations
-                    .map((obs) => {
-                    const abs = bytesToString(obs.diff.absolute);
-                    const pct = Math.round(obs.diff.relative * 10) / 10;
-                    const sign = { [-1]: "", [0]: "", [1]: "+" }[Math.sign(pct)];
-                    return ` - **${obs.series.name}**: ${sign}${abs} (${sign}${pct}%)`;
-                })
-                    .join("\n")}
-`,
-            });
+        core_1.info(github_1.context.eventName);
+        if (github_1.context.eventName === "pull_request") {
+            await comment_1.comment(github_1.context.payload.pull_request);
         }
     }
     catch (error) {
-        core.setFailed(error.message);
+        core_1.setFailed(error.message);
     }
 }
 run();
-const fmt = d3_format_1.format(".0f");
-function bytesToString(bytes) {
-    if (bytes < 1024) {
-        return fmt(bytes) + "";
-    }
-    else if (bytes < 1024 * 1024) {
-        return fmt(bytes / 1024) + "k";
-    }
-    else if (bytes < 1024 * 1024 * 1024) {
-        return fmt(bytes / 1024 / 1024) + "M";
-    }
-    else {
-        return fmt(bytes / 1024 / 1024 / 1024) + "G";
-    }
-}
 
 
 /***/ }),
