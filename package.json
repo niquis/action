@@ -14,7 +14,7 @@
     "d3-format": "^1.4.4",
     "fast-glob": "^3.2.2",
     "glob": "^7.1.6",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^2.6.1",
     "typescript": "^3.9.6"
   }
 }
