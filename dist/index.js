@@ -10264,14 +10264,34 @@ const fg = __webpack_require__(406);
 const fs = __webpack_require__(747);
 const shared_1 = __webpack_require__(739);
 exports.default = async ({ time }) => {
-    const entries = await fg(`.next/static/*/pages/**/*.js`, {
-        cwd: process.env.GITHUB_WORKSPACE,
-    });
-    for (const page of entries) {
-        const value = fs.statSync(page).size;
-        const series = page.match(/(pages\/.*)\.js$/)[1];
-        await shared_1.upload({ time, series, measure: "size", value });
-    }
+    /*
+     * Pages
+     */
+    await (async () => {
+        const entries = await fg(`.next/static/*/pages/**/*.js`, {
+            cwd: process.env.GITHUB_WORKSPACE,
+        });
+        for (const page of entries) {
+            const value = fs.statSync(page).size;
+            const series = page.match(/(pages\/.*)\.js$/)[1].slice(0, -21);
+            await shared_1.upload({ time, series, measure: "size", value });
+        }
+    })();
+    /*
+     * Chunks
+     */
+    await (async () => {
+        const entries = await fg(`.next/static/chunks/*.js`, {
+            cwd: process.env.GITHUB_WORKSPACE,
+        });
+        for (const page of entries) {
+            if (page.match(/(framework|main|polyfills|webpack)/)) {
+                const value = fs.statSync(page).size;
+                const series = page.match(/(chunks\/.*)\.js$/)[1].slice(0, -21);
+                await shared_1.upload({ time, series, measure: "size", value });
+            }
+        }
+    })();
 };
 
 
