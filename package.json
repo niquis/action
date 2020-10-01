@@ -5,7 +5,7 @@
     "build": "tsc --build tsconfig.json && ncc build"
   },
   "dependencies": {
-    "@actions/core": "^1.2.4",
+    "@actions/core": "^1.2.6",
     "@actions/github": "^4.0.0",
     "@types/d3-format": "^1.3.1",
     "@types/glob": "^7.1.3",
