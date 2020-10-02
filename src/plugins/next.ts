@@ -1,8 +1,9 @@
 import * as fg from "fast-glob";
 import * as fs from "fs";
+import { Env } from "../env";
 import { upload } from "../shared";
 
-export default async ({ time }: any) => {
+export default async ({ time }: Env) => {
   /*
    * Pages
    */

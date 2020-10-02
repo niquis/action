@@ -1,8 +1,9 @@
-import * as path from "path";
 import * as fs from "fs";
+import * as path from "path";
+import { Env } from "../env";
 import { upload } from "../shared";
 
-export default async ({ time }: any) => {
+export default async ({ time }: Env) => {
   const workspace = process.env.GITHUB_WORKSPACE!;
 
   const series = "dependencies";

@@ -3,12 +3,13 @@ import { context } from "@actions/github";
 import { comment } from "./comment";
 import * as plugins from "./plugins";
 
-async function run(): Promise<void> {
+async function main(): Promise<void> {
   const time = Date.now() / 1000;
+  const env = { time };
 
   try {
-    plugins.next({ time });
-    plugins.npm({ time });
+    await plugins.next(env);
+    await plugins.npm(env);
 
     info(context.eventName);
     if (context.eventName === "pull_request") {
@@ -19,4 +20,4 @@ async function run(): Promise<void> {
   }
 }
 
-run();
+main();

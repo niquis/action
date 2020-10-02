@@ -9190,11 +9190,12 @@ const core_1 = __webpack_require__(470);
 const github_1 = __webpack_require__(469);
 const comment_1 = __webpack_require__(105);
 const plugins = __webpack_require__(954);
-async function run() {
+async function main() {
     const time = Date.now() / 1000;
+    const env = { time };
     try {
-        plugins.next({ time });
-        plugins.npm({ time });
+        await plugins.next(env);
+        await plugins.npm(env);
         core_1.info(github_1.context.eventName);
         if (github_1.context.eventName === "pull_request") {
             await comment_1.comment(github_1.context.payload.pull_request);
@@ -9204,7 +9205,7 @@ async function run() {
         core_1.setFailed(error.message);
     }
 }
-run();
+main();
 
 
 /***/ }),
@@ -15638,8 +15639,8 @@ exports.createFileSystemAdapter = createFileSystemAdapter;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const path = __webpack_require__(622);
 const fs = __webpack_require__(747);
+const path = __webpack_require__(622);
 const shared_1 = __webpack_require__(739);
 exports.default = async ({ time }) => {
     const workspace = process.env.GITHUB_WORKSPACE;
