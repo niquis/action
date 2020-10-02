@@ -9190,12 +9190,13 @@ const core_1 = __webpack_require__(470);
 const github_1 = __webpack_require__(469);
 const comment_1 = __webpack_require__(105);
 const plugins = __webpack_require__(954);
+const shared_1 = __webpack_require__(739);
 async function main() {
     const time = Date.now() / 1000;
-    const env = { time };
     try {
-        await plugins.next(env);
-        await plugins.npm(env);
+        for await (const obs of shared_1.combine(plugins.npm(), plugins.next())) {
+            await shared_1.upload({ time, ...obs });
+        }
         core_1.info(github_1.context.eventName);
         if (github_1.context.eventName === "pull_request") {
             await comment_1.comment(github_1.context.payload.pull_request);
@@ -10263,25 +10264,24 @@ exports.HttpClient = HttpClient;
 Object.defineProperty(exports, "__esModule", { value: true });
 const fg = __webpack_require__(406);
 const fs = __webpack_require__(747);
-const shared_1 = __webpack_require__(739);
-exports.default = async ({ time }) => {
+async function* default_1() {
     /*
      * Pages
      */
-    await (async () => {
+    {
         const entries = await fg(`.next/static/*/pages/**/*.js`, {
             cwd: process.env.GITHUB_WORKSPACE,
         });
         for (const page of entries) {
             const value = fs.statSync(page).size;
             const series = page.match(/(pages\/.*)\.js$/)[1].slice(0, -21);
-            await shared_1.upload({ time, series, measure: "size", value });
+            yield { series, measure: "size", value };
         }
-    })();
+    }
     /*
      * Chunks
      */
-    await (async () => {
+    {
         const entries = await fg(`.next/static/chunks/*.js`, {
             cwd: process.env.GITHUB_WORKSPACE,
         });
@@ -10289,11 +10289,12 @@ exports.default = async ({ time }) => {
             if (page.match(/(framework|main|polyfills|webpack)/)) {
                 const value = fs.statSync(page).size;
                 const series = page.match(/(chunks\/.*)\.js$/)[1].slice(0, -21);
-                await shared_1.upload({ time, series, measure: "size", value });
+                yield { series, measure: "size", value };
             }
         }
-    })();
-};
+    }
+}
+exports.default = default_1;
 
 
 /***/ }),
@@ -11974,7 +11975,7 @@ module.exports = fill;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.upload = void 0;
+exports.combine = exports.upload = void 0;
 const core = __webpack_require__(470);
 const https = __webpack_require__(211);
 async function upload(obs) {
@@ -12012,6 +12013,39 @@ async function upload(obs) {
     req.end();
 }
 exports.upload = upload;
+async function* combine(...iterable) {
+    const asyncIterators = iterable.map((o) => o[Symbol.asyncIterator]());
+    let count = asyncIterators.length;
+    const never = new Promise(() => { });
+    const results = [];
+    async function getNext(asyncIterator, index) {
+        return { index, result: await asyncIterator.next() };
+    }
+    const nextPromises = asyncIterators.map(getNext);
+    try {
+        while (count) {
+            const { index, result } = await Promise.race(nextPromises);
+            if (result.done) {
+                nextPromises[index] = never;
+                results[index] = result.value;
+                count--;
+            }
+            else {
+                nextPromises[index] = getNext(asyncIterators[index], index);
+                yield result.value;
+            }
+        }
+    }
+    finally {
+        for (const [index, iterator] of asyncIterators.entries())
+            if (nextPromises[index] != never && iterator.return != null) {
+                iterator.return();
+            }
+        // no await here - see https://github.com/tc39/proposal-async-iteration/issues/126
+    }
+    return results;
+}
+exports.combine = combine;
 
 
 /***/ }),
@@ -15641,19 +15675,18 @@ exports.createFileSystemAdapter = createFileSystemAdapter;
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = __webpack_require__(747);
 const path = __webpack_require__(622);
-const shared_1 = __webpack_require__(739);
-exports.default = async ({ time }) => {
+async function* default_1() {
     const workspace = process.env.GITHUB_WORKSPACE;
-    const series = "dependencies";
     if (fs.existsSync(path.join(workspace, "package-lock.json"))) {
         const { dependencies } = __webpack_require__(561)(path.join(workspace, "package-lock.json"));
         const value = (function count(deps) {
             const values = Object.values(deps);
             return values.reduce((a, v) => a + count(v.dependencies || {}), values.length);
         })(dependencies);
-        await shared_1.upload({ time, series, measure: "count", value });
+        yield { series: "dependencies", measure: "count", value };
     }
-};
+}
+exports.default = default_1;
 
 
 /***/ }),

@@ -1,12 +1,8 @@
 import * as fs from "fs";
 import * as path from "path";
-import { Env } from "../env";
-import { upload } from "../shared";
 
-export default async ({ time }: Env) => {
+export default async function* () {
   const workspace = process.env.GITHUB_WORKSPACE!;
-
-  const series = "dependencies";
 
   if (fs.existsSync(path.join(workspace, "package-lock.json"))) {
     const { dependencies } = require(path.join(workspace, "package-lock.json"));
@@ -18,6 +14,6 @@ export default async ({ time }: Env) => {
       );
     })(dependencies);
 
-    await upload({ time, series, measure: "count", value });
+    yield { series: "dependencies", measure: "count", value };
   }
-};
+}
