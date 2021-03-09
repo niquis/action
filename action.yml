@@ -1,5 +1,5 @@
 name: 'Niquis'
 description: 'Uploads stats to niquis'
 runs:
-  using: node14
+  using: node12
   main: dist/index.js
