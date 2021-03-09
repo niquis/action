@@ -11,7 +11,7 @@ export default async function* () {
     });
 
     for (const page of entries) {
-      const value = fs.statSync(page).size;
+      const value = (await fs.promises.stat(page)).size;
       const series = page.match(/(pages\/.*)\.js$/)![1].slice(0, -21);
       yield { series, measure: "size", value };
     }
@@ -27,7 +27,7 @@ export default async function* () {
 
     for (const page of entries) {
       if (page.match(/(framework|main|polyfills|webpack)/)) {
-        const value = fs.statSync(page).size;
+        const value = (await fs.promises.stat(page)).size;
         const series = page.match(/(chunks\/.*)\.js$/)![1].slice(0, -21);
         yield { series, measure: "size", value };
       }

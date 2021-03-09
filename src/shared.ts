@@ -8,6 +8,9 @@ interface Observation {
   value: number;
 }
 
+/**
+ * Upload one observation to via the /ingress API into the database.
+ */
 export async function upload(obs: Observation) {
   const { time, series, measure, value } = obs;
 

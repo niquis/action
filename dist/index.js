@@ -10373,7 +10373,7 @@ async function* default_1() {
             cwd: process.env.GITHUB_WORKSPACE,
         });
         for (const page of entries) {
-            const value = fs.statSync(page).size;
+            const value = (await fs.promises.stat(page)).size;
             const series = page.match(/(pages\/.*)\.js$/)[1].slice(0, -21);
             yield { series, measure: "size", value };
         }
@@ -10387,7 +10387,7 @@ async function* default_1() {
         });
         for (const page of entries) {
             if (page.match(/(framework|main|polyfills|webpack)/)) {
-                const value = fs.statSync(page).size;
+                const value = (await fs.promises.stat(page)).size;
                 const series = page.match(/(chunks\/.*)\.js$/)[1].slice(0, -21);
                 yield { series, measure: "size", value };
             }
@@ -12126,6 +12126,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.combine = exports.upload = void 0;
 const core = __webpack_require__(470);
 const https = __webpack_require__(211);
+/**
+ * Upload one observation to via the /ingress API into the database.
+ */
 async function upload(obs) {
     const { time, series, measure, value } = obs;
     core.info(`upload: series ${series}, measure ${measure}, value ${value}`);
