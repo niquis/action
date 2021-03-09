@@ -333,6 +333,7 @@ module.exports = opts => {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.merge = void 0;
 const merge2 = __webpack_require__(538);
 function merge(streams) {
     const mergedStream = merge2(streams);
@@ -357,6 +358,7 @@ function propagateCloseEventToSources(streams) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.createDirentFromStats = void 0;
 class DirentFromStats {
     constructor(name, stats) {
         this.name = name;
@@ -1069,11 +1071,13 @@ const core_1 = __webpack_require__(470);
 const github_1 = __webpack_require__(469);
 const d3_format_1 = __webpack_require__(663);
 const node_fetch_1 = __webpack_require__(454);
-async function comment(pull_request) {
-    const base = pull_request.base.sha;
+async function comment(pr) {
+    const base = pr.base.sha;
     const head = process.env.GITHUB_SHA;
     const dataSet = `github.com/${process.env.GITHUB_REPOSITORY}`;
-    // core.info(JSON.stringify({ base, head, GITHUB_SHA: process.env.GITHUB_SHA });
+    /*
+     * Wait a bit to allow the DB to reach eventual consistency.
+     */
     await new Promise((resolve) => setTimeout(resolve, 1000));
     const res = await node_fetch_1.default("https://api.niquis.im/graphql", {
         method: "POST",
@@ -1109,23 +1113,40 @@ async function comment(pull_request) {
     }).then((res) => res.json());
     core_1.info(JSON.stringify(res));
     const octokit = github_1.getOctokit(process.env.GITHUB_TOKEN);
-    await octokit.issues.createComment({
+    const comments = await octokit.issues.listComments({
         owner: github_1.context.payload.repository.owner.login,
         repo: github_1.context.payload.repository.name,
-        issue_number: pull_request.number,
-        body: `
+        issue_number: pr.number,
+    });
+    const body = `
 # Comparison
 
 ${res.data.comparison.observations
-            .map((obs) => {
-            const abs = bytesToString(obs.diff.absolute);
-            const pct = Math.round(obs.diff.relative * 10) / 10;
-            const sign = { [-1]: "", [0]: "", [1]: "+" }[Math.sign(pct)];
-            return ` - **${obs.series.name}**: ${sign}${abs} (${sign}${pct}%)`;
-        })
-            .join("\n")}
-`,
-    });
+        .map((obs) => {
+        const abs = bytesToString(obs.diff.absolute);
+        const pct = Math.round(obs.diff.relative * 10) / 10;
+        const sign = { [-1]: "", [0]: "", [1]: "+" }[Math.sign(pct)];
+        return ` - **${obs.series.name}**: ${sign}${abs} (${sign}${pct}%)`;
+    })
+        .join("\n")}
+`;
+    const comment = comments.data.find((x) => x.user.login === "github-actions");
+    if (!comment) {
+        await octokit.issues.createComment({
+            owner: github_1.context.payload.repository.owner.login,
+            repo: github_1.context.payload.repository.name,
+            issue_number: pr.number,
+            body,
+        });
+    }
+    else {
+        await octokit.issues.updateComment({
+            owner: github_1.context.payload.repository.owner.login,
+            repo: github_1.context.payload.repository.name,
+            comment_id: comment.id,
+            body,
+        });
+    }
 }
 exports.comment = comment;
 const fmt = d3_format_1.format(".0f");
@@ -1189,6 +1210,7 @@ exports.default = ProviderAsync;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.isEnoentCodeError = void 0;
 function isEnoentCodeError(error) {
     return error.code === 'ENOENT';
 }
@@ -1634,9 +1656,11 @@ module.exports.MaxBufferError = MaxBufferError;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.readdir = exports.readdirWithFileTypes = exports.read = void 0;
 const fsStat = __webpack_require__(858);
 const constants_1 = __webpack_require__(171);
 const utils = __webpack_require__(933);
+const common = __webpack_require__(185);
 function read(directory, settings) {
     if (!settings.stats && constants_1.IS_SUPPORT_READDIR_WITH_FILE_TYPES) {
         return readdirWithFileTypes(directory, settings);
@@ -1650,7 +1674,7 @@ function readdirWithFileTypes(directory, settings) {
         const entry = {
             dirent,
             name: dirent.name,
-            path: `${directory}${settings.pathSegmentSeparator}${dirent.name}`
+            path: common.joinPathSegments(directory, dirent.name, settings.pathSegmentSeparator)
         };
         if (entry.dirent.isSymbolicLink() && settings.followSymbolicLinks) {
             try {
@@ -1670,7 +1694,7 @@ exports.readdirWithFileTypes = readdirWithFileTypes;
 function readdir(directory, settings) {
     const names = settings.fs.readdirSync(directory);
     return names.map((name) => {
-        const entryPath = `${directory}${settings.pathSegmentSeparator}${name}`;
+        const entryPath = common.joinPathSegments(directory, name, settings.pathSegmentSeparator);
         const stats = fsStat.statSync(entryPath, settings.fsStatSettings);
         const entry = {
             name,
@@ -1743,6 +1767,7 @@ module.exports = opts => {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.IS_SUPPORT_READDIR_WITH_FILE_TYPES = void 0;
 const NODE_PROCESS_VERSION_PARTS = process.versions.node.split('.');
 const MAJOR_VERSION = parseInt(NODE_PROCESS_VERSION_PARTS[0], 10);
 const MINOR_VERSION = parseInt(NODE_PROCESS_VERSION_PARTS[1], 10);
@@ -1764,10 +1789,12 @@ exports.IS_SUPPORT_READDIR_WITH_FILE_TYPES = IS_MATCHED_BY_MAJOR || IS_MATCHED_B
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.readdir = exports.readdirWithFileTypes = exports.read = void 0;
 const fsStat = __webpack_require__(858);
 const rpl = __webpack_require__(885);
 const constants_1 = __webpack_require__(171);
 const utils = __webpack_require__(933);
+const common = __webpack_require__(185);
 function read(directory, settings, callback) {
     if (!settings.stats && constants_1.IS_SUPPORT_READDIR_WITH_FILE_TYPES) {
         return readdirWithFileTypes(directory, settings, callback);
@@ -1783,7 +1810,7 @@ function readdirWithFileTypes(directory, settings, callback) {
         const entries = dirents.map((dirent) => ({
             dirent,
             name: dirent.name,
-            path: `${directory}${settings.pathSegmentSeparator}${dirent.name}`
+            path: common.joinPathSegments(directory, dirent.name, settings.pathSegmentSeparator)
         }));
         if (!settings.followSymbolicLinks) {
             return callSuccessCallback(callback, entries);
@@ -1820,7 +1847,7 @@ function readdir(directory, settings, callback) {
         if (readdirError !== null) {
             return callFailureCallback(callback, readdirError);
         }
-        const filepaths = names.map((name) => `${directory}${settings.pathSegmentSeparator}${name}`);
+        const filepaths = names.map((name) => common.joinPathSegments(directory, name, settings.pathSegmentSeparator));
         const tasks = filepaths.map((filepath) => {
             return (done) => fsStat.stat(filepath, settings.fsStatSettings, done);
         });
@@ -1852,6 +1879,27 @@ function callFailureCallback(callback, error) {
 function callSuccessCallback(callback, result) {
     callback(null, result);
 }
+
+
+/***/ }),
+
+/***/ 185:
+/***/ (function(__unusedmodule, exports) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.joinPathSegments = void 0;
+function joinPathSegments(a, b, separator) {
+    /**
+     * The correct handling of cases when the first segment is a root (`/`, `C:/`) or UNC path (`//?/C:/`).
+     */
+    if (a.endsWith(separator)) {
+        return a + b;
+    }
+    return a + separator + b;
+}
+exports.joinPathSegments = joinPathSegments;
 
 
 /***/ }),
@@ -2097,6 +2145,7 @@ module.exports = {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.createDirentFromStats = void 0;
 class DirentFromStats {
     constructor(name, stats) {
         this.name = name;
@@ -2640,6 +2689,7 @@ module.exports = function globParent(str, opts) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.splitWhen = exports.flatten = void 0;
 function flatten(items) {
     return items.reduce((collection, item) => [].concat(collection, item), []);
 }
@@ -4486,6 +4536,9 @@ class AsyncReader extends reader_1.default {
         });
         return this._emitter;
     }
+    get isDestroyed() {
+        return this._isDestroyed;
+    }
     destroy() {
         if (this._isDestroyed) {
             throw new Error('The reader is already destroyed');
@@ -4522,7 +4575,7 @@ class AsyncReader extends reader_1.default {
         });
     }
     _handleError(error) {
-        if (!common.isFatalError(this._settings, error)) {
+        if (this._isDestroyed || !common.isFatalError(this._settings, error)) {
             return;
         }
         this._isFatalError = true;
@@ -4818,9 +4871,14 @@ isStream.transform = function (stream) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.DEFAULT_FILE_SYSTEM_ADAPTER = void 0;
 const fs = __webpack_require__(747);
 const os = __webpack_require__(87);
-const CPU_COUNT = os.cpus().length;
+/**
+ * The `os.cpus` method can return zero. We expect the number of cores to be greater than zero.
+ * https://github.com/nodejs/node/blob/7faeddf23a98c53896f8b574a6e66589e8fb1eb8/lib/os.js#L106-L107
+ */
+const CPU_COUNT = Math.max(os.cpus().length, 1);
 exports.DEFAULT_FILE_SYSTEM_ADAPTER = {
     lstat: fs.lstat,
     lstatSync: fs.lstatSync,
@@ -5330,6 +5388,7 @@ module.exports = (ast, options = {}) => {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.convertPatternGroupToTask = exports.convertPatternGroupsToTasks = exports.groupPatternsByBaseDirectory = exports.getNegativePatternsAsPositive = exports.getPositivePatterns = exports.convertPatternsToTasks = exports.generate = void 0;
 const utils = __webpack_require__(444);
 function generate(patterns, settings) {
     const positivePatterns = getPositivePatterns(patterns);
@@ -5952,7 +6011,7 @@ class Settings {
         });
     }
     _getValue(option, value) {
-        return option === undefined ? value : option;
+        return option !== null && option !== void 0 ? option : value;
     }
 }
 exports.default = Settings;
@@ -6049,6 +6108,7 @@ module.exports = __webpack_require__(141);
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.removeLeadingDotSegment = exports.escape = exports.makeAbsolute = exports.unixify = void 0;
 const path = __webpack_require__(622);
 const LEADING_DOT_SEGMENT_CHARACTERS_COUNT = 2; // ./ or .\\
 const UNESCAPED_GLOB_SYMBOLS_RE = /(\\?)([()*?[\]{|}]|^!|[!+@](?=\())/g;
@@ -6449,6 +6509,7 @@ module.exports = expand;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.string = exports.stream = exports.pattern = exports.path = exports.fs = exports.errno = exports.array = void 0;
 const array = __webpack_require__(231);
 exports.array = array;
 const errno = __webpack_require__(115);
@@ -9082,6 +9143,7 @@ exports.getOctokitOptions = getOctokitOptions;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Settings = exports.walkStream = exports.walkSync = exports.walk = void 0;
 const async_1 = __webpack_require__(387);
 const stream_1 = __webpack_require__(798);
 const sync_1 = __webpack_require__(833);
@@ -9611,7 +9673,7 @@ module.exports = scan;
  * merge2
  * https://github.com/teambition/merge2
  *
- * Copyright (c) 2014-2016 Teambition
+ * Copyright (c) 2014-2020 Teambition
  * Licensed under the MIT license.
  */
 const Stream = __webpack_require__(794)
@@ -9622,16 +9684,24 @@ module.exports = merge2
 
 function merge2 () {
   const streamsQueue = []
-  let merging = false
   const args = slice.call(arguments)
+  let merging = false
   let options = args[args.length - 1]
 
-  if (options && !Array.isArray(options) && options.pipe == null) args.pop()
-  else options = {}
+  if (options && !Array.isArray(options) && options.pipe == null) {
+    args.pop()
+  } else {
+    options = {}
+  }
 
   const doEnd = options.end !== false
-  if (options.objectMode == null) options.objectMode = true
-  if (options.highWaterMark == null) options.highWaterMark = 64 * 1024
+  const doPipeError = options.pipeError === true
+  if (options.objectMode == null) {
+    options.objectMode = true
+  }
+  if (options.highWaterMark == null) {
+    options.highWaterMark = 64 * 1024
+  }
   const mergedStream = PassThrough(options)
 
   function addStream () {
@@ -9643,7 +9713,9 @@ function merge2 () {
   }
 
   function mergeStream () {
-    if (merging) return
+    if (merging) {
+      return
+    }
     merging = true
 
     let streams = streamsQueue.shift()
@@ -9651,12 +9723,16 @@ function merge2 () {
       process.nextTick(endStream)
       return
     }
-    if (!Array.isArray(streams)) streams = [streams]
+    if (!Array.isArray(streams)) {
+      streams = [streams]
+    }
 
     let pipesCount = streams.length + 1
 
     function next () {
-      if (--pipesCount > 0) return
+      if (--pipesCount > 0) {
+        return
+      }
       merging = false
       mergeStream()
     }
@@ -9665,19 +9741,34 @@ function merge2 () {
       function onend () {
         stream.removeListener('merge2UnpipeEnd', onend)
         stream.removeListener('end', onend)
+        if (doPipeError) {
+          stream.removeListener('error', onerror)
+        }
         next()
       }
+      function onerror (err) {
+        mergedStream.emit('error', err)
+      }
       // skip ended stream
-      if (stream._readableState.endEmitted) return next()
+      if (stream._readableState.endEmitted) {
+        return next()
+      }
 
       stream.on('merge2UnpipeEnd', onend)
       stream.on('end', onend)
+
+      if (doPipeError) {
+        stream.on('error', onerror)
+      }
+
       stream.pipe(mergedStream, { end: false })
       // compatible for old stream
       stream.resume()
     }
 
-    for (let i = 0; i < streams.length; i++) pipe(streams[i])
+    for (let i = 0; i < streams.length; i++) {
+      pipe(streams[i])
+    }
 
     next()
   }
@@ -9686,7 +9777,9 @@ function merge2 () {
     merging = false
     // emit 'queueDrain' when all streams merged.
     mergedStream.emit('queueDrain')
-    return doEnd && mergedStream.end()
+    if (doEnd) {
+      mergedStream.end()
+    }
   }
 
   mergedStream.setMaxListeners(0)
@@ -9695,7 +9788,9 @@ function merge2 () {
     stream.emit('merge2UnpipeEnd')
   })
 
-  if (args.length) addStream.apply(null, args)
+  if (args.length) {
+    addStream.apply(null, args)
+  }
   return mergedStream
 }
 
@@ -9703,13 +9798,17 @@ function merge2 () {
 function pauseStreams (streams, options) {
   if (!Array.isArray(streams)) {
     // Backwards-compat with old-style streams
-    if (!streams._readableState && streams.pipe) streams = streams.pipe(PassThrough(options))
+    if (!streams._readableState && streams.pipe) {
+      streams = streams.pipe(PassThrough(options))
+    }
     if (!streams._readableState || !streams.pause || !streams.pipe) {
       throw new Error('Only readable stream can be merged.')
     }
     streams.pause()
   } else {
-    for (let i = 0, len = streams.length; i < len; i++) streams[i] = pauseStreams(streams[i], options)
+    for (let i = 0, len = streams.length; i < len; i++) {
+      streams[i] = pauseStreams(streams[i], options)
+    }
   }
   return streams
 }
@@ -10513,6 +10612,7 @@ exports.default = Provider;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.read = void 0;
 function read(path, settings) {
     const lstat = settings.fs.lstatSync(path);
     if (!lstat.isSymbolicLink() || !settings.followSymbolicLink) {
@@ -10633,7 +10733,7 @@ class Settings {
         });
     }
     _getValue(option, value) {
-        return option === undefined ? value : option;
+        return option !== null && option !== void 0 ? option : value;
     }
 }
 exports.default = Settings;
@@ -10654,6 +10754,7 @@ module.exports = require("events");
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.joinPathSegments = exports.replacePathSegmentSeparator = exports.isAppliedFilter = exports.isFatalError = void 0;
 function isFatalError(settings, error) {
     if (settings.errorFilter === null) {
         return true;
@@ -10666,12 +10767,18 @@ function isAppliedFilter(filter, value) {
 }
 exports.isAppliedFilter = isAppliedFilter;
 function replacePathSegmentSeparator(filepath, separator) {
-    return filepath.split(/[\\/]/).join(separator);
+    return filepath.split(/[/\\]/).join(separator);
 }
 exports.replacePathSegmentSeparator = replacePathSegmentSeparator;
 function joinPathSegments(a, b, separator) {
     if (a === '') {
         return b;
+    }
+    /**
+     * The correct handling of cases when the first segment is a root (`/`, `C:/`) or UNC path (`//?/C:/`).
+     */
+    if (a.endsWith(separator)) {
+        return a + b;
     }
     return a + separator + b;
 }
@@ -10807,6 +10914,7 @@ if (process.platform === 'linux') {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Settings = exports.scandirSync = exports.scandir = void 0;
 const async = __webpack_require__(182);
 const sync = __webpack_require__(148);
 const settings_1 = __webpack_require__(403);
@@ -11204,10 +11312,15 @@ function fastqueue (context, worker, concurrency) {
     context = null
   }
 
+  if (concurrency < 1) {
+    throw new Error('fastqueue concurrency must be greater than 1')
+  }
+
   var cache = reusify(Task)
   var queueHead = null
   var queueTail = null
   var _running = 0
+  var errorHandler = null
 
   var self = {
     push: push,
@@ -11224,7 +11337,8 @@ function fastqueue (context, worker, concurrency) {
     unshift: unshift,
     empty: noop,
     kill: kill,
-    killAndDrain: killAndDrain
+    killAndDrain: killAndDrain,
+    error: error
   }
 
   return self
@@ -11281,6 +11395,7 @@ function fastqueue (context, worker, concurrency) {
     current.release = release
     current.value = value
     current.callback = done || noop
+    current.errorHandler = errorHandler
 
     if (_running === self.concurrency || self.paused) {
       if (queueTail) {
@@ -11356,6 +11471,10 @@ function fastqueue (context, worker, concurrency) {
     self.drain()
     self.drain = noop
   }
+
+  function error (handler) {
+    errorHandler = handler
+  }
 }
 
 function noop () {}
@@ -11366,13 +11485,19 @@ function Task () {
   this.next = null
   this.release = noop
   this.context = null
+  this.errorHandler = null
 
   var self = this
 
   this.worked = function worked (err, result) {
     var callback = self.callback
+    var errorHandler = self.errorHandler
+    var val = self.value
     self.value = null
     self.callback = noop
+    if (self.errorHandler) {
+      errorHandler(err, val)
+    }
     callback.call(self.context, err, result)
     self.release(self)
   }
@@ -11509,20 +11634,21 @@ class EntryFilter {
         return (entry) => this._filter(entry, positiveRe, negativeRe);
     }
     _filter(entry, positiveRe, negativeRe) {
-        if (this._settings.unique) {
-            if (this._isDuplicateEntry(entry)) {
-                return false;
-            }
-            this._createIndexRecord(entry);
+        if (this._settings.unique && this._isDuplicateEntry(entry)) {
+            return false;
         }
         if (this._onlyFileFilter(entry) || this._onlyDirectoryFilter(entry)) {
             return false;
         }
-        if (this._isSkippedByAbsoluteNegativePatterns(entry, negativeRe)) {
+        if (this._isSkippedByAbsoluteNegativePatterns(entry.path, negativeRe)) {
             return false;
         }
         const filepath = this._settings.baseNameMatch ? entry.name : entry.path;
-        return this._isMatchToPatterns(filepath, positiveRe) && !this._isMatchToPatterns(entry.path, negativeRe);
+        const isMatched = this._isMatchToPatterns(filepath, positiveRe) && !this._isMatchToPatterns(entry.path, negativeRe);
+        if (this._settings.unique && isMatched) {
+            this._createIndexRecord(entry);
+        }
+        return isMatched;
     }
     _isDuplicateEntry(entry) {
         return this.index.has(entry.path);
@@ -11536,12 +11662,12 @@ class EntryFilter {
     _onlyDirectoryFilter(entry) {
         return this._settings.onlyDirectories && !entry.dirent.isDirectory();
     }
-    _isSkippedByAbsoluteNegativePatterns(entry, negativeRe) {
+    _isSkippedByAbsoluteNegativePatterns(entryPath, patternsRe) {
         if (!this._settings.absolute) {
             return false;
         }
-        const fullpath = utils.path.makeAbsolute(this._settings.cwd, entry.path);
-        return this._isMatchToPatterns(fullpath, negativeRe);
+        const fullpath = utils.path.makeAbsolute(this._settings.cwd, entryPath);
+        return utils.pattern.matchAny(fullpath, patternsRe);
     }
     _isMatchToPatterns(entryPath, patternsRe) {
         const filepath = utils.path.removeLeadingDotSegment(entryPath);
@@ -11559,6 +11685,7 @@ exports.default = EntryFilter;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.matchAny = exports.convertPatternsToRe = exports.makeRe = exports.getPatternParts = exports.expandBraceExpansion = exports.expandPatternsWithBraceExpansion = exports.isAffectDepthOfReadingPattern = exports.endsWithSlashGlobStar = exports.hasGlobStar = exports.getBaseDirectory = exports.getPositivePatterns = exports.getNegativePatterns = exports.isPositivePattern = exports.isNegativePattern = exports.convertToNegativePattern = exports.convertToPositivePattern = exports.isDynamicPattern = exports.isStaticPattern = void 0;
 const path = __webpack_require__(622);
 const globParent = __webpack_require__(230);
 const micromatch = __webpack_require__(74);
@@ -11575,6 +11702,14 @@ function isStaticPattern(pattern, options = {}) {
 }
 exports.isStaticPattern = isStaticPattern;
 function isDynamicPattern(pattern, options = {}) {
+    /**
+     * A special case with an empty string is necessary for matching patterns that start with a forward slash.
+     * An empty string cannot be a dynamic pattern.
+     * For example, the pattern `/lib/*` will be spread into parts: '', 'lib', '*'.
+     */
+    if (pattern === '') {
+        return false;
+    }
     /**
      * When the `caseSensitiveMatch` option is disabled, all patterns must be marked as dynamic, because we cannot check
      * filepath directly (without read directory).
@@ -11649,12 +11784,23 @@ function expandBraceExpansion(pattern) {
 }
 exports.expandBraceExpansion = expandBraceExpansion;
 function getPatternParts(pattern, options) {
-    const info = picomatch.scan(pattern, Object.assign(Object.assign({}, options), { parts: true }));
-    // See micromatch/picomatch#58 for more details
-    if (info.parts.length === 0) {
-        return [pattern];
+    let { parts } = picomatch.scan(pattern, Object.assign(Object.assign({}, options), { parts: true }));
+    /**
+     * The scan method returns an empty array in some cases.
+     * See micromatch/picomatch#58 for more details.
+     */
+    if (parts.length === 0) {
+        parts = [pattern];
     }
-    return info.parts;
+    /**
+     * The scan method does not return an empty part for the pattern with a forward slash.
+     * This is another part of micromatch/picomatch#58.
+     */
+    if (parts[0].startsWith('/')) {
+        parts[0] = parts[0].slice(1);
+        parts.unshift('');
+    }
+    return parts;
 }
 exports.getPatternParts = getPatternParts;
 function makeRe(pattern, options) {
@@ -11679,6 +11825,7 @@ exports.matchAny = matchAny;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.read = void 0;
 function read(path, settings, callback) {
     settings.fs.lstat(path, (lstatError, lstat) => {
         if (lstatError !== null) {
@@ -12897,7 +13044,11 @@ class StreamProvider {
         this._stream = new stream_1.Readable({
             objectMode: true,
             read: () => { },
-            destroy: this._reader.destroy.bind(this._reader)
+            destroy: () => {
+                if (!this._reader.isDestroyed) {
+                    this._reader.destroy();
+                }
+            }
         });
     }
     read() {
@@ -15564,6 +15715,7 @@ exports.restEndpointMethods = restEndpointMethods;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.statSync = exports.stat = exports.Settings = void 0;
 const async = __webpack_require__(728);
 const sync = __webpack_require__(593);
 const settings_1 = __webpack_require__(872);
@@ -15633,7 +15785,7 @@ class Settings {
         this.throwErrorOnBrokenSymbolicLink = this._getValue(this._options.throwErrorOnBrokenSymbolicLink, true);
     }
     _getValue(option, value) {
-        return option === undefined ? value : option;
+        return option !== null && option !== void 0 ? option : value;
     }
 }
 exports.default = Settings;
@@ -15647,6 +15799,7 @@ exports.default = Settings;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.createFileSystemAdapter = exports.FILE_SYSTEM_ADAPTER = void 0;
 const fs = __webpack_require__(747);
 exports.FILE_SYSTEM_ADAPTER = {
     lstat: fs.lstat,
@@ -15764,6 +15917,7 @@ module.exports = {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.isEmpty = exports.isString = void 0;
 function isString(input) {
     return typeof input === 'string';
 }
@@ -15779,6 +15933,7 @@ exports.isEmpty = isEmpty;
 /***/ 885:
 /***/ (function(module) {
 
+/*! run-parallel. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
 module.exports = runParallel
 
 function runParallel (tasks, cb) {
@@ -15857,8 +16012,7 @@ class DeepFilter {
         return utils.pattern.convertPatternsToRe(affectDepthOfReadingPatterns, this._micromatchOptions);
     }
     _filter(basePath, entry, matcher, negativeRe) {
-        const depth = this._getEntryLevel(basePath, entry.path);
-        if (this._isSkippedByDeep(depth)) {
+        if (this._isSkippedByDeep(basePath, entry.path)) {
             return false;
         }
         if (this._isSkippedSymbolicLink(entry)) {
@@ -15870,22 +16024,31 @@ class DeepFilter {
         }
         return this._isSkippedByNegativePatterns(filepath, negativeRe);
     }
-    _isSkippedByDeep(entryDepth) {
-        return entryDepth >= this._settings.deep;
+    _isSkippedByDeep(basePath, entryPath) {
+        /**
+         * Avoid unnecessary depth calculations when it doesn't matter.
+         */
+        if (this._settings.deep === Infinity) {
+            return false;
+        }
+        return this._getEntryLevel(basePath, entryPath) >= this._settings.deep;
+    }
+    _getEntryLevel(basePath, entryPath) {
+        const entryPathDepth = entryPath.split('/').length;
+        if (basePath === '') {
+            return entryPathDepth;
+        }
+        const basePathDepth = basePath.split('/').length;
+        return entryPathDepth - basePathDepth;
     }
     _isSkippedSymbolicLink(entry) {
         return !this._settings.followSymbolicLinks && entry.dirent.isSymbolicLink();
     }
-    _getEntryLevel(basePath, entryPath) {
-        const basePathDepth = basePath.split('/').length;
-        const entryPathDepth = entryPath.split('/').length;
-        return entryPathDepth - (basePath === '' ? 0 : basePathDepth);
-    }
     _isSkippedByPositivePatterns(entryPath, matcher) {
         return !this._settings.baseNameMatch && !matcher.match(entryPath);
     }
-    _isSkippedByNegativePatterns(entryPath, negativeRe) {
-        return !utils.pattern.matchAny(entryPath, negativeRe);
+    _isSkippedByNegativePatterns(entryPath, patternsRe) {
+        return !utils.pattern.matchAny(entryPath, patternsRe);
     }
 }
 exports.default = DeepFilter;
@@ -16045,6 +16208,7 @@ module.exports = function(num) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.fs = void 0;
 const fs = __webpack_require__(210);
 exports.fs = fs;
 
@@ -16694,6 +16858,7 @@ function onceStrict (fn) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.createFileSystemAdapter = exports.FILE_SYSTEM_ADAPTER = void 0;
 const fs = __webpack_require__(747);
 exports.FILE_SYSTEM_ADAPTER = {
     lstat: fs.lstat,

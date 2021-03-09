@@ -51,11 +51,14 @@ export async function comment(pr: NonNullable<WebhookPayload["pull_request"]>): 
   info(JSON.stringify(res));
 
   const octokit = getOctokit(process.env.GITHUB_TOKEN!);
-  await octokit.issues.createComment({
+
+  const comments = await octokit.issues.listComments({
     owner: context.payload.repository!.owner.login,
     repo: context.payload.repository!.name,
     issue_number: pr.number,
-    body: `
+  });
+
+  const body = `
 # Comparison
 
 ${res.data.comparison.observations
@@ -67,8 +70,24 @@ ${res.data.comparison.observations
     return ` - **${obs.series.name}**: ${sign}${abs} (${sign}${pct}%)`;
   })
   .join("\n")}
-`,
-  });
+`;
+
+  const comment = comments.data.find((x) => x.user.login === "github-actions");
+  if (!comment) {
+    await octokit.issues.createComment({
+      owner: context.payload.repository!.owner.login,
+      repo: context.payload.repository!.name,
+      issue_number: pr.number,
+      body,
+    });
+  } else {
+    await octokit.issues.updateComment({
+      owner: context.payload.repository!.owner.login,
+      repo: context.payload.repository!.name,
+      comment_id: comment.id,
+      body,
+    });
+  }
 }
 
 const fmt = format(".0f");
