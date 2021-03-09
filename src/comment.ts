@@ -58,7 +58,7 @@ export async function comment(pr: NonNullable<WebhookPayload["pull_request"]>): 
     issue_number: pr.number,
   });
 
-  info(JSON.stringify(comments));
+  // info(JSON.stringify(comments));
 
   const body = `
 # Comparison
@@ -74,7 +74,7 @@ ${res.data.comparison.observations
   .join("\n")}
 `;
 
-  const comment = comments.data.find((x) => x.user.login === "github-actions");
+  const comment = comments.data.find((x) => x.user.login === "github-actions[bot]");
   if (!comment) {
     await octokit.issues.createComment({
       owner: context.payload.repository!.owner.login,
