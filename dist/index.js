@@ -47,9 +47,10 @@ module.exports =
 /******/ 	return startup();
 /******/ })
 /************************************************************************/
-/******/ ({
-
-/***/ 2:
+/******/ ([
+/* 0 */,
+/* 1 */,
+/* 2 */
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
 "use strict";
@@ -102,8 +103,13 @@ module.exports = osName;
 
 
 /***/ }),
-
-/***/ 9:
+/* 3 */,
+/* 4 */,
+/* 5 */,
+/* 6 */,
+/* 7 */,
+/* 8 */,
+/* 9 */
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
 var once = __webpack_require__(969);
@@ -203,8 +209,8 @@ module.exports = eos;
 
 
 /***/ }),
-
-/***/ 11:
+/* 10 */,
+/* 11 */
 /***/ (function(module) {
 
 // Returns a wrapper function that returns a wrapped callback
@@ -243,23 +249,26 @@ function wrappy (fn, cb) {
 
 
 /***/ }),
-
-/***/ 16:
+/* 12 */,
+/* 13 */,
+/* 14 */,
+/* 15 */,
+/* 16 */
 /***/ (function(module) {
 
 module.exports = require("tls");
 
 /***/ }),
-
-/***/ 18:
+/* 17 */,
+/* 18 */
 /***/ (function(module) {
 
 module.exports = eval("require")("encoding");
 
 
 /***/ }),
-
-/***/ 20:
+/* 19 */,
+/* 20 */
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
 "use strict";
@@ -305,8 +314,100 @@ module.exports._enoent = enoent;
 
 
 /***/ }),
+/* 21 */,
+/* 22 */,
+/* 23 */,
+/* 24 */,
+/* 25 */,
+/* 26 */,
+/* 27 */,
+/* 28 */,
+/* 29 */,
+/* 30 */,
+/* 31 */,
+/* 32 */,
+/* 33 */,
+/* 34 */,
+/* 35 */
+/***/ (function(__unusedmodule, exports) {
 
-/***/ 39:
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.info = exports.error = exports.warn = exports.log = void 0;
+/**
+ * @since 2.0.0
+ */
+function log(s) {
+    return function () { return console.log(s); }; // tslint:disable-line:no-console
+}
+exports.log = log;
+/**
+ * @since 2.0.0
+ */
+function warn(s) {
+    return function () { return console.warn(s); }; // tslint:disable-line:no-console
+}
+exports.warn = warn;
+/**
+ * @since 2.0.0
+ */
+function error(s) {
+    return function () { return console.error(s); }; // tslint:disable-line:no-console
+}
+exports.error = error;
+/**
+ * @since 2.0.0
+ */
+function info(s) {
+    return function () { return console.info(s); }; // tslint:disable-line:no-console
+}
+exports.info = info;
+
+
+/***/ }),
+/* 36 */
+/***/ (function(__unusedmodule, exports) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.read = void 0;
+function read(path, settings, callback) {
+    settings.fs.lstat(path, (lstatError, lstat) => {
+        if (lstatError !== null) {
+            return callFailureCallback(callback, lstatError);
+        }
+        if (!lstat.isSymbolicLink() || !settings.followSymbolicLink) {
+            return callSuccessCallback(callback, lstat);
+        }
+        settings.fs.stat(path, (statError, stat) => {
+            if (statError !== null) {
+                if (settings.throwErrorOnBrokenSymbolicLink) {
+                    return callFailureCallback(callback, statError);
+                }
+                return callSuccessCallback(callback, lstat);
+            }
+            if (settings.markSymbolicLink) {
+                stat.isSymbolicLink = () => true;
+            }
+            callSuccessCallback(callback, stat);
+        });
+    });
+}
+exports.read = read;
+function callFailureCallback(callback, error) {
+    callback(error);
+}
+function callSuccessCallback(callback, result) {
+    callback(null, result);
+}
+
+
+/***/ }),
+/* 37 */,
+/* 38 */,
+/* 39 */
 /***/ (function(module) {
 
 "use strict";
@@ -326,8 +427,319 @@ module.exports = opts => {
 
 
 /***/ }),
+/* 40 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
 
-/***/ 42:
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.sequenceArray = exports.traverseArray = exports.traverseArrayWithIndex = exports.apS = exports.bind = exports.bindTo = exports.execute = exports.evaluate = exports.execState = exports.evalState = exports.state = exports.Monad = exports.Applicative = exports.Functor = exports.URI = exports.flatten = exports.chainFirst = exports.chain = exports.of = exports.apSecond = exports.apFirst = exports.ap = exports.map = exports.gets = exports.modify = exports.put = exports.get = void 0;
+/**
+ * @since 2.0.0
+ */
+var function_1 = __webpack_require__(231);
+/* tslint:enable:readonly-array */
+// -------------------------------------------------------------------------------------
+// constructors
+// -------------------------------------------------------------------------------------
+/**
+ * Get the current state
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+var get = function () { return function (s) { return [s, s]; }; };
+exports.get = get;
+/**
+ * Set the state
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+var put = function (s) { return function () { return [undefined, s]; }; };
+exports.put = put;
+/**
+ * Modify the state by applying a function to the current state
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+var modify = function (f) { return function (s) { return [undefined, f(s)]; }; };
+exports.modify = modify;
+/**
+ * Get a value which depends on the current state
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+var gets = function (f) { return function (s) { return [f(s), s]; }; };
+exports.gets = gets;
+// -------------------------------------------------------------------------------------
+// non-pipeables
+// -------------------------------------------------------------------------------------
+/* istanbul ignore next */
+var map_ = function (fa, f) { return function_1.pipe(fa, exports.map(f)); };
+/* istanbul ignore next */
+var ap_ = function (fab, fa) { return function_1.pipe(fab, exports.ap(fa)); };
+/* istanbul ignore next */
+var chain_ = function (ma, f) { return function_1.pipe(ma, exports.chain(f)); };
+// -------------------------------------------------------------------------------------
+// pipeables
+// -------------------------------------------------------------------------------------
+/**
+ * `map` can be used to turn functions `(a: A) => B` into functions `(fa: F<A>) => F<B>` whose argument and return types
+ * use the type constructor `F` to represent some computational context.
+ *
+ * @category Functor
+ * @since 2.0.0
+ */
+var map = function (f) { return function (fa) { return function (s1) {
+    var _a = fa(s1), a = _a[0], s2 = _a[1];
+    return [f(a), s2];
+}; }; };
+exports.map = map;
+/**
+ * Apply a function to an argument under a type constructor.
+ *
+ * @category Apply
+ * @since 2.0.0
+ */
+var ap = function (fa) { return function (fab) { return function (s1) {
+    var _a = fab(s1), f = _a[0], s2 = _a[1];
+    var _b = fa(s2), a = _b[0], s3 = _b[1];
+    return [f(a), s3];
+}; }; };
+exports.ap = ap;
+/**
+ * Combine two effectful actions, keeping only the result of the first.
+ *
+ * Derivable from `Apply`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+var apFirst = function (fb) {
+    return function_1.flow(exports.map(function (a) { return function () { return a; }; }), exports.ap(fb));
+};
+exports.apFirst = apFirst;
+/**
+ * Combine two effectful actions, keeping only the result of the second.
+ *
+ * Derivable from `Apply`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+var apSecond = function (fb) {
+    return function_1.flow(exports.map(function () { return function (b) { return b; }; }), exports.ap(fb));
+};
+exports.apSecond = apSecond;
+/**
+ * Wrap a value into the type constructor.
+ *
+ * @category Applicative
+ * @since 2.0.0
+ */
+var of = function (a) { return function (s) { return [a, s]; }; };
+exports.of = of;
+/**
+ * Composes computations in sequence, using the return value of one computation to determine the next computation.
+ *
+ * @category Monad
+ * @since 2.0.0
+ */
+var chain = function (f) { return function (ma) { return function (s1) {
+    var _a = ma(s1), a = _a[0], s2 = _a[1];
+    return f(a)(s2);
+}; }; };
+exports.chain = chain;
+/**
+ * Composes computations in sequence, using the return value of one computation to determine the next computation and
+ * keeping only the result of the first.
+ *
+ * Derivable from `Monad`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+var chainFirst = function (f) {
+    return exports.chain(function (a) {
+        return function_1.pipe(f(a), exports.map(function () { return a; }));
+    });
+};
+exports.chainFirst = chainFirst;
+/**
+ * Derivable from `Monad`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.flatten = 
+/*#__PURE__*/
+exports.chain(function_1.identity);
+// -------------------------------------------------------------------------------------
+// instances
+// -------------------------------------------------------------------------------------
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.URI = 'State';
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Functor = {
+    URI: exports.URI,
+    map: map_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Applicative = {
+    URI: exports.URI,
+    map: map_,
+    ap: ap_,
+    of: exports.of
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Monad = {
+    URI: exports.URI,
+    map: map_,
+    ap: ap_,
+    of: exports.of,
+    chain: chain_
+};
+// TODO: remove in v3
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.state = exports.Monad;
+// -------------------------------------------------------------------------------------
+// utils
+// -------------------------------------------------------------------------------------
+/**
+ * Use `evaluate` instead
+ *
+ * @since 2.0.0
+ * @deprecated
+ */
+var evalState = function (ma, s) { return ma(s)[0]; };
+exports.evalState = evalState;
+/**
+ * Use `execute` instead
+ *
+ * @since 2.0.0
+ * @deprecated
+ */
+var execState = function (ma, s) { return ma(s)[1]; };
+exports.execState = execState;
+/**
+ * Run a computation in the `State` monad, discarding the final state
+ *
+ * @since 2.8.0
+ */
+var evaluate = function (s) { return function (ma) { return ma(s)[0]; }; };
+exports.evaluate = evaluate;
+/**
+ * Run a computation in the `State` monad discarding the result
+ *
+ * @since 2.8.0
+ */
+var execute = function (s) { return function (ma) { return ma(s)[1]; }; };
+exports.execute = execute;
+// -------------------------------------------------------------------------------------
+// do notation
+// -------------------------------------------------------------------------------------
+/**
+ * @since 2.8.0
+ */
+var bindTo = function (name) {
+    return exports.map(function_1.bindTo_(name));
+};
+exports.bindTo = bindTo;
+/**
+ * @since 2.8.0
+ */
+var bind = function (name, f) {
+    return exports.chain(function (a) {
+        return function_1.pipe(f(a), exports.map(function (b) { return function_1.bind_(a, name, b); }));
+    });
+};
+exports.bind = bind;
+// -------------------------------------------------------------------------------------
+// pipeable sequence S
+// -------------------------------------------------------------------------------------
+/**
+ * @since 2.8.0
+ */
+var apS = function (name, fb) {
+    return function_1.flow(exports.map(function (a) { return function (b) { return function_1.bind_(a, name, b); }; }), exports.ap(fb));
+};
+exports.apS = apS;
+// -------------------------------------------------------------------------------------
+// array utils
+// -------------------------------------------------------------------------------------
+/**
+ * @since 2.9.0
+ */
+var traverseArrayWithIndex = function (f) { return function (arr) { return function (s) {
+    var lastState = s;
+    // tslint:disable-next-line: readonly-array
+    var values = [];
+    for (var i = 0; i < arr.length; i++) {
+        var _a = f(i, arr[i])(lastState), newValue = _a[0], newState = _a[1];
+        values.push(newValue);
+        lastState = newState;
+    }
+    return [values, lastState];
+}; }; };
+exports.traverseArrayWithIndex = traverseArrayWithIndex;
+/**
+ * This function has the same behavior of `A.traverse(S.State)` but it's stack safe and optimized
+ *
+ * @example
+ * import * as RA from 'fp-ts/ReadonlyArray'
+ * import { traverseArray, State } from 'fp-ts/State'
+ * import { pipe, tuple } from 'fp-ts/function'
+ *
+ * const add = (n: number): State<number, number> => (s: number) => tuple(n, n + s)
+ * const arr = RA.range(0, 100)
+ *
+ * assert.deepStrictEqual(pipe(arr, traverseArray(add))(0), [arr, arr.reduce((p, c) => p + c, 0)])
+ *
+ * @since 2.9.0
+ */
+var traverseArray = function (f) { return exports.traverseArrayWithIndex(function (_, a) { return f(a); }); };
+exports.traverseArray = traverseArray;
+/**
+ * This function has the same behavior of `A.sequence(S.State)` but it's stack safe and optimized
+ *
+ * @example
+ * import * as RA from 'fp-ts/ReadonlyArray'
+ * import { sequenceArray, State } from 'fp-ts/State'
+ * import { pipe, tuple } from 'fp-ts/function'
+ *
+ * const add = (n: number): State<number, number> => (s: number) => tuple(n, n + s)
+ * const arr = RA.range(0, 100)
+ *
+ * assert.deepStrictEqual(pipe(arr, RA.map(add), sequenceArray)(0), [arr, arr.reduce((p, c) => p + c, 0)])
+ *
+ * @since 2.9.0
+ */
+exports.sequenceArray = 
+/*#__PURE__*/
+exports.traverseArray(function_1.identity);
+
+
+/***/ }),
+/* 41 */,
+/* 42 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
@@ -351,8 +763,7 @@ function propagateCloseEventToSources(streams) {
 
 
 /***/ }),
-
-/***/ 43:
+/* 43 */
 /***/ (function(__unusedmodule, exports) {
 
 "use strict";
@@ -378,8 +789,868 @@ exports.createDirentFromStats = createDirentFromStats;
 
 
 /***/ }),
+/* 44 */,
+/* 45 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
 
-/***/ 49:
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.alt = exports.altW = exports.flatten = exports.chainFirst = exports.chainFirstW = exports.chain = exports.chainW = exports.of = exports.apSecond = exports.apFirst = exports.ap = exports.apW = exports.mapLeft = exports.bimap = exports.map = exports.filterOrElse = exports.filterOrElseW = exports.chainReaderTaskEitherK = exports.chainReaderTaskEitherKW = exports.fromReaderTaskEitherK = exports.chainTaskEitherK = exports.chainTaskEitherKW = exports.fromTaskEitherK = exports.chainIOEitherK = exports.chainIOEitherKW = exports.fromIOEitherK = exports.chainEitherK = exports.chainEitherKW = exports.fromEitherK = exports.fromPredicate = exports.fromOption = exports.fromEither = exports.gets = exports.modify = exports.put = exports.get = exports.fromReaderTaskEither = exports.leftState = exports.rightState = exports.leftIO = exports.rightIO = exports.fromReaderEither = exports.fromIOEither = exports.leftReader = exports.rightReader = exports.fromTaskEither = exports.leftTask = exports.rightTask = exports.right = exports.left = void 0;
+exports.sequenceArray = exports.traverseArray = exports.traverseArrayWithIndex = exports.apS = exports.apSW = exports.bind = exports.bindW = exports.bindTo = exports.execute = exports.evaluate = exports.execState = exports.evalState = exports.run = exports.stateReaderTaskEitherSeq = exports.stateReaderTaskEither = exports.Alt = exports.Bifunctor = exports.Applicative = exports.Functor = exports.URI = exports.throwError = exports.fromTask = exports.fromIO = void 0;
+var E = __importStar(__webpack_require__(311));
+var function_1 = __webpack_require__(231);
+var RTE = __importStar(__webpack_require__(428));
+/* tslint:enable:readonly-array */
+// -------------------------------------------------------------------------------------
+// constructors
+// -------------------------------------------------------------------------------------
+/**
+ * @category constructors
+ * @since 2.0.0
+ */
+var left = function (e) { return function () { return RTE.left(e); }; };
+exports.left = left;
+/**
+ * @category constructors
+ * @since 2.0.0
+ */
+var right = function (a) { return function (s) {
+    return RTE.right([a, s]);
+}; };
+exports.right = right;
+/**
+ * @category constructors
+ * @since 2.0.0
+ */
+function rightTask(ma) {
+    return exports.fromReaderTaskEither(RTE.rightTask(ma));
+}
+exports.rightTask = rightTask;
+/**
+ * @category constructors
+ * @since 2.0.0
+ */
+function leftTask(me) {
+    return exports.fromReaderTaskEither(RTE.leftTask(me));
+}
+exports.leftTask = leftTask;
+/**
+ * @category constructors
+ * @since 2.0.0
+ */
+function fromTaskEither(ma) {
+    return exports.fromReaderTaskEither(RTE.fromTaskEither(ma));
+}
+exports.fromTaskEither = fromTaskEither;
+/**
+ * @category constructors
+ * @since 2.0.0
+ */
+function rightReader(ma) {
+    return exports.fromReaderTaskEither(RTE.rightReader(ma));
+}
+exports.rightReader = rightReader;
+/**
+ * @category constructors
+ * @since 2.0.0
+ */
+function leftReader(me) {
+    return exports.fromReaderTaskEither(RTE.leftReader(me));
+}
+exports.leftReader = leftReader;
+/**
+ * @category constructors
+ * @since 2.0.0
+ */
+function fromIOEither(ma) {
+    return exports.fromReaderTaskEither(RTE.fromIOEither(ma));
+}
+exports.fromIOEither = fromIOEither;
+/**
+ * @category constructors
+ * @since 2.0.0
+ */
+function fromReaderEither(ma) {
+    return exports.fromReaderTaskEither(RTE.fromReaderEither(ma));
+}
+exports.fromReaderEither = fromReaderEither;
+/**
+ * @category constructors
+ * @since 2.0.0
+ */
+function rightIO(ma) {
+    return exports.fromReaderTaskEither(RTE.rightIO(ma));
+}
+exports.rightIO = rightIO;
+/**
+ * @category constructors
+ * @since 2.0.0
+ */
+function leftIO(me) {
+    return exports.fromReaderTaskEither(RTE.leftIO(me));
+}
+exports.leftIO = leftIO;
+/**
+ * @category constructors
+ * @since 2.0.0
+ */
+var rightState = function (sa) {
+    return function_1.flow(sa, RTE.right);
+};
+exports.rightState = rightState;
+/**
+ * @category constructors
+ * @since 2.0.0
+ */
+var leftState = function (me) { return function (s) { return RTE.left(me(s)[0]); }; };
+exports.leftState = leftState;
+/**
+ * @category constructors
+ * @since 2.0.0
+ */
+var fromReaderTaskEither = function (fa) { return function (s) {
+    return function_1.pipe(fa, RTE.map(function (a) { return [a, s]; }));
+}; };
+exports.fromReaderTaskEither = fromReaderTaskEither;
+/**
+ * Get the current state
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+var get = function () { return function (s) { return RTE.right([s, s]); }; };
+exports.get = get;
+/**
+ * Set the state
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+var put = function (s) { return function () {
+    return RTE.right([undefined, s]);
+}; };
+exports.put = put;
+/**
+ * Modify the state by applying a function to the current state
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+var modify = function (f) { return function (s) {
+    return RTE.right([undefined, f(s)]);
+}; };
+exports.modify = modify;
+/**
+ * Get a value which depends on the current state
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+var gets = function (f) { return function (s) {
+    return RTE.right([f(s), s]);
+}; };
+exports.gets = gets;
+/**
+ * Derivable from `MonadThrow`.
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+exports.fromEither = 
+/*#__PURE__*/
+E.fold(function (e) { return exports.left(e); }, exports.right);
+/**
+ * Derivable from `MonadThrow`.
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+var fromOption = function (onNone) { return function (ma) { return (ma._tag === 'None' ? exports.left(onNone()) : exports.right(ma.value)); }; };
+exports.fromOption = fromOption;
+/**
+ * Derivable from `MonadThrow`.
+ *
+ * @category constructors
+ * @since 2.4.4
+ */
+var fromPredicate = function (predicate, onFalse) { return function (a) {
+    return predicate(a) ? exports.right(a) : exports.left(onFalse(a));
+}; };
+exports.fromPredicate = fromPredicate;
+// -------------------------------------------------------------------------------------
+// combinators
+// -------------------------------------------------------------------------------------
+/**
+ * @category combinators
+ * @since 2.4.0
+ */
+function fromEitherK(f) {
+    return function () {
+        var a = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            a[_i] = arguments[_i];
+        }
+        return exports.fromEither(f.apply(void 0, a));
+    };
+}
+exports.fromEitherK = fromEitherK;
+/**
+ * Less strict version of [`chainEitherK`](#chainEitherK).
+ *
+ * @category combinators
+ * @since 2.6.1
+ */
+var chainEitherKW = function (f) { return function (ma) { return function_1.pipe(ma, exports.chainW(fromEitherK(f))); }; };
+exports.chainEitherKW = chainEitherKW;
+/**
+ * @category combinators
+ * @since 2.4.0
+ */
+exports.chainEitherK = exports.chainEitherKW;
+/**
+ * @category combinators
+ * @since 2.4.0
+ */
+function fromIOEitherK(f) {
+    return function () {
+        var a = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            a[_i] = arguments[_i];
+        }
+        return fromIOEither(f.apply(void 0, a));
+    };
+}
+exports.fromIOEitherK = fromIOEitherK;
+/**
+ * Less strict version of [`chainIOEitherK`](#chainIOEitherK).
+ *
+ * @category combinators
+ * @since 2.6.1
+ */
+var chainIOEitherKW = function (f) { return function (ma) { return function_1.pipe(ma, exports.chainW(fromIOEitherK(f))); }; };
+exports.chainIOEitherKW = chainIOEitherKW;
+/**
+ * @category combinators
+ * @since 2.4.0
+ */
+exports.chainIOEitherK = exports.chainIOEitherKW;
+/**
+ * @category combinators
+ * @since 2.4.0
+ */
+function fromTaskEitherK(f) {
+    return function () {
+        var a = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            a[_i] = arguments[_i];
+        }
+        return fromTaskEither(f.apply(void 0, a));
+    };
+}
+exports.fromTaskEitherK = fromTaskEitherK;
+/**
+ * Less strict version of [`chainTaskEitherK`](#chainTaskEitherK).
+ *
+ * @category combinators
+ * @since 2.6.1
+ */
+var chainTaskEitherKW = function (f) { return function (ma) { return function_1.pipe(ma, exports.chainW(fromTaskEitherK(f))); }; };
+exports.chainTaskEitherKW = chainTaskEitherKW;
+/**
+ * @category combinators
+ * @since 2.4.0
+ */
+exports.chainTaskEitherK = exports.chainTaskEitherKW;
+/**
+ * @category combinators
+ * @since 2.4.0
+ */
+function fromReaderTaskEitherK(f) {
+    return function () {
+        var a = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            a[_i] = arguments[_i];
+        }
+        return exports.fromReaderTaskEither(f.apply(void 0, a));
+    };
+}
+exports.fromReaderTaskEitherK = fromReaderTaskEitherK;
+/**
+ * Less strict version of [`chainReaderTaskEitherK`](#chainReaderTaskEitherK).
+ *
+ * @category combinators
+ * @since 2.6.1
+ */
+var chainReaderTaskEitherKW = function (f) { return function (ma) { return function_1.pipe(ma, exports.chainW(fromReaderTaskEitherK(f))); }; };
+exports.chainReaderTaskEitherKW = chainReaderTaskEitherKW;
+/**
+ * @category combinators
+ * @since 2.4.0
+ */
+exports.chainReaderTaskEitherK = exports.chainReaderTaskEitherKW;
+/**
+ * Less strict version of [`filterOrElse`](#filterOrElse).
+ *
+ * @since 2.9.0
+ */
+var filterOrElseW = function (predicate, onFalse) {
+    return exports.chainW(function (a) { return (predicate(a) ? exports.right(a) : exports.left(onFalse(a))); });
+};
+exports.filterOrElseW = filterOrElseW;
+/**
+ * Derivable from `MonadThrow`.
+ *
+ * @category combinators
+ * @since 2.4.4
+ */
+exports.filterOrElse = exports.filterOrElseW;
+// -------------------------------------------------------------------------------------
+// non-pipeables
+// -------------------------------------------------------------------------------------
+/* istanbul ignore next */
+var map_ = function (fa, f) { return function_1.pipe(fa, exports.map(f)); };
+/* istanbul ignore next */
+var ap_ = function (fab, fa) { return function_1.pipe(fab, exports.ap(fa)); };
+/* istanbul ignore next */
+var chain_ = function (ma, f) { return function_1.pipe(ma, exports.chain(f)); };
+/* istanbul ignore next */
+var alt_ = function (fa, that) { return function (s) {
+    return function_1.pipe(fa(s), RTE.alt(function () { return that()(s); }));
+}; };
+var bimap_ = function (fea, f, g) { return function (s) {
+    return function_1.pipe(fea(s), RTE.bimap(f, function (_a) {
+        var a = _a[0], s = _a[1];
+        return [g(a), s];
+    }));
+}; };
+var mapLeft_ = function (fea, f) { return function (s) { return function_1.pipe(fea(s), RTE.mapLeft(f)); }; };
+// -------------------------------------------------------------------------------------
+// pipeables
+// -------------------------------------------------------------------------------------
+/**
+ * `map` can be used to turn functions `(a: A) => B` into functions `(fa: F<A>) => F<B>` whose argument and return types
+ * use the type constructor `F` to represent some computational context.
+ *
+ * @category Functor
+ * @since 2.0.0
+ */
+var map = function (f) { return function (fa) { return function (s1) {
+    return function_1.pipe(fa(s1), RTE.map(function (_a) {
+        var a = _a[0], s2 = _a[1];
+        return [f(a), s2];
+    }));
+}; }; };
+exports.map = map;
+/**
+ * Map a pair of functions over the two last type arguments of the bifunctor.
+ *
+ * @category Bifunctor
+ * @since 2.6.2
+ */
+var bimap = function (f, g) { return function (fa) {
+    return bimap_(fa, f, g);
+}; };
+exports.bimap = bimap;
+/**
+ * Map a function over the third type argument of a bifunctor.
+ *
+ * @category Bifunctor
+ * @since 2.6.2
+ */
+var mapLeft = function (f) { return function (fa) {
+    return mapLeft_(fa, f);
+}; };
+exports.mapLeft = mapLeft;
+/**
+ * Less strict version of [`ap`](#ap).
+ *
+ * @category Apply
+ * @since 2.8.0
+ */
+var apW = function (fa) { return function (fab) { return function (s1) {
+    return function_1.pipe(fab(s1), RTE.chainW(function (_a) {
+        var f = _a[0], s2 = _a[1];
+        return function_1.pipe(fa(s2), RTE.map(function (_a) {
+            var a = _a[0], s3 = _a[1];
+            return [f(a), s3];
+        }));
+    }));
+}; }; };
+exports.apW = apW;
+/**
+ * Apply a function to an argument under a type constructor.
+ *
+ * @category Apply
+ * @since 2.0.0
+ */
+exports.ap = exports.apW;
+/**
+ * Combine two effectful actions, keeping only the result of the first.
+ *
+ * Derivable from `Apply`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+var apFirst = function (fb) {
+    return function_1.flow(exports.map(function (a) { return function () { return a; }; }), exports.ap(fb));
+};
+exports.apFirst = apFirst;
+/**
+ * Combine two effectful actions, keeping only the result of the second.
+ *
+ * Derivable from `Apply`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+var apSecond = function (fb) {
+    return function_1.flow(exports.map(function () { return function (b) { return b; }; }), exports.ap(fb));
+};
+exports.apSecond = apSecond;
+/**
+ * Wrap a value into the type constructor.
+ *
+ * @category Applicative
+ * @since 2.7.0
+ */
+exports.of = exports.right;
+/**
+ * Less strict version of [`chain`](#chain).
+ *
+ * @category Monad
+ * @since 2.6.0
+ */
+var chainW = function (f) { return function (ma) { return function (s1) {
+    return function_1.pipe(ma(s1), RTE.chainW(function (_a) {
+        var a = _a[0], s2 = _a[1];
+        return f(a)(s2);
+    }));
+}; }; };
+exports.chainW = chainW;
+/**
+ * Composes computations in sequence, using the return value of one computation to determine the next computation.
+ *
+ * @category Monad
+ * @since 2.0.0
+ */
+exports.chain = exports.chainW;
+/**
+ * Less strict version of [`chainFirst`](#chainFirst).
+ *
+ * Derivable from `Monad`.
+ *
+ * @category combinators
+ * @since 2.8.0
+ */
+var chainFirstW = function (f) {
+    return exports.chainW(function (a) {
+        return function_1.pipe(f(a), exports.map(function () { return a; }));
+    });
+};
+exports.chainFirstW = chainFirstW;
+/**
+ * Composes computations in sequence, using the return value of one computation to determine the next computation and
+ * keeping only the result of the first.
+ *
+ * Derivable from `Monad`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.chainFirst = exports.chainFirstW;
+/**
+ * Derivable from `Monad`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.flatten = 
+/*#__PURE__*/
+exports.chain(function_1.identity);
+/**
+ * Less strict version of [`alt`](#alt).
+ *
+ * @category Alt
+ * @since 2.9.0
+ */
+var altW = function (that) { return function (fa) { return function (r) {
+    return function_1.pipe(fa(r), RTE.altW(function () { return that()(r); }));
+}; }; };
+exports.altW = altW;
+/**
+ * Identifies an associative operation on a type constructor. It is similar to `Semigroup`, except that it applies to
+ * types of kind `* -> *`.
+ *
+ * @category Alt
+ * @since 2.6.2
+ */
+exports.alt = exports.altW;
+/**
+ * @category MonadIO
+ * @since 2.7.0
+ */
+exports.fromIO = rightIO;
+/**
+ * @category MonadTask
+ * @since 2.7.0
+ */
+exports.fromTask = rightTask;
+/**
+ * @category MonadThrow
+ * @since 2.7.0
+ */
+exports.throwError = exports.left;
+// -------------------------------------------------------------------------------------
+// instances
+// -------------------------------------------------------------------------------------
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.URI = 'StateReaderTaskEither';
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Functor = {
+    URI: exports.URI,
+    map: map_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Applicative = {
+    URI: exports.URI,
+    map: map_,
+    ap: ap_,
+    of: exports.of
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Bifunctor = {
+    URI: exports.URI,
+    bimap: bimap_,
+    mapLeft: mapLeft_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Alt = {
+    URI: exports.URI,
+    map: map_,
+    alt: alt_
+};
+// TODO: remove in v3
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.stateReaderTaskEither = {
+    URI: exports.URI,
+    map: map_,
+    of: exports.of,
+    ap: ap_,
+    chain: chain_,
+    bimap: bimap_,
+    mapLeft: mapLeft_,
+    alt: alt_,
+    fromIO: exports.fromIO,
+    fromTask: exports.fromTask,
+    throwError: exports.throwError
+};
+// TODO: remove in v3
+/**
+ * @category instances
+ * @since 2.0.0
+ * @deprecated
+ */
+exports.stateReaderTaskEitherSeq = {
+    URI: exports.URI,
+    map: map_,
+    of: exports.of,
+    ap: ap_,
+    chain: chain_,
+    bimap: bimap_,
+    mapLeft: mapLeft_,
+    alt: alt_,
+    fromIO: exports.fromIO,
+    fromTask: exports.fromTask,
+    throwError: exports.throwError
+};
+// -------------------------------------------------------------------------------------
+// utils
+// -------------------------------------------------------------------------------------
+// TODO: remove in v3
+/* tslint:disable:readonly-array */
+/**
+ * @since 2.0.0
+ */
+/* istanbul ignore next */
+function run(ma, s, r) {
+    return ma(s)(r)();
+}
+exports.run = run;
+/* tslint:enable:readonly-array */
+/**
+ * Use `evaluate` instead
+ *
+ * @since 2.0.0
+ * @deprecated
+ */
+/* istanbul ignore next */
+var evalState = function (fsa, s) {
+    return function_1.pipe(fsa(s), RTE.map(function (_a) {
+        var a = _a[0];
+        return a;
+    }));
+};
+exports.evalState = evalState;
+/**
+ * Use `execute` instead
+ *
+ * @since 2.0.0
+ * @deprecated
+ */
+/* istanbul ignore next */
+var execState = function (fsa, s) {
+    return function_1.pipe(fsa(s), RTE.map(function (_a) {
+        var _ = _a[0], s = _a[1];
+        return s;
+    }));
+};
+exports.execState = execState;
+/**
+ * Run a computation in the `StateReaderTaskEither` monad, discarding the final state
+ *
+ * @since 2.8.0
+ */
+var evaluate = function (s) { return function (ma) {
+    return function_1.pipe(ma(s), RTE.map(function (_a) {
+        var a = _a[0];
+        return a;
+    }));
+}; };
+exports.evaluate = evaluate;
+/**
+ * Run a computation in the `StateReaderTaskEither` monad discarding the result
+ *
+ * @since 2.8.0
+ */
+var execute = function (s) { return function (ma) {
+    return function_1.pipe(ma(s), RTE.map(function (_a) {
+        var _ = _a[0], s = _a[1];
+        return s;
+    }));
+}; };
+exports.execute = execute;
+// -------------------------------------------------------------------------------------
+// do notation
+// -------------------------------------------------------------------------------------
+/**
+ * @since 2.8.0
+ */
+var bindTo = function (name) {
+    return exports.map(function_1.bindTo_(name));
+};
+exports.bindTo = bindTo;
+/**
+ * @since 2.8.0
+ */
+var bindW = function (name, f) {
+    return exports.chainW(function (a) {
+        return function_1.pipe(f(a), exports.map(function (b) { return function_1.bind_(a, name, b); }));
+    });
+};
+exports.bindW = bindW;
+/**
+ * @since 2.8.0
+ */
+exports.bind = exports.bindW;
+// -------------------------------------------------------------------------------------
+// pipeable sequence S
+// -------------------------------------------------------------------------------------
+/**
+ * @since 2.8.0
+ */
+var apSW = function (name, fb) {
+    return function_1.flow(exports.map(function (a) { return function (b) { return function_1.bind_(a, name, b); }; }), exports.apW(fb));
+};
+exports.apSW = apSW;
+/**
+ * @since 2.8.0
+ */
+exports.apS = exports.apSW;
+// -------------------------------------------------------------------------------------
+// array utils
+// -------------------------------------------------------------------------------------
+/**
+ * @since 2.9.0
+ */
+var traverseArrayWithIndex = function (f) { return function (arr) { return function (s) { return function (r) { return function () { return __awaiter(void 0, void 0, void 0, function () {
+    var lastState, result, i, b, _a, newValue, newState;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
+            case 0:
+                lastState = s;
+                result = [];
+                i = 0;
+                _b.label = 1;
+            case 1:
+                if (!(i < arr.length)) return [3 /*break*/, 4];
+                return [4 /*yield*/, f(i, arr[i])(lastState)(r)()];
+            case 2:
+                b = _b.sent();
+                if (E.isLeft(b)) {
+                    return [2 /*return*/, b];
+                }
+                _a = b.right, newValue = _a[0], newState = _a[1];
+                result.push(newValue);
+                lastState = newState;
+                _b.label = 3;
+            case 3:
+                i++;
+                return [3 /*break*/, 1];
+            case 4: return [2 /*return*/, E.right([result, lastState])];
+        }
+    });
+}); }; }; }; }; };
+exports.traverseArrayWithIndex = traverseArrayWithIndex;
+/**
+ * @since 2.9.0
+ */
+var traverseArray = function (f) {
+    return exports.traverseArrayWithIndex(function (_, a) { return f(a); });
+};
+exports.traverseArray = traverseArray;
+/**
+ * @since 2.9.0
+ */
+exports.sequenceArray = 
+/*#__PURE__*/
+exports.traverseArray(function_1.identity);
+
+
+/***/ }),
+/* 46 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getEitherM = void 0;
+var E = __importStar(__webpack_require__(311));
+var function_1 = __webpack_require__(231);
+function getEitherM(M) {
+    var ap = function (fga) { return function (fgab) {
+        return M.ap(M.map(fgab, function (h) { return function (ga) { return function_1.pipe(h, E.ap(ga)); }; }), fga);
+    }; };
+    var of = function_1.flow(E.right, M.of);
+    return {
+        map: function (fa, f) { return M.map(fa, E.map(f)); },
+        ap: function (fab, fa) { return function_1.pipe(fab, ap(fa)); },
+        of: of,
+        chain: function (ma, f) { return M.chain(ma, function (e) { return (E.isLeft(e) ? M.of(E.left(e.left)) : f(e.right)); }); },
+        alt: function (fa, that) { return M.chain(fa, function (e) { return (E.isLeft(e) ? that() : of(e.right)); }); },
+        bimap: function (ma, f, g) { return M.map(ma, function (e) { return function_1.pipe(e, E.bimap(f, g)); }); },
+        mapLeft: function (ma, f) { return M.map(ma, function (e) { return function_1.pipe(e, E.mapLeft(f)); }); },
+        fold: function (ma, onLeft, onRight) { return M.chain(ma, E.fold(onLeft, onRight)); },
+        getOrElse: function (ma, onLeft) { return M.chain(ma, E.fold(onLeft, M.of)); },
+        orElse: function (ma, f) {
+            return M.chain(ma, E.fold(f, function (a) { return of(a); }));
+        },
+        swap: function (ma) { return M.map(ma, E.swap); },
+        rightM: function (ma) { return M.map(ma, E.right); },
+        leftM: function (ml) { return M.map(ml, E.left); },
+        left: function (e) { return M.of(E.left(e)); }
+    };
+}
+exports.getEitherM = getEitherM;
+
+
+/***/ }),
+/* 47 */,
+/* 48 */,
+/* 49 */
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
 "use strict";
@@ -438,8 +1709,624 @@ module.exports = windowsRelease;
 
 
 /***/ }),
+/* 50 */,
+/* 51 */,
+/* 52 */,
+/* 53 */,
+/* 54 */,
+/* 55 */,
+/* 56 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
 
-/***/ 74:
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ord = exports.Contravariant = exports.ordDate = exports.URI = exports.contramap = exports.getDualOrd = exports.getTupleOrd = exports.getMonoid = exports.getSemigroup = exports.fromCompare = exports.between = exports.clamp = exports.max = exports.min = exports.geq = exports.leq = exports.gt = exports.lt = exports.ordBoolean = exports.ordNumber = exports.ordString = void 0;
+var Ordering_1 = __webpack_require__(410);
+var function_1 = __webpack_require__(231);
+// default compare for primitive types
+function compare(x, y) {
+    return x < y ? -1 : x > y ? 1 : 0;
+}
+function strictEqual(a, b) {
+    return a === b;
+}
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.ordString = {
+    equals: strictEqual,
+    compare: compare
+};
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.ordNumber = {
+    equals: strictEqual,
+    compare: compare
+};
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.ordBoolean = {
+    equals: strictEqual,
+    compare: compare
+};
+// TODO: curry in v3
+/**
+ * Test whether one value is _strictly less than_ another
+ *
+ * @since 2.0.0
+ */
+function lt(O) {
+    return function (x, y) { return O.compare(x, y) === -1; };
+}
+exports.lt = lt;
+// TODO: curry in v3
+/**
+ * Test whether one value is _strictly greater than_ another
+ *
+ * @since 2.0.0
+ */
+function gt(O) {
+    return function (x, y) { return O.compare(x, y) === 1; };
+}
+exports.gt = gt;
+// TODO: curry in v3
+/**
+ * Test whether one value is _non-strictly less than_ another
+ *
+ * @since 2.0.0
+ */
+function leq(O) {
+    return function (x, y) { return O.compare(x, y) !== 1; };
+}
+exports.leq = leq;
+// TODO: curry in v3
+/**
+ * Test whether one value is _non-strictly greater than_ another
+ *
+ * @since 2.0.0
+ */
+function geq(O) {
+    return function (x, y) { return O.compare(x, y) !== -1; };
+}
+exports.geq = geq;
+// TODO: curry in v3
+/**
+ * Take the minimum of two values. If they are considered equal, the first argument is chosen
+ *
+ * @since 2.0.0
+ */
+function min(O) {
+    return function (x, y) { return (O.compare(x, y) === 1 ? y : x); };
+}
+exports.min = min;
+// TODO: curry in v3
+/**
+ * Take the maximum of two values. If they are considered equal, the first argument is chosen
+ *
+ * @since 2.0.0
+ */
+function max(O) {
+    return function (x, y) { return (O.compare(x, y) === -1 ? y : x); };
+}
+exports.max = max;
+/**
+ * Clamp a value between a minimum and a maximum
+ *
+ * @since 2.0.0
+ */
+function clamp(O) {
+    var minO = min(O);
+    var maxO = max(O);
+    return function (low, hi) { return function (x) { return maxO(minO(x, hi), low); }; };
+}
+exports.clamp = clamp;
+/**
+ * Test whether a value is between a minimum and a maximum (inclusive)
+ *
+ * @since 2.0.0
+ */
+function between(O) {
+    var lessThanO = lt(O);
+    var greaterThanO = gt(O);
+    return function (low, hi) { return function (x) { return (lessThanO(x, low) || greaterThanO(x, hi) ? false : true); }; };
+}
+exports.between = between;
+/**
+ * @category constructors
+ * @since 2.0.0
+ */
+function fromCompare(compare) {
+    var optimizedCompare = function (x, y) { return (x === y ? 0 : compare(x, y)); };
+    return {
+        equals: function (x, y) { return optimizedCompare(x, y) === 0; },
+        compare: optimizedCompare
+    };
+}
+exports.fromCompare = fromCompare;
+/**
+ * Use `getMonoid` instead
+ *
+ * @category instances
+ * @since 2.0.0
+ * @deprecated
+ */
+function getSemigroup() {
+    return {
+        concat: function (x, y) { return fromCompare(function (a, b) { return Ordering_1.monoidOrdering.concat(x.compare(a, b), y.compare(a, b)); }); }
+    };
+}
+exports.getSemigroup = getSemigroup;
+/**
+ * Returns a `Monoid` such that:
+ *
+ * - its `concat(ord1, ord2)` operation will order first by `ord1`, and then by `ord2`
+ * - its `empty` value is an `Ord` that always considers compared elements equal
+ *
+ * @example
+ * import { sort } from 'fp-ts/Array'
+ * import { contramap, getDualOrd, getMonoid, ordBoolean, ordNumber, ordString } from 'fp-ts/Ord'
+ * import { pipe } from 'fp-ts/function'
+ * import { fold } from 'fp-ts/Monoid'
+ *
+ * interface User {
+ *   id: number
+ *   name: string
+ *   age: number
+ *   rememberMe: boolean
+ * }
+ *
+ * const byName = pipe(
+ *   ordString,
+ *   contramap((p: User) => p.name)
+ * )
+ *
+ * const byAge = pipe(
+ *   ordNumber,
+ *   contramap((p: User) => p.age)
+ * )
+ *
+ * const byRememberMe = pipe(
+ *   ordBoolean,
+ *   contramap((p: User) => p.rememberMe)
+ * )
+ *
+ * const M = getMonoid<User>()
+ *
+ * const users: Array<User> = [
+ *   { id: 1, name: 'Guido', age: 47, rememberMe: false },
+ *   { id: 2, name: 'Guido', age: 46, rememberMe: true },
+ *   { id: 3, name: 'Giulio', age: 44, rememberMe: false },
+ *   { id: 4, name: 'Giulio', age: 44, rememberMe: true }
+ * ]
+ *
+ * // sort by name, then by age, then by `rememberMe`
+ * const O1 = fold(M)([byName, byAge, byRememberMe])
+ * assert.deepStrictEqual(sort(O1)(users), [
+ *   { id: 3, name: 'Giulio', age: 44, rememberMe: false },
+ *   { id: 4, name: 'Giulio', age: 44, rememberMe: true },
+ *   { id: 2, name: 'Guido', age: 46, rememberMe: true },
+ *   { id: 1, name: 'Guido', age: 47, rememberMe: false }
+ * ])
+ *
+ * // now `rememberMe = true` first, then by name, then by age
+ * const O2 = fold(M)([getDualOrd(byRememberMe), byName, byAge])
+ * assert.deepStrictEqual(sort(O2)(users), [
+ *   { id: 4, name: 'Giulio', age: 44, rememberMe: true },
+ *   { id: 2, name: 'Guido', age: 46, rememberMe: true },
+ *   { id: 3, name: 'Giulio', age: 44, rememberMe: false },
+ *   { id: 1, name: 'Guido', age: 47, rememberMe: false }
+ * ])
+ *
+ * @category instances
+ * @since 2.4.0
+ */
+function getMonoid() {
+    return {
+        // tslint:disable-next-line: deprecation
+        concat: getSemigroup().concat,
+        empty: fromCompare(function () { return 0; })
+    };
+}
+exports.getMonoid = getMonoid;
+/**
+ * Given a tuple of `Ord`s returns an `Ord` for the tuple
+ *
+ * @example
+ * import { getTupleOrd, ordString, ordNumber, ordBoolean } from 'fp-ts/Ord'
+ *
+ * const O = getTupleOrd(ordString, ordNumber, ordBoolean)
+ * assert.strictEqual(O.compare(['a', 1, true], ['b', 2, true]), -1)
+ * assert.strictEqual(O.compare(['a', 1, true], ['a', 2, true]), -1)
+ * assert.strictEqual(O.compare(['a', 1, true], ['a', 1, false]), 1)
+ *
+ * @category instances
+ * @since 2.0.0
+ */
+function getTupleOrd() {
+    var ords = [];
+    for (var _i = 0; _i < arguments.length; _i++) {
+        ords[_i] = arguments[_i];
+    }
+    var len = ords.length;
+    return fromCompare(function (x, y) {
+        var i = 0;
+        for (; i < len - 1; i++) {
+            var r = ords[i].compare(x[i], y[i]);
+            if (r !== 0) {
+                return r;
+            }
+        }
+        return ords[i].compare(x[i], y[i]);
+    });
+}
+exports.getTupleOrd = getTupleOrd;
+/**
+ * @category combinators
+ * @since 2.0.0
+ */
+function getDualOrd(O) {
+    return fromCompare(function (x, y) { return O.compare(y, x); });
+}
+exports.getDualOrd = getDualOrd;
+// -------------------------------------------------------------------------------------
+// non-pipeables
+// -------------------------------------------------------------------------------------
+/* istanbul ignore next */
+var contramap_ = function (fa, f) { return function_1.pipe(fa, exports.contramap(f)); };
+// -------------------------------------------------------------------------------------
+// pipeables
+// -------------------------------------------------------------------------------------
+/**
+ * @category Contravariant
+ * @since 2.0.0
+ */
+var contramap = function (f) { return function (fa) {
+    return fromCompare(function (x, y) { return fa.compare(f(x), f(y)); });
+}; };
+exports.contramap = contramap;
+// -------------------------------------------------------------------------------------
+// instances
+// -------------------------------------------------------------------------------------
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.URI = 'Ord';
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.ordDate = 
+/*#__PURE__*/
+function_1.pipe(exports.ordNumber, 
+/*#__PURE__*/
+exports.contramap(function (date) { return date.valueOf(); }));
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Contravariant = {
+    URI: exports.URI,
+    contramap: contramap_
+};
+// TODO: remove in v3
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.ord = exports.Contravariant;
+
+
+/***/ }),
+/* 57 */,
+/* 58 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+/**
+ * @since 2.0.0
+ */
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.monadIO = exports.monad = exports.meetSemilattice = exports.map = exports.magma = exports.lattice = exports.joinSemilattice = exports.ioRef = exports.ioEither = exports.io = exports.invariant = exports.identity = exports.hkt = exports.heytingAlgebra = exports.group = exports.functorWithIndex = exports.functor = exports.function = exports.foldableWithIndex = exports.foldable = exports.filterableWithIndex = exports.filterable = exports.field = exports.extend = exports.eitherT = exports.either = exports.distributiveLattice = exports.date = exports.contravariant = exports.const = exports.console = exports.compactable = exports.comonad = exports.choice = exports.chainRec = exports.chain = exports.category = exports.boundedMeetSemilattice = exports.boundedLattice = exports.boundedJoinSemilattice = exports.boundedDistributiveLattice = exports.bounded = exports.booleanAlgebra = exports.boolean = exports.bifunctor = exports.array = exports.apply = exports.applicative = exports.alternative = exports.alt = void 0;
+exports.writerT = exports.writer = exports.witherable = exports.validationT = exports.unfoldable = exports.tuple = exports.tree = exports.traversableWithIndex = exports.traversable = exports.traced = exports.theseT = exports.these = exports.taskThese = exports.taskEither = exports.task = exports.strong = exports.store = exports.stateT = exports.stateReaderTaskEither = exports.state = exports.show = exports.eq = exports.set = exports.semiring = exports.semigroupoid = exports.semigroup = exports.ring = exports.record = exports.readerTask = exports.readonlyTuple = exports.readonlySet = exports.readonlyRecord = exports.readonlyNonEmptyArray = exports.readonlyMap = exports.readonlyArray = exports.readerTaskEither = exports.readerT = exports.readerEither = exports.reader = exports.random = exports.profunctor = exports.pipeable = exports.ordering = exports.ord = exports.optionT = exports.option = exports.nonEmptyArray = exports.monoid = exports.monadThrow = exports.monadTask = void 0;
+var alt = __importStar(__webpack_require__(554));
+exports.alt = alt;
+var alternative = __importStar(__webpack_require__(164));
+exports.alternative = alternative;
+var applicative = __importStar(__webpack_require__(767));
+exports.applicative = applicative;
+var apply = __importStar(__webpack_require__(370));
+exports.apply = apply;
+var array = __importStar(__webpack_require__(694));
+exports.array = array;
+var bifunctor = __importStar(__webpack_require__(71));
+exports.bifunctor = bifunctor;
+var boolean = __importStar(__webpack_require__(91));
+exports.boolean = boolean;
+var booleanAlgebra = __importStar(__webpack_require__(338));
+exports.booleanAlgebra = booleanAlgebra;
+var bounded = __importStar(__webpack_require__(785));
+exports.bounded = bounded;
+var boundedDistributiveLattice = __importStar(__webpack_require__(831));
+exports.boundedDistributiveLattice = boundedDistributiveLattice;
+var boundedJoinSemilattice = __importStar(__webpack_require__(94));
+exports.boundedJoinSemilattice = boundedJoinSemilattice;
+var boundedLattice = __importStar(__webpack_require__(837));
+exports.boundedLattice = boundedLattice;
+var boundedMeetSemilattice = __importStar(__webpack_require__(68));
+exports.boundedMeetSemilattice = boundedMeetSemilattice;
+var category = __importStar(__webpack_require__(263));
+exports.category = category;
+var chain = __importStar(__webpack_require__(306));
+exports.chain = chain;
+var chainRec = __importStar(__webpack_require__(99));
+exports.chainRec = chainRec;
+var choice = __importStar(__webpack_require__(429));
+exports.choice = choice;
+var comonad = __importStar(__webpack_require__(926));
+exports.comonad = comonad;
+var compactable = __importStar(__webpack_require__(256));
+exports.compactable = compactable;
+var console = __importStar(__webpack_require__(35));
+exports.console = console;
+var const_ = __importStar(__webpack_require__(795));
+exports.const = const_;
+var contravariant = __importStar(__webpack_require__(786));
+exports.contravariant = contravariant;
+var date = __importStar(__webpack_require__(238));
+exports.date = date;
+var distributiveLattice = __importStar(__webpack_require__(121));
+exports.distributiveLattice = distributiveLattice;
+var either = __importStar(__webpack_require__(311));
+exports.either = either;
+var eitherT = __importStar(__webpack_require__(46));
+exports.eitherT = eitherT;
+var eq = __importStar(__webpack_require__(725));
+exports.eq = eq;
+var extend = __importStar(__webpack_require__(128));
+exports.extend = extend;
+var field = __importStar(__webpack_require__(480));
+exports.field = field;
+var filterable = __importStar(__webpack_require__(718));
+exports.filterable = filterable;
+var filterableWithIndex = __importStar(__webpack_require__(856));
+exports.filterableWithIndex = filterableWithIndex;
+var foldable = __importStar(__webpack_require__(684));
+exports.foldable = foldable;
+var foldableWithIndex = __importStar(__webpack_require__(737));
+exports.foldableWithIndex = foldableWithIndex;
+var function_ = __importStar(__webpack_require__(231));
+exports.function = function_;
+var functor = __importStar(__webpack_require__(943));
+exports.functor = functor;
+var functorWithIndex = __importStar(__webpack_require__(740));
+exports.functorWithIndex = functorWithIndex;
+var group = __importStar(__webpack_require__(977));
+exports.group = group;
+var heytingAlgebra = __importStar(__webpack_require__(913));
+exports.heytingAlgebra = heytingAlgebra;
+var hkt = __importStar(__webpack_require__(356));
+exports.hkt = hkt;
+var identity = __importStar(__webpack_require__(728));
+exports.identity = identity;
+var invariant = __importStar(__webpack_require__(317));
+exports.invariant = invariant;
+var io = __importStar(__webpack_require__(847));
+exports.io = io;
+var ioEither = __importStar(__webpack_require__(589));
+exports.ioEither = ioEither;
+var ioRef = __importStar(__webpack_require__(868));
+exports.ioRef = ioRef;
+var joinSemilattice = __importStar(__webpack_require__(220));
+exports.joinSemilattice = joinSemilattice;
+var lattice = __importStar(__webpack_require__(326));
+exports.lattice = lattice;
+var magma = __importStar(__webpack_require__(342));
+exports.magma = magma;
+var map = __importStar(__webpack_require__(618));
+exports.map = map;
+var meetSemilattice = __importStar(__webpack_require__(920));
+exports.meetSemilattice = meetSemilattice;
+var monad = __importStar(__webpack_require__(67));
+exports.monad = monad;
+var monadIO = __importStar(__webpack_require__(806));
+exports.monadIO = monadIO;
+var monadTask = __importStar(__webpack_require__(98));
+exports.monadTask = monadTask;
+var monadThrow = __importStar(__webpack_require__(288));
+exports.monadThrow = monadThrow;
+var monoid = __importStar(__webpack_require__(959));
+exports.monoid = monoid;
+var nonEmptyArray = __importStar(__webpack_require__(467));
+exports.nonEmptyArray = nonEmptyArray;
+var option = __importStar(__webpack_require__(293));
+exports.option = option;
+var optionT = __importStar(__webpack_require__(647));
+exports.optionT = optionT;
+var ord = __importStar(__webpack_require__(56));
+exports.ord = ord;
+var ordering = __importStar(__webpack_require__(410));
+exports.ordering = ordering;
+var pipeable = __importStar(__webpack_require__(194));
+exports.pipeable = pipeable;
+var profunctor = __importStar(__webpack_require__(722));
+exports.profunctor = profunctor;
+var random = __importStar(__webpack_require__(914));
+exports.random = random;
+var reader = __importStar(__webpack_require__(600));
+exports.reader = reader;
+var readerEither = __importStar(__webpack_require__(972));
+exports.readerEither = readerEither;
+var readerT = __importStar(__webpack_require__(579));
+exports.readerT = readerT;
+var readerTask = __importStar(__webpack_require__(492));
+exports.readerTask = readerTask;
+var readerTaskEither = __importStar(__webpack_require__(428));
+exports.readerTaskEither = readerTaskEither;
+var readonlyArray = __importStar(__webpack_require__(717));
+exports.readonlyArray = readonlyArray;
+var readonlyMap = __importStar(__webpack_require__(182));
+exports.readonlyMap = readonlyMap;
+var readonlyNonEmptyArray = __importStar(__webpack_require__(364));
+exports.readonlyNonEmptyArray = readonlyNonEmptyArray;
+var readonlyRecord = __importStar(__webpack_require__(671));
+exports.readonlyRecord = readonlyRecord;
+var readonlySet = __importStar(__webpack_require__(695));
+exports.readonlySet = readonlySet;
+var readonlyTuple = __importStar(__webpack_require__(226));
+exports.readonlyTuple = readonlyTuple;
+var record = __importStar(__webpack_require__(276));
+exports.record = record;
+var ring = __importStar(__webpack_require__(907));
+exports.ring = ring;
+var semigroup = __importStar(__webpack_require__(156));
+exports.semigroup = semigroup;
+var semigroupoid = __importStar(__webpack_require__(212));
+exports.semigroupoid = semigroupoid;
+var semiring = __importStar(__webpack_require__(754));
+exports.semiring = semiring;
+var set = __importStar(__webpack_require__(343));
+exports.set = set;
+var show = __importStar(__webpack_require__(292));
+exports.show = show;
+var state = __importStar(__webpack_require__(40));
+exports.state = state;
+var stateReaderTaskEither = __importStar(__webpack_require__(45));
+exports.stateReaderTaskEither = stateReaderTaskEither;
+var stateT = __importStar(__webpack_require__(157));
+exports.stateT = stateT;
+var store = __importStar(__webpack_require__(854));
+exports.store = store;
+var strong = __importStar(__webpack_require__(665));
+exports.strong = strong;
+var task = __importStar(__webpack_require__(721));
+exports.task = task;
+var taskEither = __importStar(__webpack_require__(206));
+exports.taskEither = taskEither;
+var taskThese = __importStar(__webpack_require__(564));
+exports.taskThese = taskThese;
+var these = __importStar(__webpack_require__(766));
+exports.these = these;
+var theseT = __importStar(__webpack_require__(193));
+exports.theseT = theseT;
+var traced = __importStar(__webpack_require__(558));
+exports.traced = traced;
+var traversable = __importStar(__webpack_require__(845));
+exports.traversable = traversable;
+var traversableWithIndex = __importStar(__webpack_require__(481));
+exports.traversableWithIndex = traversableWithIndex;
+var tree = __importStar(__webpack_require__(374));
+exports.tree = tree;
+var tuple = __importStar(__webpack_require__(175));
+exports.tuple = tuple;
+var unfoldable = __importStar(__webpack_require__(593));
+exports.unfoldable = unfoldable;
+var validationT = __importStar(__webpack_require__(64));
+exports.validationT = validationT;
+var witherable = __importStar(__webpack_require__(545));
+exports.witherable = witherable;
+var writer = __importStar(__webpack_require__(425));
+exports.writer = writer;
+var writerT = __importStar(__webpack_require__(704));
+exports.writerT = writerT;
+
+
+/***/ }),
+/* 59 */,
+/* 60 */,
+/* 61 */,
+/* 62 */,
+/* 63 */,
+/* 64 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getValidationM = void 0;
+/**
+ * @since 2.0.0
+ */
+var Applicative_1 = __webpack_require__(767);
+var Either_1 = __webpack_require__(311);
+function getValidationM(S, M) {
+    var A = Applicative_1.getApplicativeComposition(M, Either_1.getValidation(S));
+    return {
+        map: A.map,
+        ap: A.ap,
+        of: A.of,
+        chain: /* istanbul ignore next */ function (ma, f) { return M.chain(ma, function (e) { return (Either_1.isLeft(e) ? M.of(Either_1.left(e.left)) : f(e.right)); }); },
+        alt: function (me, that) {
+            return M.chain(me, function (e1) {
+                return Either_1.isRight(e1) ? M.of(e1) : M.map(that(), function (e2) { return (Either_1.isLeft(e2) ? Either_1.left(S.concat(e1.left, e2.left)) : e2); });
+            });
+        }
+    };
+}
+exports.getValidationM = getValidationM;
+
+
+/***/ }),
+/* 65 */,
+/* 66 */,
+/* 67 */
+/***/ (function(__unusedmodule, exports) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+
+
+/***/ }),
+/* 68 */
+/***/ (function(__unusedmodule, exports) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+
+
+/***/ }),
+/* 69 */,
+/* 70 */,
+/* 71 */
+/***/ (function(__unusedmodule, exports) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+
+
+/***/ }),
+/* 72 */,
+/* 73 */,
+/* 74 */
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
 "use strict";
@@ -913,8 +2800,7 @@ module.exports = micromatch;
 
 
 /***/ }),
-
-/***/ 75:
+/* 75 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
@@ -959,15 +2845,16 @@ exports.default = PartialMatcher;
 
 
 /***/ }),
-
-/***/ 78:
+/* 76 */,
+/* 77 */,
+/* 78 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const sync_1 = __webpack_require__(519);
-const provider_1 = __webpack_require__(589);
+const provider_1 = __webpack_require__(620);
 class ProviderSync extends provider_1.default {
     constructor() {
         super(...arguments);
@@ -990,8 +2877,10 @@ exports.default = ProviderSync;
 
 
 /***/ }),
-
-/***/ 82:
+/* 79 */,
+/* 80 */,
+/* 81 */,
+/* 82 */
 /***/ (function(__unusedmodule, exports) {
 
 "use strict";
@@ -1016,15 +2905,104 @@ exports.toCommandValue = toCommandValue;
 //# sourceMappingURL=utils.js.map
 
 /***/ }),
-
-/***/ 87:
+/* 83 */,
+/* 84 */,
+/* 85 */,
+/* 86 */,
+/* 87 */
 /***/ (function(module) {
 
 module.exports = require("os");
 
 /***/ }),
+/* 88 */,
+/* 89 */,
+/* 90 */,
+/* 91 */
+/***/ (function(__unusedmodule, exports) {
 
-/***/ 102:
+"use strict";
+
+/**
+ * @since 2.2.0
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.fold = void 0;
+/**
+ * Defines the fold over a boolean value.
+ * Takes two thunks `onTrue`, `onFalse` and a `boolean` value.
+ * If `value` is false, `onFalse()` is returned, otherwise `onTrue()`.
+ *
+ * @example
+ * import { some, map } from 'fp-ts/Option'
+ * import { pipe } from 'fp-ts/function'
+ * import { fold } from 'fp-ts/boolean'
+ *
+ * assert.deepStrictEqual(
+ *  pipe(
+ *    some(true),
+ *    map(fold(() => 'false', () => 'true'))
+ *  ),
+ *  some('true')
+ * )
+ *
+ * @category destructors
+ * @since 2.2.0
+ */
+function fold(onFalse, onTrue) {
+    return function (value) { return (value ? onTrue() : onFalse()); };
+}
+exports.fold = fold;
+
+
+/***/ }),
+/* 92 */,
+/* 93 */,
+/* 94 */
+/***/ (function(__unusedmodule, exports) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+
+
+/***/ }),
+/* 95 */,
+/* 96 */,
+/* 97 */,
+/* 98 */
+/***/ (function(__unusedmodule, exports) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+
+
+/***/ }),
+/* 99 */
+/***/ (function(__unusedmodule, exports) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.tailRec = void 0;
+/**
+ * @since 2.0.0
+ */
+function tailRec(a, f) {
+    var v = f(a);
+    while (v._tag === 'Left') {
+        v = f(v.left);
+    }
+    return v.right;
+}
+exports.tailRec = tailRec;
+
+
+/***/ }),
+/* 100 */,
+/* 101 */,
+/* 102 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
@@ -1059,8 +3037,9 @@ exports.issueCommand = issueCommand;
 //# sourceMappingURL=file-command.js.map
 
 /***/ }),
-
-/***/ 105:
+/* 103 */,
+/* 104 */,
+/* 105 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
@@ -1071,6 +3050,7 @@ const core_1 = __webpack_require__(470);
 const github_1 = __webpack_require__(469);
 const d3_format_1 = __webpack_require__(663);
 const node_fetch_1 = __webpack_require__(454);
+const fp_ts_1 = __webpack_require__(58);
 async function comment(pr) {
     const base = pr.base.sha;
     const head = process.env.GITHUB_SHA;
@@ -1119,18 +3099,7 @@ async function comment(pr) {
         issue_number: pr.number,
     });
     // info(JSON.stringify(comments));
-    const body = `
-# Comparison
-
-${res.data.comparison.observations
-        .map((obs) => {
-        const abs = bytesToString(obs.diff.absolute);
-        const pct = Math.round(obs.diff.relative * 10) / 10;
-        const sign = { [-1]: "", [0]: "", [1]: "+" }[Math.sign(pct)];
-        return ` - **${obs.series.name}**: ${sign}${abs} (${sign}${pct}%)`;
-    })
-        .join("\n")}
-`;
+    const body = makeCommentBody(res.data.comparison.observations);
     const comment = comments.data.find((x) => x.user.login === "github-actions[bot]");
     if (!comment) {
         await octokit.issues.createComment({
@@ -1165,18 +3134,43 @@ function bytesToString(bytes) {
         return fmt(bytes / 1024 / 1024 / 1024) + "G";
     }
 }
+function makeCommentBody(observations) {
+    /*
+     * Sort observations by relative difference (descending)
+     */
+    const ordByRelativeDiff = fp_ts_1.ord.contramap((obs) => obs.diff.relative)(fp_ts_1.ord.ordNumber);
+    const sortedObservations = fp_ts_1.array.sortBy([ordByRelativeDiff])(observations);
+    return `
+# Comparison
+
+${sortedObservations
+        .map((obs) => {
+        const abs = bytesToString(obs.diff.absolute);
+        const pct = Math.round(obs.diff.relative * 10) / 10;
+        const sign = { [-1]: "", [0]: "", [1]: "+" }[Math.sign(pct)];
+        return ` - **${obs.series.name}**: ${sign}${abs} (${sign}${pct}%)`;
+    })
+        .join("\n")}
+`;
+}
 
 
 /***/ }),
-
-/***/ 113:
+/* 106 */,
+/* 107 */,
+/* 108 */,
+/* 109 */,
+/* 110 */,
+/* 111 */,
+/* 112 */,
+/* 113 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const stream_1 = __webpack_require__(608);
-const provider_1 = __webpack_require__(589);
+const provider_1 = __webpack_require__(620);
 class ProviderAsync extends provider_1.default {
     constructor() {
         super(...arguments);
@@ -1204,8 +3198,8 @@ exports.default = ProviderAsync;
 
 
 /***/ }),
-
-/***/ 115:
+/* 114 */,
+/* 115 */
 /***/ (function(__unusedmodule, exports) {
 
 "use strict";
@@ -1219,8 +3213,9 @@ exports.isEnoentCodeError = isEnoentCodeError;
 
 
 /***/ }),
-
-/***/ 118:
+/* 116 */,
+/* 117 */,
+/* 118 */
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
 "use strict";
@@ -1263,8 +3258,36 @@ module.exports.default = macosRelease;
 
 
 /***/ }),
+/* 119 */,
+/* 120 */,
+/* 121 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
 
-/***/ 127:
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getMinMaxDistributiveLattice = void 0;
+var Ord_1 = __webpack_require__(56);
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+function getMinMaxDistributiveLattice(O) {
+    return {
+        meet: Ord_1.min(O),
+        join: Ord_1.max(O)
+    };
+}
+exports.getMinMaxDistributiveLattice = getMinMaxDistributiveLattice;
+
+
+/***/ }),
+/* 122 */,
+/* 123 */,
+/* 124 */,
+/* 125 */,
+/* 126 */,
+/* 127 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
@@ -1313,15 +3336,33 @@ exports.getApiBaseUrl = getApiBaseUrl;
 //# sourceMappingURL=utils.js.map
 
 /***/ }),
+/* 128 */
+/***/ (function(__unusedmodule, exports) {
 
-/***/ 129:
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+
+
+/***/ }),
+/* 129 */
 /***/ (function(module) {
 
 module.exports = require("child_process");
 
 /***/ }),
-
-/***/ 141:
+/* 130 */,
+/* 131 */,
+/* 132 */,
+/* 133 */,
+/* 134 */,
+/* 135 */,
+/* 136 */,
+/* 137 */,
+/* 138 */,
+/* 139 */,
+/* 140 */,
+/* 141 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
@@ -1592,8 +3633,10 @@ exports.debug = debug; // for test
 
 
 /***/ }),
-
-/***/ 145:
+/* 142 */,
+/* 143 */,
+/* 144 */,
+/* 145 */
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
 "use strict";
@@ -1650,8 +3693,9 @@ module.exports.MaxBufferError = MaxBufferError;
 
 
 /***/ }),
-
-/***/ 148:
+/* 146 */,
+/* 147 */,
+/* 148 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
@@ -1660,7 +3704,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.readdir = exports.readdirWithFileTypes = exports.read = void 0;
 const fsStat = __webpack_require__(858);
 const constants_1 = __webpack_require__(171);
-const utils = __webpack_require__(933);
+const utils = __webpack_require__(632);
 const common = __webpack_require__(185);
 function read(directory, settings) {
     if (!settings.stats && constants_1.IS_SUPPORT_READDIR_WITH_FILE_TYPES) {
@@ -1712,8 +3756,436 @@ exports.readdir = readdir;
 
 
 /***/ }),
+/* 149 */,
+/* 150 */,
+/* 151 */,
+/* 152 */,
+/* 153 */,
+/* 154 */,
+/* 155 */,
+/* 156 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
 
-/***/ 168:
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getIntercalateSemigroup = exports.semigroupVoid = exports.semigroupString = exports.semigroupProduct = exports.semigroupSum = exports.semigroupAny = exports.semigroupAll = exports.getObjectSemigroup = exports.getJoinSemigroup = exports.getMeetSemigroup = exports.getStructSemigroup = exports.getFunctionSemigroup = exports.getDualSemigroup = exports.getTupleSemigroup = exports.getLastSemigroup = exports.getFirstSemigroup = exports.fold = void 0;
+/**
+ * If a type `A` can form a `Semigroup` it has an **associative** binary operation.
+ *
+ * ```ts
+ * interface Semigroup<A> {
+ *   readonly concat: (x: A, y: A) => A
+ * }
+ * ```
+ *
+ * Associativity means the following equality must hold for any choice of `x`, `y`, and `z`.
+ *
+ * ```ts
+ * concat(x, concat(y, z)) = concat(concat(x, y), z)
+ * ```
+ *
+ * A common example of a semigroup is the type `string` with the operation `+`.
+ *
+ * ```ts
+ * import { Semigroup } from 'fp-ts/Semigroup'
+ *
+ * const semigroupString: Semigroup<string> = {
+ *   concat: (x, y) => x + y
+ * }
+ *
+ * const x = 'x'
+ * const y = 'y'
+ * const z = 'z'
+ *
+ * semigroupString.concat(x, y) // 'xy'
+ *
+ * semigroupString.concat(x, semigroupString.concat(y, z)) // 'xyz'
+ *
+ * semigroupString.concat(semigroupString.concat(x, y), z) // 'xyz'
+ * ```
+ *
+ * *Adapted from https://typelevel.org/cats*
+ *
+ * @since 2.0.0
+ */
+var function_1 = __webpack_require__(231);
+var Ord_1 = __webpack_require__(56);
+function fold(S) {
+    return function (startWith, as) {
+        if (as === undefined) {
+            var foldS_1 = fold(S);
+            return function (as) { return foldS_1(startWith, as); };
+        }
+        return as.reduce(S.concat, startWith);
+    };
+}
+exports.fold = fold;
+/**
+ * Always return the first argument.
+ *
+ * @example
+ * import * as S from 'fp-ts/Semigroup'
+ *
+ * assert.deepStrictEqual(S.getFirstSemigroup<number>().concat(1, 2), 1)
+ *
+ * @category instances
+ * @since 2.0.0
+ */
+function getFirstSemigroup() {
+    return { concat: function_1.identity };
+}
+exports.getFirstSemigroup = getFirstSemigroup;
+/**
+ * Always return the last argument.
+ *
+ * @example
+ * import * as S from 'fp-ts/Semigroup'
+ *
+ * assert.deepStrictEqual(S.getLastSemigroup<number>().concat(1, 2), 2)
+ *
+ * @category instances
+ * @since 2.0.0
+ */
+function getLastSemigroup() {
+    return { concat: function (_, y) { return y; } };
+}
+exports.getLastSemigroup = getLastSemigroup;
+/**
+ * Given a tuple of semigroups returns a semigroup for the tuple.
+ *
+ * @example
+ * import * as S from 'fp-ts/Semigroup'
+ *
+ * const S1 = S.getTupleSemigroup(S.semigroupString, S.semigroupSum)
+ * assert.deepStrictEqual(S1.concat(['a', 1], ['b', 2]), ['ab', 3])
+ *
+ * const S2 = S.getTupleSemigroup(S.semigroupString, S.semigroupSum, S.semigroupAll)
+ * assert.deepStrictEqual(S2.concat(['a', 1, true], ['b', 2, false]), ['ab', 3, false])
+ *
+ * @category instances
+ * @since 2.0.0
+ */
+function getTupleSemigroup() {
+    var semigroups = [];
+    for (var _i = 0; _i < arguments.length; _i++) {
+        semigroups[_i] = arguments[_i];
+    }
+    return {
+        concat: function (x, y) { return semigroups.map(function (s, i) { return s.concat(x[i], y[i]); }); }
+    };
+}
+exports.getTupleSemigroup = getTupleSemigroup;
+/**
+ * The dual of a `Semigroup`, obtained by swapping the arguments of `concat`.
+ *
+ * @example
+ * import * as S from 'fp-ts/Semigroup'
+ *
+ * assert.deepStrictEqual(S.getDualSemigroup(S.semigroupString).concat('a', 'b'), 'ba')
+ *
+ * @category instances
+ * @since 2.0.0
+ */
+function getDualSemigroup(S) {
+    return {
+        concat: function (x, y) { return S.concat(y, x); }
+    };
+}
+exports.getDualSemigroup = getDualSemigroup;
+/**
+ * Unary functions form a semigroup as long as you can provide a semigroup for the codomain.
+ *
+ * @example
+ * import { Predicate } from 'fp-ts/function'
+ * import * as S from 'fp-ts/Semigroup'
+ *
+ * const f: Predicate<number> = (n) => n <= 2
+ * const g: Predicate<number> = (n) => n >= 0
+ *
+ * const S1 = S.getFunctionSemigroup(S.semigroupAll)<number>()
+ *
+ * assert.deepStrictEqual(S1.concat(f, g)(1), true)
+ * assert.deepStrictEqual(S1.concat(f, g)(3), false)
+ *
+ * const S2 = S.getFunctionSemigroup(S.semigroupAny)<number>()
+ *
+ * assert.deepStrictEqual(S2.concat(f, g)(1), true)
+ * assert.deepStrictEqual(S2.concat(f, g)(3), true)
+ *
+ * @category instances
+ * @since 2.0.0
+ */
+function getFunctionSemigroup(S) {
+    return function () { return ({
+        concat: function (f, g) { return function (a) { return S.concat(f(a), g(a)); }; }
+    }); };
+}
+exports.getFunctionSemigroup = getFunctionSemigroup;
+/**
+ * Given a struct of semigroups returns a semigroup for the struct.
+ *
+ * @example
+ * import * as S from 'fp-ts/Semigroup'
+ *
+ * interface Point {
+ *   readonly x: number
+ *   readonly y: number
+ * }
+ *
+ * const semigroupPoint = S.getStructSemigroup<Point>({
+ *   x: S.semigroupSum,
+ *   y: S.semigroupSum
+ * })
+ *
+ * assert.deepStrictEqual(semigroupPoint.concat({ x: 1, y: 2 }, { x: 3, y: 4 }), { x: 4, y: 6 })
+ *
+ * @category instances
+ * @since 2.0.0
+ */
+function getStructSemigroup(semigroups) {
+    return {
+        concat: function (x, y) {
+            var r = {};
+            for (var _i = 0, _a = Object.keys(semigroups); _i < _a.length; _i++) {
+                var key = _a[_i];
+                r[key] = semigroups[key].concat(x[key], y[key]);
+            }
+            return r;
+        }
+    };
+}
+exports.getStructSemigroup = getStructSemigroup;
+/**
+ * Get a semigroup where `concat` will return the minimum, based on the provided order.
+ *
+ * @example
+ * import * as O from 'fp-ts/Ord'
+ * import * as S from 'fp-ts/Semigroup'
+ *
+ * const S1 = S.getMeetSemigroup(O.ordNumber)
+ *
+ * assert.deepStrictEqual(S1.concat(1, 2), 1)
+ *
+ * @category instances
+ * @since 2.0.0
+ */
+function getMeetSemigroup(O) {
+    return {
+        concat: Ord_1.min(O)
+    };
+}
+exports.getMeetSemigroup = getMeetSemigroup;
+/**
+ * Get a semigroup where `concat` will return the maximum, based on the provided order.
+ *
+ * @example
+ * import * as O from 'fp-ts/Ord'
+ * import * as S from 'fp-ts/Semigroup'
+ *
+ * const S1 = S.getJoinSemigroup(O.ordNumber)
+ *
+ * assert.deepStrictEqual(S1.concat(1, 2), 2)
+ *
+ * @category instances
+ * @since 2.0.0
+ */
+function getJoinSemigroup(O) {
+    return {
+        concat: Ord_1.max(O)
+    };
+}
+exports.getJoinSemigroup = getJoinSemigroup;
+/**
+ * Return a semigroup for objects, preserving their type.
+ *
+ * @example
+ * import * as S from 'fp-ts/Semigroup'
+ *
+ * interface Person {
+ *   name: string
+ *   age: number
+ * }
+ *
+ * const S1 = S.getObjectSemigroup<Person>()
+ * assert.deepStrictEqual(S1.concat({ name: 'name', age: 23 }, { name: 'name', age: 24 }), { name: 'name', age: 24 })
+ *
+ * @category instances
+ * @since 2.0.0
+ */
+function getObjectSemigroup() {
+    return {
+        concat: function (x, y) { return Object.assign({}, x, y); }
+    };
+}
+exports.getObjectSemigroup = getObjectSemigroup;
+/**
+ * `boolean` semigroup under conjunction.
+ *
+ * @example
+ * import * as S from 'fp-ts/Semigroup'
+ *
+ * assert.deepStrictEqual(S.semigroupAll.concat(true, true), true)
+ * assert.deepStrictEqual(S.semigroupAll.concat(true, false), false)
+ *
+ * @category instances
+ * @since 2.0.0
+ */
+exports.semigroupAll = {
+    concat: function (x, y) { return x && y; }
+};
+/**
+ * `boolean` semigroup under disjunction.
+ *
+ * @example
+ * import * as S from 'fp-ts/Semigroup'
+ *
+ * assert.deepStrictEqual(S.semigroupAny.concat(true, true), true)
+ * assert.deepStrictEqual(S.semigroupAny.concat(true, false), true)
+ * assert.deepStrictEqual(S.semigroupAny.concat(false, false), false)
+ *
+ * @category instances
+ * @since 2.0.0
+ */
+exports.semigroupAny = {
+    concat: function (x, y) { return x || y; }
+};
+/**
+ * `number` semigroup under addition.
+ *
+ * @example
+ * import * as S from 'fp-ts/Semigroup'
+ *
+ * assert.deepStrictEqual(S.semigroupSum.concat(2, 3), 5)
+ *
+ * @category instances
+ * @since 2.0.0
+ */
+exports.semigroupSum = {
+    concat: function (x, y) { return x + y; }
+};
+/**
+ * `number` semigroup under multiplication.
+ *
+ * @example
+ * import * as S from 'fp-ts/Semigroup'
+ *
+ * assert.deepStrictEqual(S.semigroupProduct.concat(2, 3), 6)
+ *
+ * @category instances
+ * @since 2.0.0
+ */
+exports.semigroupProduct = {
+    concat: function (x, y) { return x * y; }
+};
+/**
+ * `string` semigroup under concatenation.
+ *
+ * @example
+ * import * as S from 'fp-ts/Semigroup'
+ *
+ * assert.deepStrictEqual(S.semigroupString.concat('a', 'b'), 'ab')
+ *
+ * @category instances
+ * @since 2.0.0
+ */
+exports.semigroupString = {
+    concat: function (x, y) { return x + y; }
+};
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.semigroupVoid = {
+    concat: function () { return undefined; }
+};
+/**
+ * You can glue items between and stay associative.
+ *
+ * @example
+ * import * as S from 'fp-ts/Semigroup'
+ *
+ * const S1 = S.getIntercalateSemigroup(' ')(S.semigroupString)
+ *
+ * assert.strictEqual(S1.concat('a', 'b'), 'a b')
+ * assert.strictEqual(S1.concat(S1.concat('a', 'b'), 'c'), S1.concat('a', S1.concat('b', 'c')))
+ *
+ * @category instances
+ * @since 2.5.0
+ */
+function getIntercalateSemigroup(a) {
+    return function (S) { return ({
+        concat: function (x, y) { return S.concat(x, S.concat(a, y)); }
+    }); };
+}
+exports.getIntercalateSemigroup = getIntercalateSemigroup;
+
+
+/***/ }),
+/* 157 */
+/***/ (function(__unusedmodule, exports) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getStateM = void 0;
+function getStateM(M) {
+    return {
+        map: function (fa, f) { return function (s) { return M.map(fa(s), function (_a) {
+            var a = _a[0], s1 = _a[1];
+            return [f(a), s1];
+        }); }; },
+        of: function (a) { return function (s) { return M.of([a, s]); }; },
+        ap: function (fab, fa) { return function (s) { return M.chain(fab(s), function (_a) {
+            var f = _a[0], s = _a[1];
+            return M.map(fa(s), function (_a) {
+                var a = _a[0], s = _a[1];
+                return [f(a), s];
+            });
+        }); }; },
+        chain: function (fa, f) { return function (s) { return M.chain(fa(s), function (_a) {
+            var a = _a[0], s1 = _a[1];
+            return f(a)(s1);
+        }); }; },
+        get: function () { return function (s) { return M.of([s, s]); }; },
+        put: function (s) { return function () { return M.of([undefined, s]); }; },
+        modify: function (f) { return function (s) { return M.of([undefined, f(s)]); }; },
+        gets: function (f) { return function (s) { return M.of([f(s), s]); }; },
+        fromState: function (sa) { return function (s) { return M.of(sa(s)); }; },
+        fromM: function (ma) { return function (s) { return M.map(ma, function (a) { return [a, s]; }); }; },
+        evalState: function (ma, s) { return M.map(ma(s), function (_a) {
+            var a = _a[0];
+            return a;
+        }); },
+        execState: function (ma, s) { return M.map(ma(s), function (_a) {
+            var _ = _a[0], s = _a[1];
+            return s;
+        }); }
+    };
+}
+exports.getStateM = getStateM;
+
+
+/***/ }),
+/* 158 */,
+/* 159 */,
+/* 160 */,
+/* 161 */,
+/* 162 */,
+/* 163 */,
+/* 164 */
+/***/ (function(__unusedmodule, exports) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+
+
+/***/ }),
+/* 165 */,
+/* 166 */,
+/* 167 */,
+/* 168 */
 /***/ (function(module) {
 
 "use strict";
@@ -1761,8 +4233,9 @@ module.exports = opts => {
 
 
 /***/ }),
-
-/***/ 171:
+/* 169 */,
+/* 170 */,
+/* 171 */
 /***/ (function(__unusedmodule, exports) {
 
 "use strict";
@@ -1783,108 +4256,996 @@ exports.IS_SUPPORT_READDIR_WITH_FILE_TYPES = IS_MATCHED_BY_MAJOR || IS_MATCHED_B
 
 
 /***/ }),
-
-/***/ 182:
+/* 172 */,
+/* 173 */,
+/* 174 */,
+/* 175 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
 
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.readdir = exports.readdirWithFileTypes = exports.read = void 0;
-const fsStat = __webpack_require__(858);
-const rpl = __webpack_require__(885);
-const constants_1 = __webpack_require__(171);
-const utils = __webpack_require__(933);
-const common = __webpack_require__(185);
-function read(directory, settings, callback) {
-    if (!settings.stats && constants_1.IS_SUPPORT_READDIR_WITH_FILE_TYPES) {
-        return readdirWithFileTypes(directory, settings, callback);
-    }
-    return readdir(directory, settings, callback);
-}
-exports.read = read;
-function readdirWithFileTypes(directory, settings, callback) {
-    settings.fs.readdir(directory, { withFileTypes: true }, (readdirError, dirents) => {
-        if (readdirError !== null) {
-            return callFailureCallback(callback, readdirError);
-        }
-        const entries = dirents.map((dirent) => ({
-            dirent,
-            name: dirent.name,
-            path: common.joinPathSegments(directory, dirent.name, settings.pathSegmentSeparator)
-        }));
-        if (!settings.followSymbolicLinks) {
-            return callSuccessCallback(callback, entries);
-        }
-        const tasks = entries.map((entry) => makeRplTaskEntry(entry, settings));
-        rpl(tasks, (rplError, rplEntries) => {
-            if (rplError !== null) {
-                return callFailureCallback(callback, rplError);
-            }
-            callSuccessCallback(callback, rplEntries);
-        });
-    });
-}
-exports.readdirWithFileTypes = readdirWithFileTypes;
-function makeRplTaskEntry(entry, settings) {
-    return (done) => {
-        if (!entry.dirent.isSymbolicLink()) {
-            return done(null, entry);
-        }
-        settings.fs.stat(entry.path, (statError, stats) => {
-            if (statError !== null) {
-                if (settings.throwErrorOnBrokenSymbolicLink) {
-                    return done(statError);
-                }
-                return done(null, entry);
-            }
-            entry.dirent = utils.fs.createDirentFromStats(entry.name, stats);
-            return done(null, entry);
-        });
-    };
-}
-function readdir(directory, settings, callback) {
-    settings.fs.readdir(directory, (readdirError, names) => {
-        if (readdirError !== null) {
-            return callFailureCallback(callback, readdirError);
-        }
-        const filepaths = names.map((name) => common.joinPathSegments(directory, name, settings.pathSegmentSeparator));
-        const tasks = filepaths.map((filepath) => {
-            return (done) => fsStat.stat(filepath, settings.fsStatSettings, done);
-        });
-        rpl(tasks, (rplError, results) => {
-            if (rplError !== null) {
-                return callFailureCallback(callback, rplError);
-            }
-            const entries = [];
-            names.forEach((name, index) => {
-                const stats = results[index];
-                const entry = {
-                    name,
-                    path: filepaths[index],
-                    dirent: utils.fs.createDirentFromStats(name, stats)
-                };
-                if (settings.stats) {
-                    entry.stats = stats;
-                }
-                entries.push(entry);
-            });
-            callSuccessCallback(callback, entries);
-        });
-    });
-}
-exports.readdir = readdir;
-function callFailureCallback(callback, error) {
-    callback(error);
-}
-function callSuccessCallback(callback, result) {
-    callback(null, result);
-}
+exports.tuple = exports.Traversable = exports.Foldable = exports.Comonad = exports.Semigroupoid = exports.Bifunctor = exports.Functor = exports.URI = exports.sequence = exports.traverse = exports.reduceRight = exports.reduce = exports.map = exports.foldMap = exports.extract = exports.extend = exports.duplicate = exports.compose = exports.mapLeft = exports.bimap = exports.getChainRec = exports.getMonad = exports.getChain = exports.getApplicative = exports.getApply = exports.swap = exports.snd = exports.fst = void 0;
+var RT = __importStar(__webpack_require__(226));
+// tslint:disable:readonly-array
+// -------------------------------------------------------------------------------------
+// model
+// -------------------------------------------------------------------------------------
+/**
+ * @category destructors
+ * @since 2.0.0
+ */
+exports.fst = RT.fst;
+/**
+ * @category destructors
+ * @since 2.0.0
+ */
+exports.snd = RT.snd;
+/**
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.swap = RT.swap;
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.getApply = RT.getApply;
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.getApplicative = RT.getApplicative;
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.getChain = RT.getChain;
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.getMonad = RT.getMonad;
+// TODO: remove in v3
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.getChainRec = RT.getChainRec;
+// -------------------------------------------------------------------------------------
+// non-pipeables
+// -------------------------------------------------------------------------------------
+var map_ = RT.Functor.map;
+var bimap_ = RT.Bifunctor.bimap;
+var mapLeft_ = RT.Bifunctor.mapLeft;
+var compose_ = RT.Semigroupoid.compose;
+var extend_ = RT.Comonad.extend;
+var reduce_ = RT.Foldable.reduce;
+var foldMap_ = RT.Foldable.foldMap;
+var reduceRight_ = RT.Foldable.reduceRight;
+var traverse_ = RT.Traversable.traverse;
+// -------------------------------------------------------------------------------------
+// pipeables
+// -------------------------------------------------------------------------------------
+/**
+ * Map a pair of functions over the two type arguments of the bifunctor.
+ *
+ * @category Bifunctor
+ * @since 2.0.0
+ */
+exports.bimap = RT.bimap;
+/**
+ * Map a function over the first type argument of a bifunctor.
+ *
+ * @category Bifunctor
+ * @since 2.0.0
+ */
+exports.mapLeft = RT.mapLeft;
+/**
+ * @category Semigroupoid
+ * @since 2.0.0
+ */
+exports.compose = RT.compose;
+/**
+ * Derivable from `Extend`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.duplicate = RT.duplicate;
+/**
+ * @category Extend
+ * @since 2.0.0
+ */
+exports.extend = RT.extend;
+/**
+ * @category Extract
+ * @since 2.6.2
+ */
+exports.extract = RT.extract;
+/**
+ * @category Foldable
+ * @since 2.0.0
+ */
+exports.foldMap = RT.foldMap;
+/**
+ * `map` can be used to turn functions `(a: A) => B` into functions `(fa: F<A>) => F<B>` whose argument and return types
+ * use the type constructor `F` to represent some computational context.
+ *
+ * @category Functor
+ * @since 2.0.0
+ */
+exports.map = RT.map;
+/**
+ * @category Foldable
+ * @since 2.0.0
+ */
+exports.reduce = RT.reduce;
+/**
+ * @category Foldable
+ * @since 2.0.0
+ */
+exports.reduceRight = RT.reduceRight;
+/**
+ * @since 2.6.3
+ */
+exports.traverse = RT.traverse;
+/**
+ * @since 2.6.3
+ */
+exports.sequence = RT.sequence;
+// -------------------------------------------------------------------------------------
+// instances
+// -------------------------------------------------------------------------------------
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.URI = 'Tuple';
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Functor = {
+    URI: exports.URI,
+    map: map_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Bifunctor = {
+    URI: exports.URI,
+    bimap: bimap_,
+    mapLeft: mapLeft_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Semigroupoid = {
+    URI: exports.URI,
+    compose: compose_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Comonad = {
+    URI: exports.URI,
+    map: map_,
+    extend: extend_,
+    extract: exports.extract
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Foldable = {
+    URI: exports.URI,
+    reduce: reduce_,
+    foldMap: foldMap_,
+    reduceRight: reduceRight_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Traversable = {
+    URI: exports.URI,
+    map: map_,
+    reduce: reduce_,
+    foldMap: foldMap_,
+    reduceRight: reduceRight_,
+    traverse: traverse_,
+    sequence: exports.sequence
+};
+// TODO: remove in v3
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.tuple = {
+    URI: exports.URI,
+    compose: compose_,
+    map: map_,
+    bimap: bimap_,
+    mapLeft: mapLeft_,
+    extract: exports.extract,
+    extend: extend_,
+    reduce: reduce_,
+    foldMap: foldMap_,
+    reduceRight: reduceRight_,
+    traverse: traverse_,
+    sequence: exports.sequence
+};
 
 
 /***/ }),
+/* 176 */,
+/* 177 */,
+/* 178 */,
+/* 179 */,
+/* 180 */,
+/* 181 */,
+/* 182 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
 
-/***/ 185:
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.readonlyMap = exports.Filterable = exports.Compactable = exports.Functor = exports.getWitherable = exports.getFilterableWithIndex = exports.URI = exports.separate = exports.partitionMap = exports.partition = exports.mapWithIndex = exports.map = exports.filterMap = exports.filter = exports.compact = exports.fromFoldable = exports.singleton = exports.getMonoid = exports.getEq = exports.empty = exports.isSubmap = exports.lookup = exports.lookupWithKey = exports.pop = exports.modifyAt = exports.updateAt = exports.deleteAt = exports.insertAt = exports.toUnfoldable = exports.toReadonlyArray = exports.collect = exports.values = exports.keys = exports.elem = exports.member = exports.isEmpty = exports.size = exports.getShow = exports.toMap = exports.fromMap = void 0;
+var Either_1 = __webpack_require__(311);
+var Eq_1 = __webpack_require__(725);
+var function_1 = __webpack_require__(231);
+var O = __importStar(__webpack_require__(293));
+/**
+ * @category constructors
+ * @since 2.5.0
+ */
+function fromMap(m) {
+    return new Map(m);
+}
+exports.fromMap = fromMap;
+/**
+ * @category destructors
+ * @since 2.5.0
+ */
+function toMap(m) {
+    return new Map(m);
+}
+exports.toMap = toMap;
+/**
+ * @category instances
+ * @since 2.5.0
+ */
+function getShow(SK, SA) {
+    return {
+        show: function (m) {
+            var elements = '';
+            m.forEach(function (a, k) {
+                elements += "[" + SK.show(k) + ", " + SA.show(a) + "], ";
+            });
+            if (elements !== '') {
+                elements = elements.substring(0, elements.length - 2);
+            }
+            return "new Map([" + elements + "])";
+        }
+    };
+}
+exports.getShow = getShow;
+/**
+ * Calculate the number of key/value pairs in a map
+ *
+ * @since 2.5.0
+ */
+function size(d) {
+    return d.size;
+}
+exports.size = size;
+/**
+ * Test whether or not a map is empty
+ *
+ * @since 2.5.0
+ */
+function isEmpty(d) {
+    return d.size === 0;
+}
+exports.isEmpty = isEmpty;
+function member(E) {
+    var lookupE = lookup(E);
+    return function (k, m) {
+        if (m === undefined) {
+            var memberE_1 = member(E);
+            return function (m) { return memberE_1(k, m); };
+        }
+        return O.isSome(lookupE(k, m));
+    };
+}
+exports.member = member;
+function elem(E) {
+    return function (a, m) {
+        if (m === undefined) {
+            var elemE_1 = elem(E);
+            return function (m) { return elemE_1(a, m); };
+        }
+        var values = m.values();
+        var e;
+        // tslint:disable-next-line: strict-boolean-expressions
+        while (!(e = values.next()).done) {
+            var v = e.value;
+            if (E.equals(a, v)) {
+                return true;
+            }
+        }
+        return false;
+    };
+}
+exports.elem = elem;
+/**
+ * Get a sorted array of the keys contained in a map
+ *
+ * @since 2.5.0
+ */
+function keys(O) {
+    return function (m) { return Array.from(m.keys()).sort(O.compare); };
+}
+exports.keys = keys;
+/**
+ * Get a sorted array of the values contained in a map
+ *
+ * @since 2.5.0
+ */
+function values(O) {
+    return function (m) { return Array.from(m.values()).sort(O.compare); };
+}
+exports.values = values;
+/**
+ * @since 2.5.0
+ */
+function collect(O) {
+    var keysO = keys(O);
+    return function (f) { return function (m) {
+        // tslint:disable-next-line: readonly-array
+        var out = [];
+        var ks = keysO(m);
+        for (var _i = 0, ks_1 = ks; _i < ks_1.length; _i++) {
+            var key = ks_1[_i];
+            out.push(f(key, m.get(key)));
+        }
+        return out;
+    }; };
+}
+exports.collect = collect;
+/**
+ * Get a sorted of the key/value pairs contained in a map
+ *
+ * @category destructors
+ * @since 2.5.0
+ */
+function toReadonlyArray(O) {
+    return collect(O)(function (k, a) { return [k, a]; });
+}
+exports.toReadonlyArray = toReadonlyArray;
+function toUnfoldable(ord, U) {
+    var toArrayO = toReadonlyArray(ord);
+    return function (d) {
+        var arr = toArrayO(d);
+        var len = arr.length;
+        return U.unfold(0, function (b) { return (b < len ? O.some([arr[b], b + 1]) : O.none); });
+    };
+}
+exports.toUnfoldable = toUnfoldable;
+/**
+ * Insert or replace a key/value pair in a map
+ *
+ * @category combinators
+ * @since 2.5.0
+ */
+function insertAt(E) {
+    var lookupWithKeyE = lookupWithKey(E);
+    return function (k, a) { return function (m) {
+        var found = lookupWithKeyE(k, m);
+        if (O.isNone(found)) {
+            var r = new Map(m);
+            r.set(k, a);
+            return r;
+        }
+        else if (found.value[1] !== a) {
+            var r = new Map(m);
+            r.set(found.value[0], a);
+            return r;
+        }
+        return m;
+    }; };
+}
+exports.insertAt = insertAt;
+/**
+ * Delete a key and value from a map
+ *
+ * @category combinators
+ * @since 2.5.0
+ */
+function deleteAt(E) {
+    var lookupWithKeyE = lookupWithKey(E);
+    return function (k) { return function (m) {
+        var found = lookupWithKeyE(k, m);
+        if (O.isSome(found)) {
+            var r = new Map(m);
+            r.delete(found.value[0]);
+            return r;
+        }
+        return m;
+    }; };
+}
+exports.deleteAt = deleteAt;
+/**
+ * @since 2.5.0
+ */
+function updateAt(E) {
+    var lookupWithKeyE = lookupWithKey(E);
+    return function (k, a) { return function (m) {
+        var found = lookupWithKeyE(k, m);
+        if (O.isNone(found)) {
+            return O.none;
+        }
+        var r = new Map(m);
+        r.set(found.value[0], a);
+        return O.some(r);
+    }; };
+}
+exports.updateAt = updateAt;
+/**
+ * @since 2.5.0
+ */
+function modifyAt(E) {
+    var lookupWithKeyE = lookupWithKey(E);
+    return function (k, f) { return function (m) {
+        var found = lookupWithKeyE(k, m);
+        if (O.isNone(found)) {
+            return O.none;
+        }
+        var r = new Map(m);
+        r.set(found.value[0], f(found.value[1]));
+        return O.some(r);
+    }; };
+}
+exports.modifyAt = modifyAt;
+/**
+ * Delete a key and value from a map, returning the value as well as the subsequent map
+ *
+ * @since 2.5.0
+ */
+function pop(E) {
+    var lookupE = lookup(E);
+    var deleteAtE = deleteAt(E);
+    return function (k) {
+        var deleteAtEk = deleteAtE(k);
+        return function (m) {
+            return function_1.pipe(lookupE(k, m), O.map(function (a) { return [a, deleteAtEk(m)]; }));
+        };
+    };
+}
+exports.pop = pop;
+function lookupWithKey(E) {
+    return function (k, m) {
+        if (m === undefined) {
+            var lookupWithKeyE_1 = lookupWithKey(E);
+            return function (m) { return lookupWithKeyE_1(k, m); };
+        }
+        var entries = m.entries();
+        var e;
+        // tslint:disable-next-line: strict-boolean-expressions
+        while (!(e = entries.next()).done) {
+            var _a = e.value, ka = _a[0], a = _a[1];
+            if (E.equals(ka, k)) {
+                return O.some([ka, a]);
+            }
+        }
+        return O.none;
+    };
+}
+exports.lookupWithKey = lookupWithKey;
+function lookup(E) {
+    var lookupWithKeyE = lookupWithKey(E);
+    return function (k, m) {
+        if (m === undefined) {
+            var lookupE_1 = lookup(E);
+            return function (m) { return lookupE_1(k, m); };
+        }
+        return function_1.pipe(lookupWithKeyE(k, m), O.map(function (_a) {
+            var _ = _a[0], a = _a[1];
+            return a;
+        }));
+    };
+}
+exports.lookup = lookup;
+function isSubmap(SK, SA) {
+    var lookupWithKeyS = lookupWithKey(SK);
+    return function (me, that) {
+        if (that === undefined) {
+            var isSubmapSKSA_1 = isSubmap(SK, SA);
+            return function (that) { return isSubmapSKSA_1(that, me); };
+        }
+        var entries = me.entries();
+        var e;
+        // tslint:disable-next-line: strict-boolean-expressions
+        while (!(e = entries.next()).done) {
+            var _a = e.value, k = _a[0], a = _a[1];
+            var d2OptA = lookupWithKeyS(k, that);
+            if (O.isNone(d2OptA) || !SK.equals(k, d2OptA.value[0]) || !SA.equals(a, d2OptA.value[1])) {
+                return false;
+            }
+        }
+        return true;
+    };
+}
+exports.isSubmap = isSubmap;
+/**
+ * @since 2.5.0
+ */
+exports.empty = new Map();
+/**
+ * @category instances
+ * @since 2.5.0
+ */
+function getEq(SK, SA) {
+    var isSubmap_ = isSubmap(SK, SA);
+    return Eq_1.fromEquals(function (x, y) { return isSubmap_(x, y) && isSubmap_(y, x); });
+}
+exports.getEq = getEq;
+/**
+ * Gets `Monoid` instance for Maps given `Semigroup` instance for their values
+ *
+ * @category instances
+ * @since 2.5.0
+ */
+function getMonoid(SK, SA) {
+    var lookupWithKeyS = lookupWithKey(SK);
+    return {
+        concat: function (mx, my) {
+            if (mx === exports.empty) {
+                return my;
+            }
+            if (my === exports.empty) {
+                return mx;
+            }
+            var r = new Map(mx);
+            var entries = my.entries();
+            var e;
+            // tslint:disable-next-line: strict-boolean-expressions
+            while (!(e = entries.next()).done) {
+                var _a = e.value, k = _a[0], a = _a[1];
+                var mxOptA = lookupWithKeyS(k, mx);
+                if (O.isSome(mxOptA)) {
+                    r.set(mxOptA.value[0], SA.concat(mxOptA.value[1], a));
+                }
+                else {
+                    r.set(k, a);
+                }
+            }
+            return r;
+        },
+        empty: exports.empty
+    };
+}
+exports.getMonoid = getMonoid;
+/**
+ * Create a map with one key/value pair
+ *
+ * @category constructors
+ * @since 2.5.0
+ */
+function singleton(k, a) {
+    return new Map([[k, a]]);
+}
+exports.singleton = singleton;
+function fromFoldable(E, M, F) {
+    return function (fka) {
+        var lookupWithKeyE = lookupWithKey(E);
+        return F.reduce(fka, new Map(), function (b, _a) {
+            var k = _a[0], a = _a[1];
+            var bOpt = lookupWithKeyE(k, b);
+            if (O.isSome(bOpt)) {
+                b.set(bOpt.value[0], M.concat(bOpt.value[1], a));
+            }
+            else {
+                b.set(k, a);
+            }
+            return b;
+        });
+    };
+}
+exports.fromFoldable = fromFoldable;
+var mapWithIndex_ = function (fa, f) {
+    var m = new Map();
+    var entries = fa.entries();
+    var e;
+    // tslint:disable-next-line: strict-boolean-expressions
+    while (!(e = entries.next()).done) {
+        var _a = e.value, key = _a[0], a = _a[1];
+        m.set(key, f(key, a));
+    }
+    return m;
+};
+var partitionMapWithIndex_ = function (fa, f) {
+    var left = new Map();
+    var right = new Map();
+    var entries = fa.entries();
+    var e;
+    // tslint:disable-next-line: strict-boolean-expressions
+    while (!(e = entries.next()).done) {
+        var _a = e.value, k = _a[0], a = _a[1];
+        var ei = f(k, a);
+        if (Either_1.isLeft(ei)) {
+            left.set(k, ei.left);
+        }
+        else {
+            right.set(k, ei.right);
+        }
+    }
+    return {
+        left: left,
+        right: right
+    };
+};
+var partitionWithIndex_ = function (fa, p) {
+    var left = new Map();
+    var right = new Map();
+    var entries = fa.entries();
+    var e;
+    // tslint:disable-next-line: strict-boolean-expressions
+    while (!(e = entries.next()).done) {
+        var _a = e.value, k = _a[0], a = _a[1];
+        if (p(k, a)) {
+            right.set(k, a);
+        }
+        else {
+            left.set(k, a);
+        }
+    }
+    return {
+        left: left,
+        right: right
+    };
+};
+var filterMapWithIndex_ = function (fa, f) {
+    var m = new Map();
+    var entries = fa.entries();
+    var e;
+    // tslint:disable-next-line: strict-boolean-expressions
+    while (!(e = entries.next()).done) {
+        var _a = e.value, k = _a[0], a = _a[1];
+        var o = f(k, a);
+        if (O.isSome(o)) {
+            m.set(k, o.value);
+        }
+    }
+    return m;
+};
+var filterWithIndex_ = function (fa, p) {
+    var m = new Map();
+    var entries = fa.entries();
+    var e;
+    // tslint:disable-next-line: strict-boolean-expressions
+    while (!(e = entries.next()).done) {
+        var _a = e.value, k = _a[0], a = _a[1];
+        if (p(k, a)) {
+            m.set(k, a);
+        }
+    }
+    return m;
+};
+// -------------------------------------------------------------------------------------
+// non-pipeables
+// -------------------------------------------------------------------------------------
+var map_ = function (fa, f) { return mapWithIndex_(fa, function (_, a) { return f(a); }); };
+var filter_ = function (fa, p) {
+    return filterWithIndex_(fa, function (_, a) { return p(a); });
+};
+var filterMap_ = function (fa, f) { return filterMapWithIndex_(fa, function (_, a) { return f(a); }); };
+var partition_ = function (fa, predicate) { return partitionWithIndex_(fa, function (_, a) { return predicate(a); }); };
+var partitionMap_ = function (fa, f) { return partitionMapWithIndex_(fa, function (_, a) { return f(a); }); };
+// -------------------------------------------------------------------------------------
+// pipeables
+// -------------------------------------------------------------------------------------
+/**
+ * @category Compactable
+ * @since 2.5.0
+ */
+var compact = function (fa) {
+    var m = new Map();
+    var entries = fa.entries();
+    var e;
+    // tslint:disable-next-line: strict-boolean-expressions
+    while (!(e = entries.next()).done) {
+        var _a = e.value, k = _a[0], oa = _a[1];
+        if (O.isSome(oa)) {
+            m.set(k, oa.value);
+        }
+    }
+    return m;
+};
+exports.compact = compact;
+/**
+ * @category Filterable
+ * @since 2.5.0
+ */
+var filter = function (predicate) { return function (fa) { return filter_(fa, predicate); }; };
+exports.filter = filter;
+/**
+ * @category Filterable
+ * @since 2.5.0
+ */
+var filterMap = function (f) { return function (fa) { return filterMap_(fa, f); }; };
+exports.filterMap = filterMap;
+/**
+ * `map` can be used to turn functions `(a: A) => B` into functions `(fa: F<A>) => F<B>` whose argument and return types
+ * use the type constructor `F` to represent some computational context.
+ *
+ * @category Functor
+ * @since 2.5.0
+ */
+var map = function (f) { return function (fa) { return map_(fa, f); }; };
+exports.map = map;
+/**
+ * @category FunctorWithIndex
+ * @since 2.7.1
+ */
+var mapWithIndex = function (f) { return function (fa) { return mapWithIndex_(fa, f); }; };
+exports.mapWithIndex = mapWithIndex;
+/**
+ * @category Filterable
+ * @since 2.5.0
+ */
+var partition = function (predicate) { return function (fa) { return partition_(fa, predicate); }; };
+exports.partition = partition;
+/**
+ * @category Filterable
+ * @since 2.5.0
+ */
+var partitionMap = function (f) { return function (fa) { return partitionMap_(fa, f); }; };
+exports.partitionMap = partitionMap;
+/**
+ * @category Compactable
+ * @since 2.5.0
+ */
+var separate = function (fa) {
+    var left = new Map();
+    var right = new Map();
+    var entries = fa.entries();
+    var e;
+    // tslint:disable-next-line: strict-boolean-expressions
+    while (!(e = entries.next()).done) {
+        var _a = e.value, k = _a[0], ei = _a[1];
+        if (Either_1.isLeft(ei)) {
+            left.set(k, ei.left);
+        }
+        else {
+            right.set(k, ei.right);
+        }
+    }
+    return {
+        left: left,
+        right: right
+    };
+};
+exports.separate = separate;
+// -------------------------------------------------------------------------------------
+// instances
+// -------------------------------------------------------------------------------------
+/**
+ * @category instances
+ * @since 2.5.0
+ */
+exports.URI = 'ReadonlyMap';
+/**
+ * @category instances
+ * @since 2.5.0
+ */
+function getFilterableWithIndex() {
+    return {
+        URI: exports.URI,
+        _E: undefined,
+        map: map_,
+        mapWithIndex: mapWithIndex_,
+        compact: exports.compact,
+        separate: exports.separate,
+        filter: filter_,
+        filterMap: filterMap_,
+        partition: partition_,
+        partitionMap: partitionMap_,
+        partitionMapWithIndex: partitionMapWithIndex_,
+        partitionWithIndex: partitionWithIndex_,
+        filterMapWithIndex: filterMapWithIndex_,
+        filterWithIndex: filterWithIndex_
+    };
+}
+exports.getFilterableWithIndex = getFilterableWithIndex;
+/**
+ * @category instances
+ * @since 2.5.0
+ */
+function getWitherable(O) {
+    var keysO = keys(O);
+    var reduceWithIndex = function (fa, b, f) {
+        var out = b;
+        var ks = keysO(fa);
+        var len = ks.length;
+        for (var i = 0; i < len; i++) {
+            var k = ks[i];
+            out = f(k, out, fa.get(k));
+        }
+        return out;
+    };
+    var foldMapWithIndex = function (M) { return function (fa, f) {
+        var out = M.empty;
+        var ks = keysO(fa);
+        var len = ks.length;
+        for (var i = 0; i < len; i++) {
+            var k = ks[i];
+            out = M.concat(out, f(k, fa.get(k)));
+        }
+        return out;
+    }; };
+    var reduceRightWithIndex = function (fa, b, f) {
+        var out = b;
+        var ks = keysO(fa);
+        var len = ks.length;
+        for (var i = len - 1; i >= 0; i--) {
+            var k = ks[i];
+            out = f(k, fa.get(k), out);
+        }
+        return out;
+    };
+    var traverseWithIndex = function (F) {
+        return function (ta, f) {
+            var fm = F.of(exports.empty);
+            var ks = keysO(ta);
+            var len = ks.length;
+            var _loop_1 = function (i) {
+                var key = ks[i];
+                var a = ta.get(key);
+                fm = F.ap(F.map(fm, function (m) { return function (b) { return new Map(m).set(key, b); }; }), f(key, a));
+            };
+            for (var i = 0; i < len; i++) {
+                _loop_1(i);
+            }
+            return fm;
+        };
+    };
+    var traverse = function (F) {
+        var traverseWithIndexF = traverseWithIndex(F);
+        return function (ta, f) { return traverseWithIndexF(ta, function (_, a) { return f(a); }); };
+    };
+    var sequence = function (F) {
+        var traverseWithIndexF = traverseWithIndex(F);
+        return function (ta) { return traverseWithIndexF(ta, function (_, a) { return a; }); };
+    };
+    return {
+        URI: exports.URI,
+        _E: undefined,
+        map: map_,
+        compact: exports.compact,
+        separate: exports.separate,
+        filter: filter_,
+        filterMap: filterMap_,
+        partition: partition_,
+        partitionMap: partitionMap_,
+        reduce: function (fa, b, f) { return reduceWithIndex(fa, b, function (_, b, a) { return f(b, a); }); },
+        foldMap: function (M) {
+            var foldMapWithIndexM = foldMapWithIndex(M);
+            return function (fa, f) { return foldMapWithIndexM(fa, function (_, a) { return f(a); }); };
+        },
+        reduceRight: function (fa, b, f) { return reduceRightWithIndex(fa, b, function (_, a, b) { return f(a, b); }); },
+        traverse: traverse,
+        sequence: sequence,
+        mapWithIndex: mapWithIndex_,
+        reduceWithIndex: reduceWithIndex,
+        foldMapWithIndex: foldMapWithIndex,
+        reduceRightWithIndex: reduceRightWithIndex,
+        traverseWithIndex: traverseWithIndex,
+        wilt: function (F) {
+            var traverseF = traverse(F);
+            return function (wa, f) { return F.map(traverseF(wa, f), exports.separate); };
+        },
+        wither: function (F) {
+            var traverseF = traverse(F);
+            return function (wa, f) { return F.map(traverseF(wa, f), exports.compact); };
+        }
+    };
+}
+exports.getWitherable = getWitherable;
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Functor = {
+    URI: exports.URI,
+    map: map_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Compactable = {
+    URI: exports.URI,
+    compact: exports.compact,
+    separate: exports.separate
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Filterable = {
+    URI: exports.URI,
+    map: map_,
+    compact: exports.compact,
+    separate: exports.separate,
+    filter: filter_,
+    filterMap: filterMap_,
+    partition: partition_,
+    partitionMap: partitionMap_
+};
+// TODO: remove in v3
+/**
+ * @category instances
+ * @since 2.5.0
+ */
+exports.readonlyMap = {
+    URI: exports.URI,
+    map: map_,
+    compact: exports.compact,
+    separate: exports.separate,
+    filter: filter_,
+    filterMap: filterMap_,
+    partition: partition_,
+    partitionMap: partitionMap_
+};
+
+
+/***/ }),
+/* 183 */,
+/* 184 */,
+/* 185 */
 /***/ (function(__unusedmodule, exports) {
 
 "use strict";
@@ -1904,8 +5265,236 @@ exports.joinPathSegments = joinPathSegments;
 
 
 /***/ }),
+/* 186 */,
+/* 187 */,
+/* 188 */,
+/* 189 */,
+/* 190 */,
+/* 191 */,
+/* 192 */,
+/* 193 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
 
-/***/ 197:
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getTheseM = void 0;
+var These_1 = __webpack_require__(766);
+function getTheseM(M) {
+    function mapT(fa, f) {
+        return M.map(fa, These_1.map(f));
+    }
+    function of(a) {
+        return M.of(These_1.right(a));
+    }
+    function leftT(e) {
+        return M.of(These_1.left(e));
+    }
+    return {
+        map: mapT,
+        bimap: function (fa, f, g) { return M.map(fa, These_1.bimap(f, g)); },
+        mapLeft: function (fa, f) { return M.map(fa, These_1.mapLeft(f)); },
+        fold: function (fa, onLeft, onRight, onBoth) { return M.chain(fa, These_1.fold(onLeft, onRight, onBoth)); },
+        swap: function (fa) { return M.map(fa, These_1.swap); },
+        rightM: function (ma) { return M.map(ma, These_1.right); },
+        leftM: function (me) { return M.map(me, These_1.left); },
+        left: leftT,
+        right: of,
+        both: function (e, a) { return M.of(These_1.both(e, a)); },
+        toTuple: function (fa, e, a) { return M.map(fa, These_1.toTuple(e, a)); },
+        getMonad: function (E) {
+            function chain(fa, f) {
+                return M.chain(fa, These_1.fold(leftT, f, function (e1, a) {
+                    return M.map(f(a), These_1.fold(function (e2) { return These_1.left(E.concat(e1, e2)); }, function (b) { return These_1.both(e1, b); }, function (e2, b) { return These_1.both(E.concat(e1, e2), b); }));
+                }));
+            }
+            return {
+                _E: undefined,
+                map: mapT,
+                of: of,
+                ap: function (mab, ma) {
+                    return chain(mab, function (f) { return mapT(ma, f); });
+                },
+                chain: chain
+            };
+        }
+    };
+}
+exports.getTheseM = getTheseM;
+
+
+/***/ }),
+/* 194 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.pipeable = exports.pipe = void 0;
+var function_1 = __webpack_require__(231);
+// TODO: remove module in v3
+/**
+ * Use [`pipe`](https://gcanti.github.io/fp-ts/modules/function.ts.html#flow) from `function` module instead.
+ *
+ * @since 2.0.0
+ */
+exports.pipe = function_1.pipe;
+var isFunctor = function (I) { return typeof I.map === 'function'; };
+var isContravariant = function (I) { return typeof I.contramap === 'function'; };
+var isFunctorWithIndex = function (I) { return typeof I.mapWithIndex === 'function'; };
+var isApply = function (I) { return typeof I.ap === 'function'; };
+var isChain = function (I) { return typeof I.chain === 'function'; };
+var isBifunctor = function (I) { return typeof I.bimap === 'function'; };
+var isExtend = function (I) { return typeof I.extend === 'function'; };
+var isFoldable = function (I) { return typeof I.reduce === 'function'; };
+var isFoldableWithIndex = function (I) { return typeof I.reduceWithIndex === 'function'; };
+var isAlt = function (I) { return typeof I.alt === 'function'; };
+var isCompactable = function (I) { return typeof I.compact === 'function'; };
+var isFilterable = function (I) { return typeof I.filter === 'function'; };
+var isFilterableWithIndex = function (I) {
+    return typeof I.filterWithIndex === 'function';
+};
+var isProfunctor = function (I) { return typeof I.promap === 'function'; };
+var isSemigroupoid = function (I) { return typeof I.compose === 'function'; };
+var isMonadThrow = function (I) { return typeof I.throwError === 'function'; };
+function pipeable(I) {
+    var r = {};
+    if (isFunctor(I)) {
+        var map = function (f) { return function (fa) { return I.map(fa, f); }; };
+        r.map = map;
+    }
+    if (isContravariant(I)) {
+        var contramap = function (f) { return function (fa) { return I.contramap(fa, f); }; };
+        r.contramap = contramap;
+    }
+    if (isFunctorWithIndex(I)) {
+        var mapWithIndex = function (f) { return function (fa) { return I.mapWithIndex(fa, f); }; };
+        r.mapWithIndex = mapWithIndex;
+    }
+    if (isApply(I)) {
+        var ap = function (fa) { return function (fab) { return I.ap(fab, fa); }; };
+        var apFirst = function (fb) { return function (fa) {
+            return I.ap(I.map(fa, function (a) { return function () { return a; }; }), fb);
+        }; };
+        r.ap = ap;
+        r.apFirst = apFirst;
+        r.apSecond = function (fb) { return function (fa) {
+            return I.ap(I.map(fa, function () { return function (b) { return b; }; }), fb);
+        }; };
+    }
+    if (isChain(I)) {
+        var chain = function (f) { return function (ma) { return I.chain(ma, f); }; };
+        var chainFirst = function (f) { return function (ma) { return I.chain(ma, function (a) { return I.map(f(a), function () { return a; }); }); }; };
+        var flatten = function (mma) { return I.chain(mma, function_1.identity); };
+        r.chain = chain;
+        r.chainFirst = chainFirst;
+        r.flatten = flatten;
+    }
+    if (isBifunctor(I)) {
+        var bimap = function (f, g) { return function (fa) { return I.bimap(fa, f, g); }; };
+        var mapLeft = function (f) { return function (fa) { return I.mapLeft(fa, f); }; };
+        r.bimap = bimap;
+        r.mapLeft = mapLeft;
+    }
+    if (isExtend(I)) {
+        var extend = function (f) { return function (wa) { return I.extend(wa, f); }; };
+        var duplicate = function (wa) { return I.extend(wa, function_1.identity); };
+        r.extend = extend;
+        r.duplicate = duplicate;
+    }
+    if (isFoldable(I)) {
+        var reduce = function (b, f) { return function (fa) { return I.reduce(fa, b, f); }; };
+        var foldMap = function (M) {
+            var foldMapM = I.foldMap(M);
+            return function (f) { return function (fa) { return foldMapM(fa, f); }; };
+        };
+        var reduceRight = function (b, f) { return function (fa) { return I.reduceRight(fa, b, f); }; };
+        r.reduce = reduce;
+        r.foldMap = foldMap;
+        r.reduceRight = reduceRight;
+    }
+    if (isFoldableWithIndex(I)) {
+        var reduceWithIndex = function (b, f) { return function (fa) {
+            return I.reduceWithIndex(fa, b, f);
+        }; };
+        var foldMapWithIndex = function (M) {
+            var foldMapM = I.foldMapWithIndex(M);
+            return function (f) { return function (fa) { return foldMapM(fa, f); }; };
+        };
+        var reduceRightWithIndex = function (b, f) { return function (fa) {
+            return I.reduceRightWithIndex(fa, b, f);
+        }; };
+        r.reduceWithIndex = reduceWithIndex;
+        r.foldMapWithIndex = foldMapWithIndex;
+        r.reduceRightWithIndex = reduceRightWithIndex;
+    }
+    if (isAlt(I)) {
+        var alt = function (that) { return function (fa) { return I.alt(fa, that); }; };
+        r.alt = alt;
+    }
+    if (isCompactable(I)) {
+        r.compact = I.compact;
+        r.separate = I.separate;
+    }
+    if (isFilterable(I)) {
+        var filter = function (predicate) { return function (fa) {
+            return I.filter(fa, predicate);
+        }; };
+        var filterMap = function (f) { return function (fa) { return I.filterMap(fa, f); }; };
+        var partition = function (predicate) { return function (fa) {
+            return I.partition(fa, predicate);
+        }; };
+        var partitionMap = function (f) { return function (fa) { return I.partitionMap(fa, f); }; };
+        r.filter = filter;
+        r.filterMap = filterMap;
+        r.partition = partition;
+        r.partitionMap = partitionMap;
+    }
+    if (isFilterableWithIndex(I)) {
+        var filterWithIndex = function (predicateWithIndex) { return function (fa) { return I.filterWithIndex(fa, predicateWithIndex); }; };
+        var filterMapWithIndex = function (f) { return function (fa) {
+            return I.filterMapWithIndex(fa, f);
+        }; };
+        var partitionWithIndex = function (predicateWithIndex) { return function (fa) { return I.partitionWithIndex(fa, predicateWithIndex); }; };
+        var partitionMapWithIndex = function (f) { return function (fa) {
+            return I.partitionMapWithIndex(fa, f);
+        }; };
+        r.filterWithIndex = filterWithIndex;
+        r.filterMapWithIndex = filterMapWithIndex;
+        r.partitionWithIndex = partitionWithIndex;
+        r.partitionMapWithIndex = partitionMapWithIndex;
+    }
+    if (isProfunctor(I)) {
+        var promap = function (f, g) { return function (fa) { return I.promap(fa, f, g); }; };
+        r.promap = promap;
+    }
+    if (isSemigroupoid(I)) {
+        var compose = function (that) { return function (fa) { return I.compose(fa, that); }; };
+        r.compose = compose;
+    }
+    if (isMonadThrow(I)) {
+        var fromOption = function (onNone) { return function (ma) {
+            return ma._tag === 'None' ? I.throwError(onNone()) : I.of(ma.value);
+        }; };
+        var fromEither = function (ma) {
+            return ma._tag === 'Left' ? I.throwError(ma.left) : I.of(ma.right);
+        };
+        var fromPredicate = function (predicate, onFalse) { return function (a) { return (predicate(a) ? I.of(a) : I.throwError(onFalse(a))); }; };
+        var filterOrElse = function (predicate, onFalse) { return function (ma) { return I.chain(ma, function (a) { return (predicate(a) ? I.of(a) : I.throwError(onFalse(a))); }); }; };
+        r.fromOption = fromOption;
+        r.fromEither = fromEither;
+        r.fromPredicate = fromPredicate;
+        r.filterOrElse = filterOrElse;
+    }
+    return r;
+}
+exports.pipeable = pipeable;
+
+
+/***/ }),
+/* 195 */,
+/* 196 */,
+/* 197 */
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
 module.exports = isexe
@@ -1952,8 +5541,8 @@ function checkMode (stat, options) {
 
 
 /***/ }),
-
-/***/ 199:
+/* 198 */,
+/* 199 */
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
 "use strict";
@@ -2139,8 +5728,957 @@ module.exports = {
 
 
 /***/ }),
+/* 200 */,
+/* 201 */,
+/* 202 */,
+/* 203 */,
+/* 204 */,
+/* 205 */,
+/* 206 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
 
-/***/ 210:
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getTaskValidation = exports.getAltTaskValidation = exports.getApplicativeTaskValidation = exports.getApplyMonoid = exports.getApplySemigroup = exports.getSemigroup = exports.URI = exports.throwError = exports.fromTask = exports.fromIO = exports.of = exports.alt = exports.altW = exports.flatten = exports.chainFirst = exports.chainFirstW = exports.chain = exports.chainW = exports.apSecond = exports.apFirst = exports.ap = exports.apW = exports.mapLeft = exports.bimap = exports.map = exports.chainIOEitherK = exports.chainIOEitherKW = exports.chainEitherK = exports.chainEitherKW = exports.fromIOEitherK = exports.fromEitherK = exports.tryCatchK = exports.filterOrElse = exports.filterOrElseW = exports.swap = exports.orElse = exports.getOrElse = exports.getOrElseW = exports.fold = exports.tryCatch = exports.fromPredicate = exports.fromOption = exports.fromEither = exports.fromIOEither = exports.leftIO = exports.rightIO = exports.leftTask = exports.rightTask = exports.right = exports.left = void 0;
+exports.sequenceSeqArray = exports.traverseSeqArray = exports.traverseSeqArrayWithIndex = exports.sequenceArray = exports.traverseArray = exports.traverseArrayWithIndex = exports.apS = exports.apSW = exports.bind = exports.bindW = exports.bindTo = exports.Do = exports.bracket = exports.taskify = exports.taskEitherSeq = exports.taskEither = exports.Alt = exports.Bifunctor = exports.ApplicativeSeq = exports.ApplicativePar = exports.Functor = exports.getFilterable = void 0;
+var E = __importStar(__webpack_require__(311));
+var Filterable_1 = __webpack_require__(718);
+var function_1 = __webpack_require__(231);
+var T = __importStar(__webpack_require__(721));
+// -------------------------------------------------------------------------------------
+// constructors
+// -------------------------------------------------------------------------------------
+/**
+ * @category constructors
+ * @since 2.0.0
+ */
+exports.left = 
+/*#__PURE__*/
+function_1.flow(E.left, T.of);
+/**
+ * @category constructors
+ * @since 2.0.0
+ */
+exports.right = 
+/*#__PURE__*/
+function_1.flow(E.right, T.of);
+/**
+ * @category constructors
+ * @since 2.0.0
+ */
+exports.rightTask = 
+/*#__PURE__*/
+T.map(E.right);
+/**
+ * @category constructors
+ * @since 2.0.0
+ */
+exports.leftTask = 
+/*#__PURE__*/
+T.map(E.left);
+/**
+ * @category constructors
+ * @since 2.0.0
+ */
+exports.rightIO = 
+/*#__PURE__*/
+function_1.flow(T.fromIO, exports.rightTask);
+/**
+ * @category constructors
+ * @since 2.0.0
+ */
+exports.leftIO = 
+/*#__PURE__*/
+function_1.flow(T.fromIO, exports.leftTask);
+/**
+ * @category constructors
+ * @since 2.0.0
+ */
+exports.fromIOEither = T.fromIO;
+/**
+ * Derivable from `MonadThrow`.
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+exports.fromEither = 
+/*#__PURE__*/
+E.fold(exports.left, function (a) { return exports.right(a); });
+/**
+ * Derivable from `MonadThrow`.
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+var fromOption = function (onNone) { return function (ma) {
+    return ma._tag === 'None' ? exports.left(onNone()) : exports.right(ma.value);
+}; };
+exports.fromOption = fromOption;
+/**
+ * Derivable from `MonadThrow`.
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+var fromPredicate = function (predicate, onFalse) { return function (a) { return (predicate(a) ? exports.right(a) : exports.left(onFalse(a))); }; };
+exports.fromPredicate = fromPredicate;
+/**
+ * Transforms a `Promise` that may reject to a `Promise` that never rejects and returns an `Either` instead.
+ *
+ * Note: `f` should never `throw` errors, they are not caught.
+ *
+ * @example
+ * import { left, right } from 'fp-ts/Either'
+ * import { tryCatch } from 'fp-ts/TaskEither'
+ *
+ * tryCatch(() => Promise.resolve(1), String)().then(result => {
+ *   assert.deepStrictEqual(result, right(1))
+ * })
+ * tryCatch(() => Promise.reject('error'), String)().then(result => {
+ *   assert.deepStrictEqual(result, left('error'))
+ * })
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+function tryCatch(f, onRejected) {
+    return function () { return f().then(E.right, function (reason) { return E.left(onRejected(reason)); }); };
+}
+exports.tryCatch = tryCatch;
+// -------------------------------------------------------------------------------------
+// destructors
+// -------------------------------------------------------------------------------------
+/**
+ * @category destructors
+ * @since 2.0.0
+ */
+exports.fold = 
+/*#__PURE__*/
+function_1.flow(E.fold, T.chain);
+/**
+ * Less strict version of [`getOrElse`](#getOrElse).
+ *
+ * @category destructors
+ * @since 2.6.0
+ */
+var getOrElseW = function (onLeft) { return function (ma) {
+    return function_1.pipe(ma, T.chain(E.fold(onLeft, T.of)));
+}; };
+exports.getOrElseW = getOrElseW;
+/**
+ * @category destructors
+ * @since 2.0.0
+ */
+exports.getOrElse = exports.getOrElseW;
+// -------------------------------------------------------------------------------------
+// combinators
+// -------------------------------------------------------------------------------------
+/**
+ * Returns `ma` if is a `Right` or the value returned by `onLeft` otherwise.
+ *
+ * See also [alt](#alt).
+ *
+ * @example
+ * import * as E from 'fp-ts/Either'
+ * import { pipe } from 'fp-ts/function'
+ * import * as TE from 'fp-ts/TaskEither'
+ *
+ * async function test() {
+ *   const errorHandler = TE.orElse((error: string) => TE.right(`recovering from ${error}...`))
+ *   assert.deepStrictEqual(await pipe(TE.right('ok'), errorHandler)(), E.right('ok'))
+ *   assert.deepStrictEqual(await pipe(TE.left('ko'), errorHandler)(), E.right('recovering from ko...'))
+ * }
+ *
+ * test()
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+var orElse = function (f) { return T.chain(E.fold(f, exports.right)); };
+exports.orElse = orElse;
+/**
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.swap = 
+/*#__PURE__*/
+T.map(E.swap);
+/**
+ * Less strict version of [`filterOrElse`](#filterOrElse).
+ *
+ * @since 2.9.0
+ */
+var filterOrElseW = function (predicate, onFalse) {
+    return exports.chainW(function (a) { return (predicate(a) ? exports.right(a) : exports.left(onFalse(a))); });
+};
+exports.filterOrElseW = filterOrElseW;
+/**
+ * Derivable from `MonadThrow`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.filterOrElse = exports.filterOrElseW;
+/**
+ * Converts a function returning a `Promise` to one returning a `TaskEither`.
+ *
+ * @category combinators
+ * @since 2.5.0
+ */
+function tryCatchK(f, onRejected) {
+    return function () {
+        var a = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            a[_i] = arguments[_i];
+        }
+        return tryCatch(function () { return f.apply(void 0, a); }, onRejected);
+    };
+}
+exports.tryCatchK = tryCatchK;
+/**
+ * @category combinators
+ * @since 2.4.0
+ */
+function fromEitherK(f) {
+    return function () {
+        var a = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            a[_i] = arguments[_i];
+        }
+        return exports.fromEither(f.apply(void 0, a));
+    };
+}
+exports.fromEitherK = fromEitherK;
+/**
+ * @category combinators
+ * @since 2.4.0
+ */
+function fromIOEitherK(f) {
+    return function () {
+        var a = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            a[_i] = arguments[_i];
+        }
+        return exports.fromIOEither(f.apply(void 0, a));
+    };
+}
+exports.fromIOEitherK = fromIOEitherK;
+/**
+ * Less strict version of [`chainEitherK`](#chainEitherK).
+ *
+ * @category combinators
+ * @since 2.6.1
+ */
+var chainEitherKW = function (f) { return exports.chainW(fromEitherK(f)); };
+exports.chainEitherKW = chainEitherKW;
+/**
+ * @category combinators
+ * @since 2.4.0
+ */
+exports.chainEitherK = exports.chainEitherKW;
+/**
+ * Less strict version of [`chainIOEitherK`](#chainIOEitherK).
+ *
+ * @category combinators
+ * @since 2.6.1
+ */
+var chainIOEitherKW = function (f) { return exports.chainW(fromIOEitherK(f)); };
+exports.chainIOEitherKW = chainIOEitherKW;
+/**
+ * @category combinators
+ * @since 2.4.0
+ */
+exports.chainIOEitherK = exports.chainIOEitherKW;
+// -------------------------------------------------------------------------------------
+// non-pipeables
+// -------------------------------------------------------------------------------------
+var map_ = function (fa, f) { return function_1.pipe(fa, exports.map(f)); };
+/* istanbul ignore next */
+var bimap_ = function (fa, f, g) { return function_1.pipe(fa, exports.bimap(f, g)); };
+/* istanbul ignore next */
+var mapLeft_ = function (fa, f) { return function_1.pipe(fa, exports.mapLeft(f)); };
+var apPar_ = function (fab, fa) { return function_1.pipe(fab, exports.ap(fa)); };
+var apSeq_ = function (fab, fa) {
+    return function_1.pipe(fab, exports.chain(function (f) { return function_1.pipe(fa, exports.map(f)); }));
+};
+/* istanbul ignore next */
+var chain_ = function (ma, f) { return function_1.pipe(ma, exports.chain(f)); };
+/* istanbul ignore next */
+var alt_ = function (fa, that) { return function_1.pipe(fa, exports.alt(that)); };
+// -------------------------------------------------------------------------------------
+// pipeables
+// -------------------------------------------------------------------------------------
+/**
+ * `map` can be used to turn functions `(a: A) => B` into functions `(fa: F<A>) => F<B>` whose argument and return types
+ * use the type constructor `F` to represent some computational context.
+ *
+ * @category Functor
+ * @since 2.0.0
+ */
+var map = function (f) { return T.map(E.map(f)); };
+exports.map = map;
+/**
+ * Map a pair of functions over the two type arguments of the bifunctor.
+ *
+ * @category Bifunctor
+ * @since 2.0.0
+ */
+exports.bimap = 
+/*#__PURE__*/
+function_1.flow(E.bimap, T.map);
+/**
+ * Map a function over the first type argument of a bifunctor.
+ *
+ * @category Bifunctor
+ * @since 2.0.0
+ */
+var mapLeft = function (f) {
+    return T.map(E.mapLeft(f));
+};
+exports.mapLeft = mapLeft;
+/**
+ * Less strict version of [`ap`](#ap).
+ *
+ * @category Apply
+ * @since 2.8.0
+ */
+var apW = function (fa) {
+    return function_1.flow(T.map(function (gab) { return function (ga) { return E.apW(ga)(gab); }; }), T.ap(fa));
+};
+exports.apW = apW;
+/**
+ * Apply a function to an argument under a type constructor.
+ *
+ * @category Apply
+ * @since 2.0.0
+ */
+exports.ap = exports.apW;
+/**
+ * Combine two effectful actions, keeping only the result of the first.
+ *
+ * Derivable from `Apply`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+var apFirst = function (fb) {
+    return function_1.flow(exports.map(function (a) { return function () { return a; }; }), exports.ap(fb));
+};
+exports.apFirst = apFirst;
+/**
+ * Combine two effectful actions, keeping only the result of the second.
+ *
+ * Derivable from `Apply`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+var apSecond = function (fb) {
+    return function_1.flow(exports.map(function () { return function (b) { return b; }; }), exports.ap(fb));
+};
+exports.apSecond = apSecond;
+/**
+ * Less strict version of [`chain`](#chain).
+ *
+ * @category Monad
+ * @since 2.6.0
+ */
+var chainW = function (f) { return function (ma) {
+    return function_1.pipe(ma, T.chain(E.fold(exports.left, f)));
+}; };
+exports.chainW = chainW;
+/**
+ * Composes computations in sequence, using the return value of one computation to determine the next computation.
+ *
+ * @category Monad
+ * @since 2.0.0
+ */
+exports.chain = exports.chainW;
+/**
+ * Less strict version of [`chainFirst`](#chainFirst).
+ *
+ * Derivable from `Monad`.
+ *
+ * @category combinators
+ * @since 2.8.0
+ */
+var chainFirstW = function (f) {
+    return exports.chainW(function (a) {
+        return function_1.pipe(f(a), exports.map(function () { return a; }));
+    });
+};
+exports.chainFirstW = chainFirstW;
+/**
+ * Composes computations in sequence, using the return value of one computation to determine the next computation and
+ * keeping only the result of the first.
+ *
+ * Derivable from `Monad`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.chainFirst = exports.chainFirstW;
+/**
+ * Derivable from `Monad`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.flatten = 
+/*#__PURE__*/
+exports.chain(function_1.identity);
+/**
+ * Less strict version of [`alt`](#alt).
+ *
+ * @category Alt
+ * @since 2.9.0
+ */
+var altW = function (that) { return function (fa) { return function_1.pipe(fa, T.chain(E.fold(that, exports.right))); }; };
+exports.altW = altW;
+/**
+ * Identifies an associative operation on a type constructor. It is similar to `Semigroup`, except that it applies to
+ * types of kind `* -> *`.
+ *
+ * In case of `TaskEither` returns `fa` if is a `Right` or the value returned by `that` otherwise.
+ *
+ * See also [orElse](#orElse).
+ *
+ * @example
+ * import * as E from 'fp-ts/Either'
+ * import { pipe } from 'fp-ts/function'
+ * import * as TE from 'fp-ts/TaskEither'
+ *
+ * async function test() {
+ *   assert.deepStrictEqual(
+ *     await pipe(
+ *       TE.right(1),
+ *       TE.alt(() => TE.right(2))
+ *     )(),
+ *     E.right(1)
+ *   )
+ *   assert.deepStrictEqual(
+ *     await pipe(
+ *       TE.left('a'),
+ *       TE.alt(() => TE.right(2))
+ *     )(),
+ *     E.right(2)
+ *   )
+ *   assert.deepStrictEqual(
+ *     await pipe(
+ *       TE.left('a'),
+ *       TE.alt(() => TE.left('b'))
+ *     )(),
+ *     E.left('b')
+ *   )
+ * }
+ *
+ * test()
+ *
+ * @category Alt
+ * @since 2.0.0
+ */
+exports.alt = exports.altW;
+/**
+ * Wrap a value into the type constructor.
+ *
+ * Equivalent to [`right`](#right).
+ *
+ * @category Applicative
+ * @since 2.0.0
+ */
+exports.of = exports.right;
+/**
+ * @category MonadIO
+ * @since 2.7.0
+ */
+exports.fromIO = exports.rightIO;
+/**
+ * @category MonadTask
+ * @since 2.7.0
+ */
+exports.fromTask = exports.rightTask;
+/**
+ * @category MonadTask
+ * @since 2.7.0
+ */
+exports.throwError = exports.left;
+// -------------------------------------------------------------------------------------
+// instances
+// -------------------------------------------------------------------------------------
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.URI = 'TaskEither';
+/**
+ * Semigroup returning the left-most non-`Left` value. If both operands are `Right`s then the inner values are
+ * concatenated using the provided `Semigroup`
+ *
+ * @category instances
+ * @since 2.0.0
+ */
+function getSemigroup(S) {
+    return T.getSemigroup(E.getSemigroup(S));
+}
+exports.getSemigroup = getSemigroup;
+/**
+ * Semigroup returning the left-most `Left` value. If both operands are `Right`s then the inner values
+ * are concatenated using the provided `Semigroup`
+ *
+ * @category instances
+ * @since 2.0.0
+ */
+function getApplySemigroup(S) {
+    return T.getSemigroup(E.getApplySemigroup(S));
+}
+exports.getApplySemigroup = getApplySemigroup;
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+function getApplyMonoid(M) {
+    return {
+        concat: getApplySemigroup(M).concat,
+        empty: exports.right(M.empty)
+    };
+}
+exports.getApplyMonoid = getApplyMonoid;
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+function getApplicativeTaskValidation(A, SE) {
+    var AV = E.getApplicativeValidation(SE);
+    var ap = function (fga) { return function (fgab) {
+        return A.ap(A.map(fgab, function (h) { return function (ga) { return AV.ap(h, ga); }; }), fga);
+    }; };
+    return {
+        URI: exports.URI,
+        _E: undefined,
+        map: map_,
+        ap: function (fab, fa) { return function_1.pipe(fab, ap(fa)); },
+        of: exports.of
+    };
+}
+exports.getApplicativeTaskValidation = getApplicativeTaskValidation;
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+function getAltTaskValidation(SE) {
+    return {
+        URI: exports.URI,
+        _E: undefined,
+        map: map_,
+        alt: function (me, that) {
+            return function_1.pipe(me, T.chain(function (e1) {
+                return E.isRight(e1)
+                    ? T.of(e1)
+                    : function_1.pipe(that(), T.map(function (e2) { return (E.isLeft(e2) ? E.left(SE.concat(e1.left, e2.left)) : e2); }));
+            }));
+        }
+    };
+}
+exports.getAltTaskValidation = getAltTaskValidation;
+// TODO: remove in v3
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+function getTaskValidation(SE) {
+    var applicativeTaskValidation = getApplicativeTaskValidation(T.ApplicativePar, SE);
+    var altTaskValidation = getAltTaskValidation(SE);
+    return {
+        URI: exports.URI,
+        _E: undefined,
+        map: map_,
+        ap: applicativeTaskValidation.ap,
+        of: exports.of,
+        chain: chain_,
+        bimap: bimap_,
+        mapLeft: mapLeft_,
+        alt: altTaskValidation.alt,
+        fromIO: exports.fromIO,
+        fromTask: exports.fromTask,
+        throwError: exports.throwError
+    };
+}
+exports.getTaskValidation = getTaskValidation;
+/**
+ * @category instances
+ * @since 2.1.0
+ */
+function getFilterable(M) {
+    var W = E.getWitherable(M);
+    var F = Filterable_1.getFilterableComposition(T.Monad, W);
+    return {
+        URI: exports.URI,
+        _E: undefined,
+        map: map_,
+        compact: F.compact,
+        separate: F.separate,
+        filter: F.filter,
+        filterMap: F.filterMap,
+        partition: F.partition,
+        partitionMap: F.partitionMap
+    };
+}
+exports.getFilterable = getFilterable;
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Functor = {
+    URI: exports.URI,
+    map: map_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.ApplicativePar = {
+    URI: exports.URI,
+    map: map_,
+    ap: apPar_,
+    of: exports.of
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.ApplicativeSeq = {
+    URI: exports.URI,
+    map: map_,
+    ap: apSeq_,
+    of: exports.of
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Bifunctor = {
+    URI: exports.URI,
+    bimap: bimap_,
+    mapLeft: mapLeft_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Alt = {
+    URI: exports.URI,
+    map: map_,
+    alt: alt_
+};
+// TODO: remove in v3
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.taskEither = {
+    URI: exports.URI,
+    bimap: bimap_,
+    mapLeft: mapLeft_,
+    map: map_,
+    of: exports.of,
+    ap: apPar_,
+    chain: chain_,
+    alt: alt_,
+    fromIO: exports.fromIO,
+    fromTask: exports.fromTask,
+    throwError: exports.throwError
+};
+// TODO: remove in v3
+/**
+ * Like `TaskEither` but `ap` is sequential
+ *
+ * @category instances
+ * @since 2.0.0
+ */
+exports.taskEitherSeq = {
+    URI: exports.URI,
+    bimap: bimap_,
+    mapLeft: mapLeft_,
+    map: map_,
+    of: exports.of,
+    ap: apSeq_,
+    chain: chain_,
+    alt: alt_,
+    fromIO: exports.fromIO,
+    fromTask: exports.fromTask,
+    throwError: exports.throwError
+};
+function taskify(f) {
+    return function () {
+        var args = Array.prototype.slice.call(arguments);
+        return function () {
+            return new Promise(function (resolve) {
+                var cbResolver = function (e, r) { return (e != null ? resolve(E.left(e)) : resolve(E.right(r))); };
+                f.apply(null, args.concat(cbResolver));
+            });
+        };
+    };
+}
+exports.taskify = taskify;
+/**
+ * Make sure that a resource is cleaned up in the event of an exception (\*). The release action is called regardless of
+ * whether the body action throws (\*) or returns.
+ *
+ * (\*) i.e. returns a `Left`
+ *
+ * Derivable from `MonadThrow`.
+ *
+ * @since 2.0.0
+ */
+var bracket = function (acquire, use, release) {
+    return function_1.pipe(acquire, exports.chain(function (a) {
+        return function_1.pipe(function_1.pipe(use(a), T.map(E.right)), exports.chain(function (e) {
+            return function_1.pipe(release(a, e), exports.chain(function () { return (E.isLeft(e) ? exports.left(e.left) : exports.of(e.right)); }));
+        }));
+    }));
+};
+exports.bracket = bracket;
+// -------------------------------------------------------------------------------------
+// do notation
+// -------------------------------------------------------------------------------------
+/**
+ * @since 2.9.0
+ */
+exports.Do = 
+/*#__PURE__*/
+exports.of({});
+/**
+ * @since 2.8.0
+ */
+var bindTo = function (name) {
+    return exports.map(function_1.bindTo_(name));
+};
+exports.bindTo = bindTo;
+/**
+ * @since 2.8.0
+ */
+var bindW = function (name, f) {
+    return exports.chainW(function (a) {
+        return function_1.pipe(f(a), exports.map(function (b) { return function_1.bind_(a, name, b); }));
+    });
+};
+exports.bindW = bindW;
+/**
+ * @since 2.8.0
+ */
+exports.bind = exports.bindW;
+// -------------------------------------------------------------------------------------
+// pipeable sequence S
+// -------------------------------------------------------------------------------------
+/**
+ * @since 2.8.0
+ */
+var apSW = function (name, fb) {
+    return function_1.flow(exports.map(function (a) { return function (b) { return function_1.bind_(a, name, b); }; }), exports.apW(fb));
+};
+exports.apSW = apSW;
+/**
+ * @since 2.8.0
+ */
+exports.apS = exports.apSW;
+// -------------------------------------------------------------------------------------
+// array utils
+// -------------------------------------------------------------------------------------
+/**
+ * @since 2.9.0
+ */
+var traverseArrayWithIndex = function (f) { return function (arr) {
+    return function_1.pipe(arr, T.traverseArrayWithIndex(f), T.map(E.sequenceArray));
+}; };
+exports.traverseArrayWithIndex = traverseArrayWithIndex;
+/**
+ * this function has the same behavior of `A.traverse(TE.taskEither)` but it's stack safe and performs better
+ *
+ * *this function run all tasks in parallel and does not bail out, for sequential version use `traverseSeqArray`*
+ *
+ * @example
+ *
+ * import * as TE from 'fp-ts/TaskEither'
+ * import * as A from 'fp-ts/Array'
+ * import { right } from 'fp-ts/Either'
+ * import { pipe } from 'fp-ts/function'
+ *
+ * const PostRepo = {
+ *  findById : (id: number) => TE.of({id, title: ''})
+ * }
+ *
+ * const findAllPosts = (ids:number[]) => pipe(ids, TE.traverseArray(PostRepo.findById))
+ *
+ * async function test() {
+ *   const ids = A.range(0, 10)
+ *
+ *   assert.deepStrictEqual(
+ *     await findAllPosts(ids)(),
+ *     right(
+ *       pipe(
+ *         ids,
+ *         A.map((id) => ({ id, title: ''}))
+ *       )
+ *     )
+ *   )
+ * }
+ *
+ * test()
+ *
+ * @since 2.9.0
+ */
+var traverseArray = function (f) { return exports.traverseArrayWithIndex(function (_, a) { return f(a); }); };
+exports.traverseArray = traverseArray;
+/**
+ * this function has the same behavior of `A.sequence(TE.taskEither)` but it's stack safe and performs better
+ *
+ * *this function run all tasks in parallel and does not bail out, for sequential version use `sequenceSeqArray`*
+ *
+ * @example
+ *
+ * import * as TE from 'fp-ts/TaskEither'
+ * import * as A from 'fp-ts/Array'
+ * import { right } from 'fp-ts/Either'
+ * import { pipe } from 'fp-ts/function'
+ *
+ * const PostRepo = {
+ *  findById : (id: number) => TE.of({id, title: ''})
+ * }
+ *
+ * const findAllPosts = (ids:number[]) => pipe(ids, A.map(PostRepo.findById), TE.sequenceArray)
+ *
+ * async function test() {
+ *   const ids = A.range(0, 10)
+ *
+ *   assert.deepStrictEqual(
+ *     await findAllPosts(ids)(),
+ *     right(
+ *       pipe(
+ *         ids,
+ *         A.map((id) => ({ id, title: ''}))
+ *       )
+ *     )
+ *   )
+ * }
+ *
+ * test()
+ *
+ * @since 2.9.0
+ */
+exports.sequenceArray = 
+/*#__PURE__*/
+exports.traverseArray(function_1.identity);
+/**
+ * @since 2.9.0
+ */
+var traverseSeqArrayWithIndex = function (f) { return function (arr) { return function () { return __awaiter(void 0, void 0, void 0, function () {
+    var result, i, e;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                result = [];
+                i = 0;
+                _a.label = 1;
+            case 1:
+                if (!(i < arr.length)) return [3 /*break*/, 4];
+                return [4 /*yield*/, f(i, arr[i])()];
+            case 2:
+                e = _a.sent();
+                if (E.isLeft(e)) {
+                    return [2 /*return*/, e];
+                }
+                result.push(e.right);
+                _a.label = 3;
+            case 3:
+                i++;
+                return [3 /*break*/, 1];
+            case 4: return [2 /*return*/, E.right(result)];
+        }
+    });
+}); }; }; };
+exports.traverseSeqArrayWithIndex = traverseSeqArrayWithIndex;
+/**
+ * this function has the same behavior of `A.traverse(TE.taskEitherSeq)` but it's stack safe and performs better
+ *
+ * *this function run all tasks in sequential order and bails out on left side of either, for parallel version use `traverseArray`*
+ *
+ * @since 2.9.0
+ */
+var traverseSeqArray = function (f) { return exports.traverseSeqArrayWithIndex(function (_, a) { return f(a); }); };
+exports.traverseSeqArray = traverseSeqArray;
+/**
+ * this function has the same behavior of `A.sequence(TE.taskEitherSeq)` but it's stack safe and performs better
+ *
+ * *this function run all tasks in sequential order and bails out on left side of either, for parallel version use `sequenceArray`*
+ *
+ * @since 2.9.0
+ */
+exports.sequenceSeqArray = 
+/*#__PURE__*/
+exports.traverseSeqArray(function_1.identity);
+
+
+/***/ }),
+/* 207 */,
+/* 208 */,
+/* 209 */,
+/* 210 */
 /***/ (function(__unusedmodule, exports) {
 
 "use strict";
@@ -2166,15 +6704,54 @@ exports.createDirentFromStats = createDirentFromStats;
 
 
 /***/ }),
-
-/***/ 211:
+/* 211 */
 /***/ (function(module) {
 
 module.exports = require("https");
 
 /***/ }),
+/* 212 */
+/***/ (function(__unusedmodule, exports) {
 
-/***/ 225:
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+
+
+/***/ }),
+/* 213 */,
+/* 214 */,
+/* 215 */,
+/* 216 */,
+/* 217 */,
+/* 218 */,
+/* 219 */,
+/* 220 */
+/***/ (function(__unusedmodule, exports) {
+
+"use strict";
+
+/**
+ * A join-semilattice (or upper semilattice) is a semilattice whose operation is called `join`, and which can be thought
+ * of as a least upper bound.
+ *
+ * A `JoinSemilattice` must satisfy the following laws:
+ *
+ * - Associativity: `a ∨ (b ∨ c) <-> (a ∨ b) ∨ c`
+ * - Commutativity: `a ∨ b <-> b ∨ a`
+ * - Idempotency:   `a ∨ a <-> a`
+ *
+ * @since 2.0.0
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+
+
+/***/ }),
+/* 221 */,
+/* 222 */,
+/* 223 */,
+/* 224 */,
+/* 225 */
 /***/ (function(__unusedmodule, exports) {
 
 "use strict";
@@ -2293,8 +6870,351 @@ exports.flatten = (...args) => {
 
 
 /***/ }),
+/* 226 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
 
-/***/ 227:
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.readonlyTuple = exports.Traversable = exports.Foldable = exports.Comonad = exports.Semigroupoid = exports.Bifunctor = exports.Functor = exports.URI = exports.sequence = exports.traverse = exports.reduceRight = exports.foldMap = exports.reduce = exports.map = exports.duplicate = exports.extract = exports.extend = exports.compose = exports.mapLeft = exports.bimap = exports.getChainRec = exports.getMonad = exports.getChain = exports.getApplicative = exports.getApply = exports.swap = exports.snd = exports.fst = void 0;
+var function_1 = __webpack_require__(231);
+// -------------------------------------------------------------------------------------
+// model
+// -------------------------------------------------------------------------------------
+/**
+ * @category destructors
+ * @since 2.5.0
+ */
+function fst(ea) {
+    return ea[0];
+}
+exports.fst = fst;
+/**
+ * @category destructors
+ * @since 2.5.0
+ */
+function snd(ea) {
+    return ea[1];
+}
+exports.snd = snd;
+/**
+ * @category combinators
+ * @since 2.5.0
+ */
+function swap(ea) {
+    return [snd(ea), fst(ea)];
+}
+exports.swap = swap;
+/**
+ * @category instances
+ * @since 2.5.0
+ */
+function getApply(S) {
+    return {
+        URI: exports.URI,
+        _E: undefined,
+        map: map_,
+        ap: function (fab, fa) { return [fst(fab)(fst(fa)), S.concat(snd(fab), snd(fa))]; }
+    };
+}
+exports.getApply = getApply;
+var of = function (M) { return function (a) {
+    return [a, M.empty];
+}; };
+/**
+ * @category instances
+ * @since 2.5.0
+ */
+function getApplicative(M) {
+    var A = getApply(M);
+    return {
+        URI: exports.URI,
+        _E: undefined,
+        map: A.map,
+        ap: A.ap,
+        of: of(M)
+    };
+}
+exports.getApplicative = getApplicative;
+/**
+ * @category instances
+ * @since 2.5.0
+ */
+function getChain(S) {
+    var A = getApply(S);
+    return {
+        URI: exports.URI,
+        _E: undefined,
+        map: A.map,
+        ap: A.ap,
+        chain: function (ma, f) {
+            var _a = f(fst(ma)), b = _a[0], s = _a[1];
+            return [b, S.concat(snd(ma), s)];
+        }
+    };
+}
+exports.getChain = getChain;
+/**
+ * @category instances
+ * @since 2.5.0
+ */
+function getMonad(M) {
+    var C = getChain(M);
+    return {
+        URI: exports.URI,
+        _E: undefined,
+        map: C.map,
+        ap: C.ap,
+        chain: C.chain,
+        of: of(M)
+    };
+}
+exports.getMonad = getMonad;
+// TODO: remove in v3
+/**
+ * @category instances
+ * @since 2.5.0
+ */
+function getChainRec(M) {
+    var chainRec = function (a, f) {
+        var result = f(a);
+        var acc = M.empty;
+        var s = fst(result);
+        while (s._tag === 'Left') {
+            acc = M.concat(acc, snd(result));
+            result = f(s.left);
+            s = fst(result);
+        }
+        return [s.right, M.concat(acc, snd(result))];
+    };
+    var C = getChain(M);
+    return {
+        URI: exports.URI,
+        _E: undefined,
+        map: C.map,
+        ap: C.ap,
+        chain: C.chain,
+        chainRec: chainRec
+    };
+}
+exports.getChainRec = getChainRec;
+// -------------------------------------------------------------------------------------
+// non-pipeables
+// -------------------------------------------------------------------------------------
+/* istanbul ignore next */
+var compose_ = function (bc, ab) { return function_1.pipe(bc, exports.compose(ab)); };
+/* istanbul ignore next */
+var map_ = function (fa, f) { return function_1.pipe(fa, exports.map(f)); };
+/* istanbul ignore next */
+var bimap_ = function (fa, f, g) { return function_1.pipe(fa, exports.bimap(f, g)); };
+/* istanbul ignore next */
+var mapLeft_ = function (fa, f) { return function_1.pipe(fa, exports.mapLeft(f)); };
+/* istanbul ignore next */
+var extend_ = function (wa, f) { return function_1.pipe(wa, exports.extend(f)); };
+/* istanbul ignore next */
+var reduce_ = function (fa, b, f) { return function_1.pipe(fa, exports.reduce(b, f)); };
+/* istanbul ignore next */
+var foldMap_ = function (M) {
+    var foldMapM = exports.foldMap(M);
+    return function (fa, f) { return function_1.pipe(fa, foldMapM(f)); };
+};
+/* istanbul ignore next */
+var reduceRight_ = function (fa, b, f) { return function_1.pipe(fa, exports.reduceRight(b, f)); };
+/* istanbul ignore next */
+var traverse_ = function (F) {
+    var traverseF = exports.traverse(F);
+    return function (ta, f) { return function_1.pipe(ta, traverseF(f)); };
+};
+// -------------------------------------------------------------------------------------
+// pipeables
+// -------------------------------------------------------------------------------------
+/**
+ * Map a pair of functions over the two type arguments of the bifunctor.
+ *
+ * @category Bifunctor
+ * @since 2.5.0
+ */
+var bimap = function (f, g) { return function (fa) { return [g(fst(fa)), f(snd(fa))]; }; };
+exports.bimap = bimap;
+/**
+ * Map a function over the first type argument of a bifunctor.
+ *
+ * @category Bifunctor
+ * @since 2.5.0
+ */
+var mapLeft = function (f) { return function (fa) { return [
+    fst(fa),
+    f(snd(fa))
+]; }; };
+exports.mapLeft = mapLeft;
+/**
+ * @category Semigroupoid
+ * @since 2.5.0
+ */
+var compose = function (ab) { return function (bc) { return [
+    fst(bc),
+    snd(ab)
+]; }; };
+exports.compose = compose;
+/**
+ * @category Extend
+ * @since 2.5.0
+ */
+var extend = function (f) { return function (wa) { return [f(wa), snd(wa)]; }; };
+exports.extend = extend;
+/**
+ * @category Extract
+ * @since 2.6.2
+ */
+exports.extract = fst;
+/**
+ * Derivable from `Extend`.
+ *
+ * @category combinators
+ * @since 2.5.0
+ */
+exports.duplicate = 
+/*#__PURE__*/
+exports.extend(function_1.identity);
+/**
+ * `map` can be used to turn functions `(a: A) => B` into functions `(fa: F<A>) => F<B>` whose argument and return types
+ * use the type constructor `F` to represent some computational context.
+ *
+ * @category Functor
+ * @since 2.5.0
+ */
+var map = function (f) { return function (fa) { return [
+    f(fst(fa)),
+    snd(fa)
+]; }; };
+exports.map = map;
+/**
+ * @category Foldable
+ * @since 2.5.0
+ */
+var reduce = function (b, f) { return function (fa) {
+    return f(b, fst(fa));
+}; };
+exports.reduce = reduce;
+/**
+ * @category Foldable
+ * @since 2.5.0
+ */
+var foldMap = function () {
+    return function (f) { return function (fa) { return f(fst(fa)); }; };
+};
+exports.foldMap = foldMap;
+/**
+ * @category Foldable
+ * @since 2.5.0
+ */
+var reduceRight = function (b, f) { return function (fa) {
+    return f(fst(fa), b);
+}; };
+exports.reduceRight = reduceRight;
+/**
+ * @since 2.6.3
+ */
+var traverse = function (F) {
+    return function (f) { return function (ta) { return F.map(f(fst(ta)), function (b) { return [b, snd(ta)]; }); }; };
+};
+exports.traverse = traverse;
+/**
+ * @since 2.6.3
+ */
+var sequence = function (F) { return function (fas) {
+    return F.map(fst(fas), function (a) { return [a, snd(fas)]; });
+}; };
+exports.sequence = sequence;
+// -------------------------------------------------------------------------------------
+// instances
+// -------------------------------------------------------------------------------------
+/**
+ * @category instances
+ * @since 2.5.0
+ */
+exports.URI = 'ReadonlyTuple';
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Functor = {
+    URI: exports.URI,
+    map: map_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Bifunctor = {
+    URI: exports.URI,
+    bimap: bimap_,
+    mapLeft: mapLeft_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Semigroupoid = {
+    URI: exports.URI,
+    compose: compose_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Comonad = {
+    URI: exports.URI,
+    map: map_,
+    extend: extend_,
+    extract: exports.extract
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Foldable = {
+    URI: exports.URI,
+    reduce: reduce_,
+    foldMap: foldMap_,
+    reduceRight: reduceRight_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Traversable = {
+    URI: exports.URI,
+    map: map_,
+    reduce: reduce_,
+    foldMap: foldMap_,
+    reduceRight: reduceRight_,
+    traverse: traverse_,
+    sequence: exports.sequence
+};
+// TODO: remove in v3
+/**
+ * @category instances
+ * @since 2.5.0
+ */
+exports.readonlyTuple = {
+    URI: exports.URI,
+    compose: compose_,
+    map: map_,
+    bimap: bimap_,
+    mapLeft: mapLeft_,
+    extract: exports.extract,
+    extend: extend_,
+    reduce: reduce_,
+    foldMap: foldMap_,
+    reduceRight: reduceRight_,
+    traverse: traverse_,
+    sequence: exports.sequence
+};
+
+
+/***/ }),
+/* 227 */
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
 "use strict";
@@ -2634,8 +7554,9 @@ module.exports = parse;
 
 
 /***/ }),
-
-/***/ 230:
+/* 228 */,
+/* 229 */,
+/* 230 */
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
 "use strict";
@@ -2683,38 +7604,362 @@ module.exports = function globParent(str, opts) {
 
 
 /***/ }),
+/* 231 */
+/***/ (function(__unusedmodule, exports) {
 
-/***/ 231:
+"use strict";
+
+/**
+ * @since 2.0.0
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.bindTo_ = exports.bind_ = exports.hole = exports.pipe = exports.untupled = exports.tupled = exports.absurd = exports.decrement = exports.increment = exports.tuple = exports.flow = exports.flip = exports.constVoid = exports.constUndefined = exports.constNull = exports.constFalse = exports.constTrue = exports.constant = exports.not = exports.unsafeCoerce = exports.identity = void 0;
+/**
+ * @since 2.0.0
+ */
+function identity(a) {
+    return a;
+}
+exports.identity = identity;
+/**
+ * @since 2.0.0
+ */
+exports.unsafeCoerce = identity;
+/**
+ * @since 2.0.0
+ */
+function not(predicate) {
+    return function (a) { return !predicate(a); };
+}
+exports.not = not;
+/**
+ * @since 2.0.0
+ */
+function constant(a) {
+    return function () { return a; };
+}
+exports.constant = constant;
+/**
+ * A thunk that returns always `true`.
+ *
+ * @since 2.0.0
+ */
+exports.constTrue = 
+/*#__PURE__*/
+constant(true);
+/**
+ * A thunk that returns always `false`.
+ *
+ * @since 2.0.0
+ */
+exports.constFalse = 
+/*#__PURE__*/
+constant(false);
+/**
+ * A thunk that returns always `null`.
+ *
+ * @since 2.0.0
+ */
+exports.constNull = 
+/*#__PURE__*/
+constant(null);
+/**
+ * A thunk that returns always `undefined`.
+ *
+ * @since 2.0.0
+ */
+exports.constUndefined = 
+/*#__PURE__*/
+constant(undefined);
+/**
+ * A thunk that returns always `void`.
+ *
+ * @since 2.0.0
+ */
+exports.constVoid = exports.constUndefined;
+// TODO: remove in v3
+/**
+ * Flips the order of the arguments of a function of two arguments.
+ *
+ * @since 2.0.0
+ */
+function flip(f) {
+    return function (b, a) { return f(a, b); };
+}
+exports.flip = flip;
+function flow(ab, bc, cd, de, ef, fg, gh, hi, ij) {
+    switch (arguments.length) {
+        case 1:
+            return ab;
+        case 2:
+            return function () {
+                return bc(ab.apply(this, arguments));
+            };
+        case 3:
+            return function () {
+                return cd(bc(ab.apply(this, arguments)));
+            };
+        case 4:
+            return function () {
+                return de(cd(bc(ab.apply(this, arguments))));
+            };
+        case 5:
+            return function () {
+                return ef(de(cd(bc(ab.apply(this, arguments)))));
+            };
+        case 6:
+            return function () {
+                return fg(ef(de(cd(bc(ab.apply(this, arguments))))));
+            };
+        case 7:
+            return function () {
+                return gh(fg(ef(de(cd(bc(ab.apply(this, arguments)))))));
+            };
+        case 8:
+            return function () {
+                return hi(gh(fg(ef(de(cd(bc(ab.apply(this, arguments))))))));
+            };
+        case 9:
+            return function () {
+                return ij(hi(gh(fg(ef(de(cd(bc(ab.apply(this, arguments)))))))));
+            };
+    }
+    return;
+}
+exports.flow = flow;
+/**
+ * @since 2.0.0
+ */
+function tuple() {
+    var t = [];
+    for (var _i = 0; _i < arguments.length; _i++) {
+        t[_i] = arguments[_i];
+    }
+    return t;
+}
+exports.tuple = tuple;
+/**
+ * @since 2.0.0
+ */
+function increment(n) {
+    return n + 1;
+}
+exports.increment = increment;
+/**
+ * @since 2.0.0
+ */
+function decrement(n) {
+    return n - 1;
+}
+exports.decrement = decrement;
+/**
+ * @since 2.0.0
+ */
+function absurd(_) {
+    throw new Error('Called `absurd` function which should be uncallable');
+}
+exports.absurd = absurd;
+/**
+ * Creates a tupled version of this function: instead of `n` arguments, it accepts a single tuple argument.
+ *
+ * @example
+ * import { tupled } from 'fp-ts/function'
+ *
+ * const add = tupled((x: number, y: number): number => x + y)
+ *
+ * assert.strictEqual(add([1, 2]), 3)
+ *
+ * @since 2.4.0
+ */
+function tupled(f) {
+    return function (a) { return f.apply(void 0, a); };
+}
+exports.tupled = tupled;
+/**
+ * Inverse function of `tupled`
+ *
+ * @since 2.4.0
+ */
+function untupled(f) {
+    return function () {
+        var a = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            a[_i] = arguments[_i];
+        }
+        return f(a);
+    };
+}
+exports.untupled = untupled;
+function pipe(a, ab, bc, cd, de, ef, fg, gh, hi, ij, jk, kl, lm, mn, no, op, pq, qr, rs, st) {
+    switch (arguments.length) {
+        case 1:
+            return a;
+        case 2:
+            return ab(a);
+        case 3:
+            return bc(ab(a));
+        case 4:
+            return cd(bc(ab(a)));
+        case 5:
+            return de(cd(bc(ab(a))));
+        case 6:
+            return ef(de(cd(bc(ab(a)))));
+        case 7:
+            return fg(ef(de(cd(bc(ab(a))))));
+        case 8:
+            return gh(fg(ef(de(cd(bc(ab(a)))))));
+        case 9:
+            return hi(gh(fg(ef(de(cd(bc(ab(a))))))));
+        case 10:
+            return ij(hi(gh(fg(ef(de(cd(bc(ab(a)))))))));
+        case 11:
+            return jk(ij(hi(gh(fg(ef(de(cd(bc(ab(a))))))))));
+        case 12:
+            return kl(jk(ij(hi(gh(fg(ef(de(cd(bc(ab(a)))))))))));
+        case 13:
+            return lm(kl(jk(ij(hi(gh(fg(ef(de(cd(bc(ab(a))))))))))));
+        case 14:
+            return mn(lm(kl(jk(ij(hi(gh(fg(ef(de(cd(bc(ab(a)))))))))))));
+        case 15:
+            return no(mn(lm(kl(jk(ij(hi(gh(fg(ef(de(cd(bc(ab(a))))))))))))));
+        case 16:
+            return op(no(mn(lm(kl(jk(ij(hi(gh(fg(ef(de(cd(bc(ab(a)))))))))))))));
+        case 17:
+            return pq(op(no(mn(lm(kl(jk(ij(hi(gh(fg(ef(de(cd(bc(ab(a))))))))))))))));
+        case 18:
+            return qr(pq(op(no(mn(lm(kl(jk(ij(hi(gh(fg(ef(de(cd(bc(ab(a)))))))))))))))));
+        case 19:
+            return rs(qr(pq(op(no(mn(lm(kl(jk(ij(hi(gh(fg(ef(de(cd(bc(ab(a))))))))))))))))));
+        case 20:
+            return st(rs(qr(pq(op(no(mn(lm(kl(jk(ij(hi(gh(fg(ef(de(cd(bc(ab(a)))))))))))))))))));
+    }
+    return;
+}
+exports.pipe = pipe;
+/**
+ * Type hole simulation
+ *
+ * @since 2.7.0
+ */
+exports.hole = absurd;
+/**
+ * @internal
+ */
+var bind_ = function (a, name, b) {
+    var _a;
+    return Object.assign({}, a, (_a = {}, _a[name] = b, _a));
+};
+exports.bind_ = bind_;
+/**
+ * @internal
+ */
+var bindTo_ = function (name) { return function (b) {
+    var _a;
+    return (_a = {}, _a[name] = b, _a);
+}; };
+exports.bindTo_ = bindTo_;
+
+
+/***/ }),
+/* 232 */,
+/* 233 */,
+/* 234 */,
+/* 235 */,
+/* 236 */,
+/* 237 */,
+/* 238 */
 /***/ (function(__unusedmodule, exports) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.splitWhen = exports.flatten = void 0;
-function flatten(items) {
-    return items.reduce((collection, item) => [].concat(collection, item), []);
-}
-exports.flatten = flatten;
-function splitWhen(items, predicate) {
-    const result = [[]];
-    let groupIndex = 0;
-    for (const item of items) {
-        if (predicate(item)) {
-            groupIndex++;
-            result[groupIndex] = [];
-        }
-        else {
-            result[groupIndex].push(item);
-        }
-    }
-    return result;
-}
-exports.splitWhen = splitWhen;
+exports.eqYear = exports.eqMonth = exports.eqDate = exports.now = exports.create = void 0;
+/**
+ * Returns the current `Date`
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+var create = function () { return new Date(); };
+exports.create = create;
+/**
+ * Returns the number of milliseconds elapsed since January 1, 1970, 00:00:00 UTC
+ *
+ * @since 2.0.0
+ */
+var now = function () { return new Date().getTime(); };
+exports.now = now;
+/**
+ * @category instances
+ * @since 2.6.0
+ */
+exports.eqDate = {
+    equals: function (x, y) { return x.getDate() === y.getDate(); }
+};
+/**
+ * @category instances
+ * @since 2.6.0
+ */
+exports.eqMonth = {
+    equals: function (x, y) { return x.getMonth() === y.getMonth(); }
+};
+/**
+ * @category instances
+ * @since 2.6.0
+ */
+exports.eqYear = {
+    equals: function (x, y) { return x.getFullYear() === y.getFullYear(); }
+};
 
 
 /***/ }),
+/* 239 */,
+/* 240 */,
+/* 241 */,
+/* 242 */,
+/* 243 */,
+/* 244 */,
+/* 245 */,
+/* 246 */,
+/* 247 */,
+/* 248 */,
+/* 249 */,
+/* 250 */,
+/* 251 */,
+/* 252 */,
+/* 253 */,
+/* 254 */,
+/* 255 */,
+/* 256 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
 
-/***/ 260:
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getCompactableComposition = void 0;
+var Functor_1 = __webpack_require__(943);
+var Option_1 = __webpack_require__(293);
+function getCompactableComposition(F, G) {
+    var FC = Functor_1.getFunctorComposition(F, G);
+    var CC = {
+        map: FC.map,
+        compact: function (fga) { return F.map(fga, G.compact); },
+        separate: function (fge) {
+            var left = CC.compact(FC.map(fge, Option_1.getLeft));
+            var right = CC.compact(FC.map(fge, Option_1.getRight));
+            return { left: left, right: right };
+        }
+    };
+    return CC;
+}
+exports.getCompactableComposition = getCompactableComposition;
+
+
+/***/ }),
+/* 257 */,
+/* 258 */,
+/* 259 */,
+/* 260 */
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
 // Note: since nyc uses this module to output coverage, any lines
@@ -2883,8 +8128,8 @@ function processEmit (ev, arg) {
 
 
 /***/ }),
-
-/***/ 262:
+/* 261 */,
+/* 262 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
@@ -2940,8 +8185,17 @@ exports.Context = Context;
 //# sourceMappingURL=context.js.map
 
 /***/ }),
+/* 263 */
+/***/ (function(__unusedmodule, exports) {
 
-/***/ 265:
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+
+
+/***/ }),
+/* 264 */,
+/* 265 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
@@ -3012,8 +8266,483 @@ exports.wrapOutput = (input, state = {}, options = {}) => {
 
 
 /***/ }),
+/* 266 */,
+/* 267 */,
+/* 268 */,
+/* 269 */,
+/* 270 */,
+/* 271 */,
+/* 272 */,
+/* 273 */,
+/* 274 */,
+/* 275 */,
+/* 276 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
 
-/***/ 280:
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.FunctorWithIndex = exports.Functor = exports.URI = exports.separate = exports.compact = exports.reduceRight = exports.reduce = exports.partitionMap = exports.partition = exports.foldMap = exports.filterMap = exports.filter = exports.elem = exports.some = exports.every = exports.fromFoldableMap = exports.fromFoldable = exports.filterWithIndex = exports.filterMapWithIndex = exports.partitionWithIndex = exports.partitionMapWithIndex = exports.wilt = exports.wither = exports.sequence = exports.traverse = exports.traverseWithIndex = exports.singleton = exports.reduceRightWithIndex = exports.foldMapWithIndex = exports.reduceWithIndex = exports.map = exports.mapWithIndex = exports.empty = exports.lookup = exports.getMonoid = exports.getEq = exports.isSubrecord = exports.pop = exports.modifyAt = exports.updateAt = exports.deleteAt = exports.hasOwnProperty = exports.insertAt = exports.toUnfoldable = exports.toArray = exports.collect = exports.keys = exports.isEmpty = exports.size = exports.getShow = void 0;
+exports.record = exports.Witherable = exports.TraversableWithIndex = exports.Traversable = exports.FilterableWithIndex = exports.Filterable = exports.Compactable = exports.FoldableWithIndex = exports.Foldable = void 0;
+var RR = __importStar(__webpack_require__(671));
+/* tslint:disable:readonly-array */
+// -------------------------------------------------------------------------------------
+// model
+// -------------------------------------------------------------------------------------
+/**
+ * @since 2.0.0
+ */
+exports.getShow = RR.getShow;
+/**
+ * Calculate the number of key/value pairs in a record
+ *
+ * @since 2.0.0
+ */
+exports.size = RR.size;
+/**
+ * Test whether a record is empty
+ *
+ * @since 2.0.0
+ */
+exports.isEmpty = RR.isEmpty;
+/**
+ * @since 2.0.0
+ */
+exports.keys = RR.keys;
+/**
+ * Map a record into an array
+ *
+ * @example
+ * import {collect} from 'fp-ts/Record'
+ *
+ * const x: { a: string, b: boolean } = { a: 'foo', b: false }
+ * assert.deepStrictEqual(
+ *   collect((key, val) => ({key: key, value: val}))(x),
+ *   [{key: 'a', value: 'foo'}, {key: 'b', value: false}]
+ * )
+ *
+ * @since 2.0.0
+ */
+exports.collect = RR.collect;
+/**
+ * @since 2.0.0
+ */
+exports.toArray = RR.toReadonlyArray;
+function toUnfoldable(U) {
+    return RR.toUnfoldable(U);
+}
+exports.toUnfoldable = toUnfoldable;
+function insertAt(k, a) {
+    return RR.insertAt(k, a);
+}
+exports.insertAt = insertAt;
+/**
+ * @since 2.0.0
+ */
+exports.hasOwnProperty = RR.hasOwnProperty;
+function deleteAt(k) {
+    return RR.deleteAt(k);
+}
+exports.deleteAt = deleteAt;
+/**
+ * @since 2.0.0
+ */
+exports.updateAt = RR.updateAt;
+/**
+ * @since 2.0.0
+ */
+exports.modifyAt = RR.modifyAt;
+function pop(k) {
+    return RR.pop(k);
+}
+exports.pop = pop;
+// TODO: remove non-curried overloading in v3
+/**
+ * Test whether one record contains all of the keys and values contained in another record
+ *
+ * @since 2.0.0
+ */
+exports.isSubrecord = RR.isSubrecord;
+function getEq(E) {
+    return RR.getEq(E);
+}
+exports.getEq = getEq;
+function getMonoid(S) {
+    return RR.getMonoid(S);
+}
+exports.getMonoid = getMonoid;
+// TODO: remove non-curried overloading in v3
+/**
+ * Lookup the value for a key in a record
+ *
+ * @since 2.0.0
+ */
+exports.lookup = RR.lookup;
+/**
+ * @since 2.0.0
+ */
+exports.empty = {};
+function mapWithIndex(f) {
+    return RR.mapWithIndex(f);
+}
+exports.mapWithIndex = mapWithIndex;
+function map(f) {
+    return RR.map(f);
+}
+exports.map = map;
+function reduceWithIndex(b, f) {
+    return RR.reduceWithIndex(b, f);
+}
+exports.reduceWithIndex = reduceWithIndex;
+function foldMapWithIndex(M) {
+    return RR.foldMapWithIndex(M);
+}
+exports.foldMapWithIndex = foldMapWithIndex;
+function reduceRightWithIndex(b, f) {
+    return RR.reduceRightWithIndex(b, f);
+}
+exports.reduceRightWithIndex = reduceRightWithIndex;
+/**
+ * Create a record with one key/value pair
+ *
+ * @since 2.0.0
+ */
+exports.singleton = RR.singleton;
+function traverseWithIndex(F) {
+    return RR.traverseWithIndex(F);
+}
+exports.traverseWithIndex = traverseWithIndex;
+function traverse(F) {
+    return RR.traverse(F);
+}
+exports.traverse = traverse;
+function sequence(F) {
+    return RR.sequence(F);
+}
+exports.sequence = sequence;
+/**
+ * @category Witherable
+ * @since 2.6.5
+ */
+exports.wither = RR.wither;
+/**
+ * @category Witherable
+ * @since 2.6.5
+ */
+exports.wilt = RR.wilt;
+function partitionMapWithIndex(f) {
+    return RR.partitionMapWithIndex(f);
+}
+exports.partitionMapWithIndex = partitionMapWithIndex;
+function partitionWithIndex(predicateWithIndex) {
+    return RR.partitionWithIndex(predicateWithIndex);
+}
+exports.partitionWithIndex = partitionWithIndex;
+function filterMapWithIndex(f) {
+    return RR.filterMapWithIndex(f);
+}
+exports.filterMapWithIndex = filterMapWithIndex;
+function filterWithIndex(predicateWithIndex) {
+    return RR.filterWithIndex(predicateWithIndex);
+}
+exports.filterWithIndex = filterWithIndex;
+function fromFoldable(M, F) {
+    return RR.fromFoldable(M, F);
+}
+exports.fromFoldable = fromFoldable;
+function fromFoldableMap(M, F) {
+    return RR.fromFoldableMap(M, F);
+}
+exports.fromFoldableMap = fromFoldableMap;
+/**
+ * @since 2.0.0
+ */
+exports.every = RR.every;
+/**
+ * @since 2.0.0
+ */
+exports.some = RR.some;
+// TODO: remove non-curried overloading in v3
+/**
+ * @since 2.0.0
+ */
+exports.elem = RR.elem;
+// -------------------------------------------------------------------------------------
+// non-pipeables
+// -------------------------------------------------------------------------------------
+var map_ = RR.Functor.map;
+var mapWithIndex_ = RR.FunctorWithIndex.mapWithIndex;
+var reduce_ = RR.Foldable.reduce;
+var foldMap_ = RR.Foldable.foldMap;
+var reduceRight_ = RR.Foldable.reduceRight;
+var reduceWithIndex_ = RR.FoldableWithIndex.reduceWithIndex;
+var foldMapWithIndex_ = RR.FoldableWithIndex.foldMapWithIndex;
+var reduceRightWithIndex_ = RR.FoldableWithIndex.reduceRightWithIndex;
+var filter_ = RR.Filterable.filter;
+var filterMap_ = RR.Filterable.filterMap;
+var partition_ = RR.Filterable.partition;
+var partitionMap_ = RR.Filterable.partitionMap;
+var filterWithIndex_ = RR.FilterableWithIndex
+    .filterWithIndex;
+var filterMapWithIndex_ = RR.FilterableWithIndex.filterMapWithIndex;
+var partitionWithIndex_ = RR.FilterableWithIndex
+    .partitionWithIndex;
+var partitionMapWithIndex_ = RR.FilterableWithIndex.partitionMapWithIndex;
+var traverseWithIndex_ = RR.TraversableWithIndex
+    .traverseWithIndex;
+var wither_ = RR.Witherable.wither;
+var wilt_ = RR.Witherable.wilt;
+var traverse_ = function (F) {
+    var traverseF = traverse(F);
+    return function (ta, f) { return traverseF(f)(ta); };
+};
+// -------------------------------------------------------------------------------------
+// pipeables
+// -------------------------------------------------------------------------------------
+/**
+ * @category Filterable
+ * @since 2.0.0
+ */
+exports.filter = RR.filter;
+/**
+ * @category Filterable
+ * @since 2.0.0
+ */
+exports.filterMap = RR.filterMap;
+/**
+ * @category Foldable
+ * @since 2.0.0
+ */
+exports.foldMap = RR.foldMap;
+/**
+ * @category Filterable
+ * @since 2.0.0
+ */
+exports.partition = RR.partition;
+/**
+ * @category Filterable
+ * @since 2.0.0
+ */
+exports.partitionMap = RR.partitionMap;
+/**
+ * @category Foldable
+ * @since 2.0.0
+ */
+exports.reduce = RR.reduce;
+/**
+ * @category Foldable
+ * @since 2.0.0
+ */
+exports.reduceRight = RR.reduceRight;
+/**
+ * @category Compactable
+ * @since 2.0.0
+ */
+exports.compact = RR.compact;
+/**
+ * @category Compactable
+ * @since 2.0.0
+ */
+exports.separate = RR.separate;
+// -------------------------------------------------------------------------------------
+// instances
+// -------------------------------------------------------------------------------------
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.URI = 'Record';
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Functor = {
+    URI: exports.URI,
+    map: map_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.FunctorWithIndex = {
+    URI: exports.URI,
+    map: map_,
+    mapWithIndex: mapWithIndex_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Foldable = {
+    URI: exports.URI,
+    reduce: reduce_,
+    foldMap: foldMap_,
+    reduceRight: reduceRight_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.FoldableWithIndex = {
+    URI: exports.URI,
+    reduce: reduce_,
+    foldMap: foldMap_,
+    reduceRight: reduceRight_,
+    reduceWithIndex: reduceWithIndex_,
+    foldMapWithIndex: foldMapWithIndex_,
+    reduceRightWithIndex: reduceRightWithIndex_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Compactable = {
+    URI: exports.URI,
+    compact: exports.compact,
+    separate: exports.separate
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Filterable = {
+    URI: exports.URI,
+    map: map_,
+    compact: exports.compact,
+    separate: exports.separate,
+    filter: filter_,
+    filterMap: filterMap_,
+    partition: partition_,
+    partitionMap: partitionMap_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.FilterableWithIndex = {
+    URI: exports.URI,
+    map: map_,
+    mapWithIndex: mapWithIndex_,
+    compact: exports.compact,
+    separate: exports.separate,
+    filter: filter_,
+    filterMap: filterMap_,
+    partition: partition_,
+    partitionMap: partitionMap_,
+    filterMapWithIndex: filterMapWithIndex_,
+    filterWithIndex: filterWithIndex_,
+    partitionMapWithIndex: partitionMapWithIndex_,
+    partitionWithIndex: partitionWithIndex_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Traversable = {
+    URI: exports.URI,
+    map: map_,
+    reduce: reduce_,
+    foldMap: foldMap_,
+    reduceRight: reduceRight_,
+    traverse: traverse_,
+    sequence: sequence
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.TraversableWithIndex = {
+    URI: exports.URI,
+    map: map_,
+    mapWithIndex: mapWithIndex_,
+    reduce: reduce_,
+    foldMap: foldMap_,
+    reduceRight: reduceRight_,
+    reduceWithIndex: reduceWithIndex_,
+    foldMapWithIndex: foldMapWithIndex_,
+    reduceRightWithIndex: reduceRightWithIndex_,
+    traverse: traverse_,
+    sequence: sequence,
+    traverseWithIndex: traverseWithIndex_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Witherable = {
+    URI: exports.URI,
+    map: map_,
+    reduce: reduce_,
+    foldMap: foldMap_,
+    reduceRight: reduceRight_,
+    traverse: traverse_,
+    sequence: sequence,
+    compact: exports.compact,
+    separate: exports.separate,
+    filter: filter_,
+    filterMap: filterMap_,
+    partition: partition_,
+    partitionMap: partitionMap_,
+    wither: wither_,
+    wilt: wilt_
+};
+// TODO: remove in v3
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.record = {
+    URI: exports.URI,
+    map: map_,
+    reduce: reduce_,
+    foldMap: foldMap_,
+    reduceRight: reduceRight_,
+    traverse: traverse_,
+    sequence: sequence,
+    compact: exports.compact,
+    separate: exports.separate,
+    filter: filter_,
+    filterMap: filterMap_,
+    partition: partition_,
+    partitionMap: partitionMap_,
+    mapWithIndex: mapWithIndex_,
+    reduceWithIndex: reduceWithIndex_,
+    foldMapWithIndex: foldMapWithIndex_,
+    reduceRightWithIndex: reduceRightWithIndex_,
+    filterMapWithIndex: filterMapWithIndex_,
+    filterWithIndex: filterWithIndex_,
+    partitionMapWithIndex: partitionMapWithIndex_,
+    partitionWithIndex: partitionWithIndex_,
+    traverseWithIndex: traverseWithIndex_,
+    wither: wither_,
+    wilt: wilt_
+};
+
+
+/***/ }),
+/* 277 */,
+/* 278 */,
+/* 279 */,
+/* 280 */
 /***/ (function(module, exports) {
 
 exports = module.exports = SemVer
@@ -4502,8 +10231,25 @@ function coerce (version) {
 
 
 /***/ }),
+/* 281 */,
+/* 282 */,
+/* 283 */,
+/* 284 */,
+/* 285 */,
+/* 286 */,
+/* 287 */,
+/* 288 */
+/***/ (function(__unusedmodule, exports) {
 
-/***/ 291:
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+
+
+/***/ }),
+/* 289 */,
+/* 290 */,
+/* 291 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
@@ -4606,8 +10352,1273 @@ exports.default = AsyncReader;
 
 
 /***/ }),
+/* 292 */
+/***/ (function(__unusedmodule, exports) {
 
-/***/ 299:
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getTupleShow = exports.getStructShow = exports.showBoolean = exports.showNumber = exports.showString = void 0;
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.showString = {
+    show: function (a) { return JSON.stringify(a); }
+};
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.showNumber = {
+    show: function (a) { return JSON.stringify(a); }
+};
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.showBoolean = {
+    show: function (a) { return JSON.stringify(a); }
+};
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+function getStructShow(shows) {
+    return {
+        show: function (s) {
+            return "{ " + Object.keys(shows)
+                .map(function (k) { return k + ": " + shows[k].show(s[k]); })
+                .join(', ') + " }";
+        }
+    };
+}
+exports.getStructShow = getStructShow;
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+function getTupleShow() {
+    var shows = [];
+    for (var _i = 0; _i < arguments.length; _i++) {
+        shows[_i] = arguments[_i];
+    }
+    return {
+        show: function (t) { return "[" + t.map(function (a, i) { return shows[i].show(a); }).join(', ') + "]"; }
+    };
+}
+exports.getTupleShow = getTupleShow;
+
+
+/***/ }),
+/* 293 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getApplySemigroup = exports.getOrd = exports.getEq = exports.getShow = exports.URI = exports.wilt = exports.wither = exports.sequence = exports.traverse = exports.partitionMap = exports.partition = exports.filterMap = exports.filter = exports.separate = exports.compact = exports.reduceRight = exports.foldMap = exports.reduce = exports.duplicate = exports.extend = exports.throwError = exports.zero = exports.alt = exports.altW = exports.flatten = exports.chainFirst = exports.chain = exports.of = exports.apSecond = exports.apFirst = exports.ap = exports.map = exports.chainNullableK = exports.mapNullable = exports.fromNullableK = exports.getOrElse = exports.getOrElseW = exports.toUndefined = exports.toNullable = exports.fold = exports.fromEither = exports.getRight = exports.getLeft = exports.tryCatch = exports.fromPredicate = exports.fromNullable = exports.some = exports.none = exports.isNone = exports.isSome = void 0;
+exports.sequenceArray = exports.traverseArray = exports.traverseArrayWithIndex = exports.apS = exports.bind = exports.bindTo = exports.Do = exports.getRefinement = exports.exists = exports.elem = exports.option = exports.MonadThrow = exports.Witherable = exports.Traversable = exports.Filterable = exports.Compactable = exports.Extend = exports.Alternative = exports.Alt = exports.Foldable = exports.Monad = exports.Applicative = exports.Functor = exports.getMonoid = exports.getLastMonoid = exports.getFirstMonoid = exports.getApplyMonoid = void 0;
+var function_1 = __webpack_require__(231);
+// -------------------------------------------------------------------------------------
+// guards
+// -------------------------------------------------------------------------------------
+/**
+ * Returns `true` if the option is an instance of `Some`, `false` otherwise.
+ *
+ * @example
+ * import { some, none, isSome } from 'fp-ts/Option'
+ *
+ * assert.strictEqual(isSome(some(1)), true)
+ * assert.strictEqual(isSome(none), false)
+ *
+ * @category guards
+ * @since 2.0.0
+ */
+var isSome = function (fa) { return fa._tag === 'Some'; };
+exports.isSome = isSome;
+/**
+ * Returns `true` if the option is `None`, `false` otherwise.
+ *
+ * @example
+ * import { some, none, isNone } from 'fp-ts/Option'
+ *
+ * assert.strictEqual(isNone(some(1)), false)
+ * assert.strictEqual(isNone(none), true)
+ *
+ * @category guards
+ * @since 2.0.0
+ */
+var isNone = function (fa) { return fa._tag === 'None'; };
+exports.isNone = isNone;
+// -------------------------------------------------------------------------------------
+// constructors
+// -------------------------------------------------------------------------------------
+/**
+ * `None` doesn't have a constructor, instead you can use it directly as a value. Represents a missing value.
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+exports.none = { _tag: 'None' };
+/**
+ * Constructs a `Some`. Represents an optional value that exists.
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+var some = function (a) { return ({ _tag: 'Some', value: a }); };
+exports.some = some;
+/**
+ * Constructs a new `Option` from a nullable type. If the value is `null` or `undefined`, returns `None`, otherwise
+ * returns the value wrapped in a `Some`.
+ *
+ * @example
+ * import { none, some, fromNullable } from 'fp-ts/Option'
+ *
+ * assert.deepStrictEqual(fromNullable(undefined), none)
+ * assert.deepStrictEqual(fromNullable(null), none)
+ * assert.deepStrictEqual(fromNullable(1), some(1))
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+function fromNullable(a) {
+    return a == null ? exports.none : exports.some(a);
+}
+exports.fromNullable = fromNullable;
+function fromPredicate(predicate) {
+    return function (a) { return (predicate(a) ? exports.some(a) : exports.none); };
+}
+exports.fromPredicate = fromPredicate;
+/**
+ * Transforms an exception into an `Option`. If `f` throws, returns `None`, otherwise returns the output wrapped in a
+ * `Some`.
+ *
+ * @example
+ * import { none, some, tryCatch } from 'fp-ts/Option'
+ *
+ * assert.deepStrictEqual(
+ *   tryCatch(() => {
+ *     throw new Error()
+ *   }),
+ *   none
+ * )
+ * assert.deepStrictEqual(tryCatch(() => 1), some(1))
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+function tryCatch(f) {
+    try {
+        return exports.some(f());
+    }
+    catch (e) {
+        return exports.none;
+    }
+}
+exports.tryCatch = tryCatch;
+/**
+ * Returns the `Left` value of an `Either` if possible.
+ *
+ * @example
+ * import { getLeft, none, some } from 'fp-ts/Option'
+ * import { right, left } from 'fp-ts/Either'
+ *
+ * assert.deepStrictEqual(getLeft(right(1)), none)
+ * assert.deepStrictEqual(getLeft(left('a')), some('a'))
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+function getLeft(ma) {
+    return ma._tag === 'Right' ? exports.none : exports.some(ma.left);
+}
+exports.getLeft = getLeft;
+/**
+ * Returns the `Right` value of an `Either` if possible.
+ *
+ * @example
+ * import { getRight, none, some } from 'fp-ts/Option'
+ * import { right, left } from 'fp-ts/Either'
+ *
+ * assert.deepStrictEqual(getRight(right(1)), some(1))
+ * assert.deepStrictEqual(getRight(left('a')), none)
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+function getRight(ma) {
+    return ma._tag === 'Left' ? exports.none : exports.some(ma.right);
+}
+exports.getRight = getRight;
+/**
+ * Transforms an `Either` to an `Option` discarding the error.
+ *
+ * Alias of [getRight](#getRight)
+ *
+ * Derivable from `MonadThrow`.
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+exports.fromEither = getRight;
+// -------------------------------------------------------------------------------------
+// destructors
+// -------------------------------------------------------------------------------------
+/**
+ * Takes a (lazy) default value, a function, and an `Option` value, if the `Option` value is `None` the default value is
+ * returned, otherwise the function is applied to the value inside the `Some` and the result is returned.
+ *
+ * @example
+ * import { some, none, fold } from 'fp-ts/Option'
+ * import { pipe } from 'fp-ts/function'
+ *
+ * assert.strictEqual(
+ *   pipe(
+ *     some(1),
+ *     fold(() => 'a none', a => `a some containing ${a}`)
+ *   ),
+ *   'a some containing 1'
+ * )
+ *
+ * assert.strictEqual(
+ *   pipe(
+ *     none,
+ *     fold(() => 'a none', a => `a some containing ${a}`)
+ *   ),
+ *   'a none'
+ * )
+ *
+ * @category destructors
+ * @since 2.0.0
+ */
+function fold(onNone, onSome) {
+    return function (ma) { return (exports.isNone(ma) ? onNone() : onSome(ma.value)); };
+}
+exports.fold = fold;
+/**
+ * Extracts the value out of the structure, if it exists. Otherwise returns `null`.
+ *
+ * @example
+ * import { some, none, toNullable } from 'fp-ts/Option'
+ * import { pipe } from 'fp-ts/function'
+ *
+ * assert.strictEqual(
+ *   pipe(
+ *     some(1),
+ *     toNullable
+ *   ),
+ *   1
+ * )
+ * assert.strictEqual(
+ *   pipe(
+ *     none,
+ *     toNullable
+ *   ),
+ *   null
+ * )
+ *
+ * @category destructors
+ * @since 2.0.0
+ */
+function toNullable(ma) {
+    return exports.isNone(ma) ? null : ma.value;
+}
+exports.toNullable = toNullable;
+/**
+ * Extracts the value out of the structure, if it exists. Otherwise returns `undefined`.
+ *
+ * @example
+ * import { some, none, toUndefined } from 'fp-ts/Option'
+ * import { pipe } from 'fp-ts/function'
+ *
+ * assert.strictEqual(
+ *   pipe(
+ *     some(1),
+ *     toUndefined
+ *   ),
+ *   1
+ * )
+ * assert.strictEqual(
+ *   pipe(
+ *     none,
+ *     toUndefined
+ *   ),
+ *   undefined
+ * )
+ *
+ * @category destructors
+ * @since 2.0.0
+ */
+function toUndefined(ma) {
+    return exports.isNone(ma) ? undefined : ma.value;
+}
+exports.toUndefined = toUndefined;
+/**
+ * Less strict version of [`getOrElse`](#getOrElse).
+ *
+ * @category destructors
+ * @since 2.6.0
+ */
+var getOrElseW = function (onNone) { return function (ma) { return (exports.isNone(ma) ? onNone() : ma.value); }; };
+exports.getOrElseW = getOrElseW;
+/**
+ * Extracts the value out of the structure, if it exists. Otherwise returns the given default value
+ *
+ * @example
+ * import { some, none, getOrElse } from 'fp-ts/Option'
+ * import { pipe } from 'fp-ts/function'
+ *
+ * assert.strictEqual(
+ *   pipe(
+ *     some(1),
+ *     getOrElse(() => 0)
+ *   ),
+ *   1
+ * )
+ * assert.strictEqual(
+ *   pipe(
+ *     none,
+ *     getOrElse(() => 0)
+ *   ),
+ *   0
+ * )
+ *
+ * @category destructors
+ * @since 2.0.0
+ */
+exports.getOrElse = exports.getOrElseW;
+// -------------------------------------------------------------------------------------
+// combinators
+// -------------------------------------------------------------------------------------
+/**
+ * Returns a *smart constructor* from a function that returns a nullable value.
+ *
+ * @example
+ * import { fromNullableK, none, some } from 'fp-ts/Option'
+ *
+ * const f = (s: string): number | undefined => {
+ *   const n = parseFloat(s)
+ *   return isNaN(n) ? undefined : n
+ * }
+ *
+ * const g = fromNullableK(f)
+ *
+ * assert.deepStrictEqual(g('1'), some(1))
+ * assert.deepStrictEqual(g('a'), none)
+ *
+ * @category combinators
+ * @since 2.9.0
+ */
+function fromNullableK(f) {
+    return function () {
+        var a = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            a[_i] = arguments[_i];
+        }
+        return fromNullable(f.apply(void 0, a));
+    };
+}
+exports.fromNullableK = fromNullableK;
+/**
+ * @category combinators
+ * @since 2.0.0
+ * @deprecated
+ */
+exports.mapNullable = chainNullableK;
+/**
+ * This is `chain` + `fromNullable`, useful when working with optional values.
+ *
+ * @example
+ * import { some, none, fromNullable, chainNullableK } from 'fp-ts/Option'
+ * import { pipe } from 'fp-ts/function'
+ *
+ * interface Employee {
+ *   company?: {
+ *     address?: {
+ *       street?: {
+ *         name?: string
+ *       }
+ *     }
+ *   }
+ * }
+ *
+ * const employee1: Employee = { company: { address: { street: { name: 'high street' } } } }
+ *
+ * assert.deepStrictEqual(
+ *   pipe(
+ *     fromNullable(employee1.company),
+ *     chainNullableK(company => company.address),
+ *     chainNullableK(address => address.street),
+ *     chainNullableK(street => street.name)
+ *   ),
+ *   some('high street')
+ * )
+ *
+ * const employee2: Employee = { company: { address: { street: {} } } }
+ *
+ * assert.deepStrictEqual(
+ *   pipe(
+ *     fromNullable(employee2.company),
+ *     chainNullableK(company => company.address),
+ *     chainNullableK(address => address.street),
+ *     chainNullableK(street => street.name)
+ *   ),
+ *   none
+ * )
+ *
+ * @category combinators
+ * @since 2.9.0
+ */
+function chainNullableK(f) {
+    return function (ma) { return (exports.isNone(ma) ? exports.none : fromNullable(f(ma.value))); };
+}
+exports.chainNullableK = chainNullableK;
+// -------------------------------------------------------------------------------------
+// non-pipeables
+// -------------------------------------------------------------------------------------
+var map_ = function (fa, f) { return function_1.pipe(fa, exports.map(f)); };
+var ap_ = function (fab, fa) { return function_1.pipe(fab, exports.ap(fa)); };
+var chain_ = function (ma, f) { return function_1.pipe(ma, exports.chain(f)); };
+var reduce_ = function (fa, b, f) { return function_1.pipe(fa, exports.reduce(b, f)); };
+var foldMap_ = function (M) {
+    var foldMapM = exports.foldMap(M);
+    return function (fa, f) { return function_1.pipe(fa, foldMapM(f)); };
+};
+var reduceRight_ = function (fa, b, f) { return function_1.pipe(fa, exports.reduceRight(b, f)); };
+var traverse_ = function (F) {
+    var traverseF = exports.traverse(F);
+    return function (ta, f) { return function_1.pipe(ta, traverseF(f)); };
+};
+/* istanbul ignore next */
+var alt_ = function (fa, that) { return function_1.pipe(fa, exports.alt(that)); };
+var filter_ = function (fa, predicate) {
+    return function_1.pipe(fa, exports.filter(predicate));
+};
+/* istanbul ignore next */
+var filterMap_ = function (fa, f) { return function_1.pipe(fa, exports.filterMap(f)); };
+/* istanbul ignore next */
+var extend_ = function (wa, f) { return function_1.pipe(wa, exports.extend(f)); };
+/* istanbul ignore next */
+var partition_ = function (fa, predicate) { return function_1.pipe(fa, exports.partition(predicate)); };
+/* istanbul ignore next */
+var partitionMap_ = function (fa, f) { return function_1.pipe(fa, exports.partitionMap(f)); };
+/* istanbul ignore next */
+var wither_ = function (F) {
+    var witherF = exports.wither(F);
+    return function (fa, f) { return function_1.pipe(fa, witherF(f)); };
+};
+/* istanbul ignore next */
+var wilt_ = function (F) {
+    var wiltF = exports.wilt(F);
+    return function (fa, f) { return function_1.pipe(fa, wiltF(f)); };
+};
+// -------------------------------------------------------------------------------------
+// pipeables
+// -------------------------------------------------------------------------------------
+/**
+ * `map` can be used to turn functions `(a: A) => B` into functions `(fa: F<A>) => F<B>` whose argument and return types
+ * use the type constructor `F` to represent some computational context.
+ *
+ * @category Functor
+ * @since 2.0.0
+ */
+var map = function (f) { return function (fa) {
+    return exports.isNone(fa) ? exports.none : exports.some(f(fa.value));
+}; };
+exports.map = map;
+/**
+ * Apply a function to an argument under a type constructor.
+ *
+ * @category Apply
+ * @since 2.0.0
+ */
+var ap = function (fa) { return function (fab) {
+    return exports.isNone(fab) ? exports.none : exports.isNone(fa) ? exports.none : exports.some(fab.value(fa.value));
+}; };
+exports.ap = ap;
+/**
+ * Combine two effectful actions, keeping only the result of the first.
+ *
+ * Derivable from `Apply`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+var apFirst = function (fb) {
+    return function_1.flow(exports.map(function (a) { return function () { return a; }; }), exports.ap(fb));
+};
+exports.apFirst = apFirst;
+/**
+ * Combine two effectful actions, keeping only the result of the second.
+ *
+ * Derivable from `Apply`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+var apSecond = function (fb) {
+    return function_1.flow(exports.map(function () { return function (b) { return b; }; }), exports.ap(fb));
+};
+exports.apSecond = apSecond;
+/**
+ * Wrap a value into the type constructor.
+ *
+ * @category Applicative
+ * @since 2.7.0
+ */
+exports.of = exports.some;
+/**
+ * Composes computations in sequence, using the return value of one computation to determine the next computation.
+ *
+ * @category Monad
+ * @since 2.0.0
+ */
+var chain = function (f) { return function (ma) {
+    return exports.isNone(ma) ? exports.none : f(ma.value);
+}; };
+exports.chain = chain;
+/**
+ * Composes computations in sequence, using the return value of one computation to determine the next computation and
+ * keeping only the result of the first.
+ *
+ * Derivable from `Monad`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+var chainFirst = function (f) {
+    return exports.chain(function (a) {
+        return function_1.pipe(f(a), exports.map(function () { return a; }));
+    });
+};
+exports.chainFirst = chainFirst;
+/**
+ * Derivable from `Monad`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.flatten = 
+/*#__PURE__*/
+exports.chain(function_1.identity);
+/**
+ * Less strict version of [`alt`](#alt).
+ *
+ * @category Alt
+ * @since 2.9.0
+ */
+var altW = function (that) { return function (fa) {
+    return exports.isNone(fa) ? that() : fa;
+}; };
+exports.altW = altW;
+/**
+ * Identifies an associative operation on a type constructor. It is similar to `Semigroup`, except that it applies to
+ * types of kind `* -> *`.
+ *
+ * In case of `Option` returns the left-most non-`None` value.
+ *
+ * @example
+ * import * as O from 'fp-ts/Option'
+ * import { pipe } from 'fp-ts/function'
+ *
+ * assert.deepStrictEqual(
+ *   pipe(
+ *     O.some('a'),
+ *     O.alt(() => O.some('b'))
+ *   ),
+ *   O.some('a')
+ * )
+ * assert.deepStrictEqual(
+ *   pipe(
+ *     O.none,
+ *     O.alt(() => O.some('b'))
+ *   ),
+ *   O.some('b')
+ * )
+ *
+ * @category Alt
+ * @since 2.0.0
+ */
+exports.alt = exports.altW;
+/**
+ * @category Alternative
+ * @since 2.7.0
+ */
+var zero = function () { return exports.none; };
+exports.zero = zero;
+/**
+ * @category MonadThrow
+ * @since 2.7.0
+ */
+var throwError = function () { return exports.none; };
+exports.throwError = throwError;
+/**
+ * @category Extend
+ * @since 2.0.0
+ */
+var extend = function (f) { return function (wa) {
+    return exports.isNone(wa) ? exports.none : exports.some(f(wa));
+}; };
+exports.extend = extend;
+/**
+ * Derivable from `Extend`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.duplicate = 
+/*#__PURE__*/
+exports.extend(function_1.identity);
+/**
+ * @category Foldable
+ * @since 2.0.0
+ */
+var reduce = function (b, f) { return function (fa) {
+    return exports.isNone(fa) ? b : f(b, fa.value);
+}; };
+exports.reduce = reduce;
+/**
+ * @category Foldable
+ * @since 2.0.0
+ */
+var foldMap = function (M) { return function (f) { return function (fa) {
+    return exports.isNone(fa) ? M.empty : f(fa.value);
+}; }; };
+exports.foldMap = foldMap;
+/**
+ * @category Foldable
+ * @since 2.0.0
+ */
+var reduceRight = function (b, f) { return function (fa) {
+    return exports.isNone(fa) ? b : f(fa.value, b);
+}; };
+exports.reduceRight = reduceRight;
+/**
+ * @category Compactable
+ * @since 2.0.0
+ */
+exports.compact = exports.flatten;
+var defaultSeparate = { left: exports.none, right: exports.none };
+/**
+ * @category Compactable
+ * @since 2.0.0
+ */
+var separate = function (ma) {
+    var o = function_1.pipe(ma, exports.map(function (e) { return ({
+        left: getLeft(e),
+        right: getRight(e)
+    }); }));
+    return exports.isNone(o) ? defaultSeparate : o.value;
+};
+exports.separate = separate;
+/**
+ * @category Filterable
+ * @since 2.0.0
+ */
+var filter = function (predicate) { return function (fa) { return (exports.isNone(fa) ? exports.none : predicate(fa.value) ? fa : exports.none); }; };
+exports.filter = filter;
+/**
+ * @category Filterable
+ * @since 2.0.0
+ */
+var filterMap = function (f) { return function (fa) {
+    return exports.isNone(fa) ? exports.none : f(fa.value);
+}; };
+exports.filterMap = filterMap;
+/**
+ * @category Filterable
+ * @since 2.0.0
+ */
+var partition = function (predicate) { return function (fa) {
+    return {
+        left: filter_(fa, function (a) { return !predicate(a); }),
+        right: filter_(fa, predicate)
+    };
+}; };
+exports.partition = partition;
+/**
+ * @category Filterable
+ * @since 2.0.0
+ */
+var partitionMap = function (f) { return function_1.flow(exports.map(f), exports.separate); };
+exports.partitionMap = partitionMap;
+/**
+ * @category Traversable
+ * @since 2.6.3
+ */
+var traverse = function (F) { return function (f) { return function (ta) { return (exports.isNone(ta) ? F.of(exports.none) : F.map(f(ta.value), exports.some)); }; }; };
+exports.traverse = traverse;
+/**
+ * @category Traversable
+ * @since 2.6.3
+ */
+var sequence = function (F) { return function (ta) { return (exports.isNone(ta) ? F.of(exports.none) : F.map(ta.value, exports.some)); }; };
+exports.sequence = sequence;
+/**
+ * @category Witherable
+ * @since 2.6.5
+ */
+var wither = function (F) { return function (f) { return function (fa) { return (exports.isNone(fa) ? F.of(exports.none) : f(fa.value)); }; }; };
+exports.wither = wither;
+/**
+ * @category Witherable
+ * @since 2.6.5
+ */
+var wilt = function (F) { return function (f) { return function (fa) {
+    return exports.isNone(fa)
+        ? F.of({
+            left: exports.none,
+            right: exports.none
+        })
+        : F.map(f(fa.value), function (e) { return ({
+            left: getLeft(e),
+            right: getRight(e)
+        }); });
+}; }; };
+exports.wilt = wilt;
+// -------------------------------------------------------------------------------------
+// instances
+// -------------------------------------------------------------------------------------
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.URI = 'Option';
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+function getShow(S) {
+    return {
+        show: function (ma) { return (exports.isNone(ma) ? 'none' : "some(" + S.show(ma.value) + ")"); }
+    };
+}
+exports.getShow = getShow;
+/**
+ * @example
+ * import { none, some, getEq } from 'fp-ts/Option'
+ * import { eqNumber } from 'fp-ts/Eq'
+ *
+ * const E = getEq(eqNumber)
+ * assert.strictEqual(E.equals(none, none), true)
+ * assert.strictEqual(E.equals(none, some(1)), false)
+ * assert.strictEqual(E.equals(some(1), none), false)
+ * assert.strictEqual(E.equals(some(1), some(2)), false)
+ * assert.strictEqual(E.equals(some(1), some(1)), true)
+ *
+ * @category instances
+ * @since 2.0.0
+ */
+function getEq(E) {
+    return {
+        equals: function (x, y) { return x === y || (exports.isNone(x) ? exports.isNone(y) : exports.isNone(y) ? false : E.equals(x.value, y.value)); }
+    };
+}
+exports.getEq = getEq;
+/**
+ * The `Ord` instance allows `Option` values to be compared with
+ * `compare`, whenever there is an `Ord` instance for
+ * the type the `Option` contains.
+ *
+ * `None` is considered to be less than any `Some` value.
+ *
+ *
+ * @example
+ * import { none, some, getOrd } from 'fp-ts/Option'
+ * import { ordNumber } from 'fp-ts/Ord'
+ *
+ * const O = getOrd(ordNumber)
+ * assert.strictEqual(O.compare(none, none), 0)
+ * assert.strictEqual(O.compare(none, some(1)), -1)
+ * assert.strictEqual(O.compare(some(1), none), 1)
+ * assert.strictEqual(O.compare(some(1), some(2)), -1)
+ * assert.strictEqual(O.compare(some(1), some(1)), 0)
+ *
+ * @category instances
+ * @since 2.0.0
+ */
+function getOrd(O) {
+    return {
+        equals: getEq(O).equals,
+        compare: function (x, y) { return (x === y ? 0 : exports.isSome(x) ? (exports.isSome(y) ? O.compare(x.value, y.value) : 1) : -1); }
+    };
+}
+exports.getOrd = getOrd;
+/**
+ * `Apply` semigroup
+ *
+ * | x       | y       | concat(x, y)       |
+ * | ------- | ------- | ------------------ |
+ * | none    | none    | none               |
+ * | some(a) | none    | none               |
+ * | none    | some(a) | none               |
+ * | some(a) | some(b) | some(concat(a, b)) |
+ *
+ * @example
+ * import { getApplySemigroup, some, none } from 'fp-ts/Option'
+ * import { semigroupSum } from 'fp-ts/Semigroup'
+ *
+ * const S = getApplySemigroup(semigroupSum)
+ * assert.deepStrictEqual(S.concat(none, none), none)
+ * assert.deepStrictEqual(S.concat(some(1), none), none)
+ * assert.deepStrictEqual(S.concat(none, some(1)), none)
+ * assert.deepStrictEqual(S.concat(some(1), some(2)), some(3))
+ *
+ * @category instances
+ * @since 2.0.0
+ */
+function getApplySemigroup(S) {
+    return {
+        concat: function (x, y) { return (exports.isSome(x) && exports.isSome(y) ? exports.some(S.concat(x.value, y.value)) : exports.none); }
+    };
+}
+exports.getApplySemigroup = getApplySemigroup;
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+function getApplyMonoid(M) {
+    return {
+        concat: getApplySemigroup(M).concat,
+        empty: exports.some(M.empty)
+    };
+}
+exports.getApplyMonoid = getApplyMonoid;
+/**
+ * Monoid returning the left-most non-`None` value
+ *
+ * | x       | y       | concat(x, y) |
+ * | ------- | ------- | ------------ |
+ * | none    | none    | none         |
+ * | some(a) | none    | some(a)      |
+ * | none    | some(a) | some(a)      |
+ * | some(a) | some(b) | some(a)      |
+ *
+ * @example
+ * import { getFirstMonoid, some, none } from 'fp-ts/Option'
+ *
+ * const M = getFirstMonoid<number>()
+ * assert.deepStrictEqual(M.concat(none, none), none)
+ * assert.deepStrictEqual(M.concat(some(1), none), some(1))
+ * assert.deepStrictEqual(M.concat(none, some(1)), some(1))
+ * assert.deepStrictEqual(M.concat(some(1), some(2)), some(1))
+ *
+ * @category instances
+ * @since 2.0.0
+ */
+function getFirstMonoid() {
+    return {
+        concat: function (x, y) { return (exports.isNone(x) ? y : x); },
+        empty: exports.none
+    };
+}
+exports.getFirstMonoid = getFirstMonoid;
+/**
+ * Monoid returning the right-most non-`None` value
+ *
+ * | x       | y       | concat(x, y) |
+ * | ------- | ------- | ------------ |
+ * | none    | none    | none         |
+ * | some(a) | none    | some(a)      |
+ * | none    | some(a) | some(a)      |
+ * | some(a) | some(b) | some(b)      |
+ *
+ * @example
+ * import { getLastMonoid, some, none } from 'fp-ts/Option'
+ *
+ * const M = getLastMonoid<number>()
+ * assert.deepStrictEqual(M.concat(none, none), none)
+ * assert.deepStrictEqual(M.concat(some(1), none), some(1))
+ * assert.deepStrictEqual(M.concat(none, some(1)), some(1))
+ * assert.deepStrictEqual(M.concat(some(1), some(2)), some(2))
+ *
+ * @category instances
+ * @since 2.0.0
+ */
+function getLastMonoid() {
+    return {
+        concat: function (x, y) { return (exports.isNone(y) ? x : y); },
+        empty: exports.none
+    };
+}
+exports.getLastMonoid = getLastMonoid;
+/**
+ * Monoid returning the left-most non-`None` value. If both operands are `Some`s then the inner values are
+ * concatenated using the provided `Semigroup`
+ *
+ * | x       | y       | concat(x, y)       |
+ * | ------- | ------- | ------------------ |
+ * | none    | none    | none               |
+ * | some(a) | none    | some(a)            |
+ * | none    | some(a) | some(a)            |
+ * | some(a) | some(b) | some(concat(a, b)) |
+ *
+ * @example
+ * import { getMonoid, some, none } from 'fp-ts/Option'
+ * import { semigroupSum } from 'fp-ts/Semigroup'
+ *
+ * const M = getMonoid(semigroupSum)
+ * assert.deepStrictEqual(M.concat(none, none), none)
+ * assert.deepStrictEqual(M.concat(some(1), none), some(1))
+ * assert.deepStrictEqual(M.concat(none, some(1)), some(1))
+ * assert.deepStrictEqual(M.concat(some(1), some(2)), some(3))
+ *
+ * @category instances
+ * @since 2.0.0
+ */
+function getMonoid(S) {
+    return {
+        concat: function (x, y) { return (exports.isNone(x) ? y : exports.isNone(y) ? x : exports.some(S.concat(x.value, y.value))); },
+        empty: exports.none
+    };
+}
+exports.getMonoid = getMonoid;
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Functor = {
+    URI: exports.URI,
+    map: map_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Applicative = {
+    URI: exports.URI,
+    map: map_,
+    ap: ap_,
+    of: exports.of
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Monad = {
+    URI: exports.URI,
+    map: map_,
+    ap: ap_,
+    of: exports.of,
+    chain: chain_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Foldable = {
+    URI: exports.URI,
+    reduce: reduce_,
+    foldMap: foldMap_,
+    reduceRight: reduceRight_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Alt = {
+    URI: exports.URI,
+    map: map_,
+    alt: alt_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Alternative = {
+    URI: exports.URI,
+    map: map_,
+    ap: ap_,
+    of: exports.of,
+    alt: alt_,
+    zero: exports.zero
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Extend = {
+    URI: exports.URI,
+    map: map_,
+    extend: extend_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Compactable = {
+    URI: exports.URI,
+    compact: exports.compact,
+    separate: exports.separate
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Filterable = {
+    URI: exports.URI,
+    map: map_,
+    compact: exports.compact,
+    separate: exports.separate,
+    filter: filter_,
+    filterMap: filterMap_,
+    partition: partition_,
+    partitionMap: partitionMap_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Traversable = {
+    URI: exports.URI,
+    map: map_,
+    reduce: reduce_,
+    foldMap: foldMap_,
+    reduceRight: reduceRight_,
+    traverse: traverse_,
+    sequence: exports.sequence
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Witherable = {
+    URI: exports.URI,
+    map: map_,
+    reduce: reduce_,
+    foldMap: foldMap_,
+    reduceRight: reduceRight_,
+    traverse: traverse_,
+    sequence: exports.sequence,
+    compact: exports.compact,
+    separate: exports.separate,
+    filter: filter_,
+    filterMap: filterMap_,
+    partition: partition_,
+    partitionMap: partitionMap_,
+    wither: wither_,
+    wilt: wilt_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.MonadThrow = {
+    URI: exports.URI,
+    map: map_,
+    ap: ap_,
+    of: exports.of,
+    chain: chain_,
+    throwError: exports.throwError
+};
+// TODO: remove in v3
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.option = {
+    URI: exports.URI,
+    map: map_,
+    of: exports.of,
+    ap: ap_,
+    chain: chain_,
+    reduce: reduce_,
+    foldMap: foldMap_,
+    reduceRight: reduceRight_,
+    traverse: traverse_,
+    sequence: exports.sequence,
+    zero: exports.zero,
+    alt: alt_,
+    extend: extend_,
+    compact: exports.compact,
+    separate: exports.separate,
+    filter: filter_,
+    filterMap: filterMap_,
+    partition: partition_,
+    partitionMap: partitionMap_,
+    wither: wither_,
+    wilt: wilt_,
+    throwError: exports.throwError
+};
+// -------------------------------------------------------------------------------------
+// utils
+// -------------------------------------------------------------------------------------
+/**
+ * Returns `true` if `ma` contains `a`
+ *
+ * @example
+ * import { some, none, elem } from 'fp-ts/Option'
+ * import { eqNumber } from 'fp-ts/Eq'
+ *
+ * assert.strictEqual(elem(eqNumber)(1, some(1)), true)
+ * assert.strictEqual(elem(eqNumber)(2, some(1)), false)
+ * assert.strictEqual(elem(eqNumber)(1, none), false)
+ *
+ * @since 2.0.0
+ */
+function elem(E) {
+    return function (a, ma) { return (exports.isNone(ma) ? false : E.equals(a, ma.value)); };
+}
+exports.elem = elem;
+/**
+ * Returns `true` if the predicate is satisfied by the wrapped value
+ *
+ * @example
+ * import { some, none, exists } from 'fp-ts/Option'
+ * import { pipe } from 'fp-ts/function'
+ *
+ * assert.strictEqual(
+ *   pipe(
+ *     some(1),
+ *     exists(n => n > 0)
+ *   ),
+ *   true
+ * )
+ * assert.strictEqual(
+ *   pipe(
+ *     some(1),
+ *     exists(n => n > 1)
+ *   ),
+ *   false
+ * )
+ * assert.strictEqual(
+ *   pipe(
+ *     none,
+ *     exists(n => n > 0)
+ *   ),
+ *   false
+ * )
+ *
+ * @since 2.0.0
+ */
+function exists(predicate) {
+    return function (ma) { return (exports.isNone(ma) ? false : predicate(ma.value)); };
+}
+exports.exists = exists;
+/**
+ * Returns a `Refinement` (i.e. a custom type guard) from a `Option` returning function.
+ * This function ensures that a custom type guard definition is type-safe.
+ *
+ * ```ts
+ * import { some, none, getRefinement } from 'fp-ts/Option'
+ *
+ * type A = { type: 'A' }
+ * type B = { type: 'B' }
+ * type C = A | B
+ *
+ * const isA = (c: C): c is A => c.type === 'B' // <= typo but typescript doesn't complain
+ * const isA = getRefinement<C, A>(c => (c.type === 'B' ? some(c) : none)) // static error: Type '"B"' is not assignable to type '"A"'
+ * ```
+ *
+ * @since 2.0.0
+ */
+function getRefinement(getOption) {
+    return function (a) { return exports.isSome(getOption(a)); };
+}
+exports.getRefinement = getRefinement;
+// -------------------------------------------------------------------------------------
+// do notation
+// -------------------------------------------------------------------------------------
+/**
+ * @since 2.9.0
+ */
+exports.Do = 
+/*#__PURE__*/
+exports.of({});
+/**
+ * @since 2.8.0
+ */
+var bindTo = function (name) { return exports.map(function_1.bindTo_(name)); };
+exports.bindTo = bindTo;
+/**
+ * @since 2.8.0
+ */
+var bind = function (name, f) {
+    return exports.chain(function (a) {
+        return function_1.pipe(f(a), exports.map(function (b) { return function_1.bind_(a, name, b); }));
+    });
+};
+exports.bind = bind;
+// -------------------------------------------------------------------------------------
+// pipeable sequence S
+// -------------------------------------------------------------------------------------
+/**
+ * @since 2.8.0
+ */
+var apS = function (name, fb) {
+    return function_1.flow(exports.map(function (a) { return function (b) { return function_1.bind_(a, name, b); }; }), exports.ap(fb));
+};
+exports.apS = apS;
+// -------------------------------------------------------------------------------------
+// array utils
+// -------------------------------------------------------------------------------------
+/**
+ *
+ * @since 2.9.0
+ */
+var traverseArrayWithIndex = function (f) { return function (arr) {
+    // tslint:disable-next-line: readonly-array
+    var result = [];
+    for (var i = 0; i < arr.length; i++) {
+        var b = f(i, arr[i]);
+        if (exports.isNone(b)) {
+            return exports.none;
+        }
+        result.push(b.value);
+    }
+    return exports.some(result);
+}; };
+exports.traverseArrayWithIndex = traverseArrayWithIndex;
+/**
+ * Runs an action for every element in array and accumulates the results in option
+ *
+ * this function has the same behavior of `A.sequence(O.option)` but it's optimized and performs better
+ *
+ * @example
+ *
+ * import * as A from 'fp-ts/Array'
+ * import { traverseArray, some, fromPredicate, none } from 'fp-ts/Option'
+ * import { pipe } from 'fp-ts/function'
+ *
+ * const arr = A.range(0, 10)
+ * assert.deepStrictEqual(pipe(arr, traverseArray(some)), some(arr))
+ * assert.deepStrictEqual(pipe(arr, traverseArray(fromPredicate((x) => x > 5))), none)
+ *
+ * @since 2.9.0
+ */
+var traverseArray = function (f) { return exports.traverseArrayWithIndex(function (_, a) { return f(a); }); };
+exports.traverseArray = traverseArray;
+/**
+ * get an array of option and convert it to option of array
+ *
+ * this function has the same behavior of `A.sequence(O.option)` but it's optimized and performs better
+ *
+ * @example
+ *
+ * import * as A from 'fp-ts/Array'
+ * import { sequenceArray, some, none, fromPredicate } from 'fp-ts/Option'
+ * import { pipe } from 'fp-ts/function'
+ *
+ * const arr = A.range(0, 10)
+ * assert.deepStrictEqual(pipe(arr, A.map(some), sequenceArray), some(arr))
+ * assert.deepStrictEqual(pipe(arr, A.map(fromPredicate(x => x > 8)), sequenceArray), none)
+ *
+ * @since 2.9.0
+ */
+exports.sequenceArray = 
+/*#__PURE__*/
+exports.traverseArray(function_1.identity);
+
+
+/***/ }),
+/* 294 */,
+/* 295 */,
+/* 296 */,
+/* 297 */,
+/* 298 */,
+/* 299 */
 /***/ (function(__unusedmodule, exports) {
 
 "use strict";
@@ -4744,42 +11755,1324 @@ exports.paginateRest = paginateRest;
 
 
 /***/ }),
+/* 300 */,
+/* 301 */,
+/* 302 */,
+/* 303 */,
+/* 304 */,
+/* 305 */,
+/* 306 */
+/***/ (function(__unusedmodule, exports) {
 
-/***/ 317:
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+
+
+/***/ }),
+/* 307 */,
+/* 308 */,
+/* 309 */,
+/* 310 */,
+/* 311 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const utils = __webpack_require__(444);
-class EntryTransformer {
-    constructor(_settings) {
-        this._settings = _settings;
+exports.getWitherable = exports.getFilterable = exports.getApplyMonoid = exports.getApplySemigroup = exports.getSemigroup = exports.getEq = exports.getShow = exports.URI = exports.throwError = exports.sequence = exports.traverse = exports.reduceRight = exports.foldMap = exports.reduce = exports.duplicate = exports.extend = exports.alt = exports.altW = exports.flatten = exports.chainFirst = exports.chainFirstW = exports.chain = exports.chainW = exports.of = exports.apSecond = exports.apFirst = exports.ap = exports.apW = exports.mapLeft = exports.bimap = exports.map = exports.filterOrElse = exports.filterOrElseW = exports.orElse = exports.swap = exports.chainNullableK = exports.fromNullableK = exports.getOrElse = exports.getOrElseW = exports.fold = exports.fromPredicate = exports.fromOption = exports.stringifyJSON = exports.parseJSON = exports.tryCatch = exports.fromNullable = exports.right = exports.left = exports.isRight = exports.isLeft = void 0;
+exports.sequenceArray = exports.traverseArray = exports.traverseArrayWithIndex = exports.apS = exports.apSW = exports.bind = exports.bindW = exports.bindTo = exports.Do = exports.exists = exports.elem = exports.toError = exports.either = exports.getValidationMonoid = exports.MonadThrow = exports.ChainRec = exports.Extend = exports.Alt = exports.Bifunctor = exports.Traversable = exports.Foldable = exports.Monad = exports.Applicative = exports.Functor = exports.getValidationSemigroup = exports.getValidation = exports.getAltValidation = exports.getApplicativeValidation = void 0;
+var ChainRec_1 = __webpack_require__(99);
+var function_1 = __webpack_require__(231);
+// -------------------------------------------------------------------------------------
+// guards
+// -------------------------------------------------------------------------------------
+/**
+ * Returns `true` if the either is an instance of `Left`, `false` otherwise.
+ *
+ * @category guards
+ * @since 2.0.0
+ */
+var isLeft = function (ma) { return ma._tag === 'Left'; };
+exports.isLeft = isLeft;
+/**
+ * Returns `true` if the either is an instance of `Right`, `false` otherwise.
+ *
+ * @category guards
+ * @since 2.0.0
+ */
+var isRight = function (ma) { return ma._tag === 'Right'; };
+exports.isRight = isRight;
+// -------------------------------------------------------------------------------------
+// constructors
+// -------------------------------------------------------------------------------------
+/**
+ * Constructs a new `Either` holding a `Left` value. This usually represents a failure, due to the right-bias of this
+ * structure.
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+var left = function (e) { return ({ _tag: 'Left', left: e }); };
+exports.left = left;
+/**
+ * Constructs a new `Either` holding a `Right` value. This usually represents a successful value due to the right bias
+ * of this structure.
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+var right = function (a) { return ({ _tag: 'Right', right: a }); };
+exports.right = right;
+// TODO: make lazy in v3
+/**
+ * Takes a default and a nullable value, if the value is not nully, turn it into a `Right`, if the value is nully use
+ * the provided default as a `Left`.
+ *
+ * @example
+ * import { fromNullable, left, right } from 'fp-ts/Either'
+ *
+ * const parse = fromNullable('nully')
+ *
+ * assert.deepStrictEqual(parse(1), right(1))
+ * assert.deepStrictEqual(parse(null), left('nully'))
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+function fromNullable(e) {
+    return function (a) { return (a == null ? exports.left(e) : exports.right(a)); };
+}
+exports.fromNullable = fromNullable;
+// TODO: `onError => Lazy<A> => Either` in v3
+/**
+ * Constructs a new `Either` from a function that might throw.
+ *
+ * @example
+ * import { Either, left, right, tryCatch } from 'fp-ts/Either'
+ *
+ * const unsafeHead = <A>(as: Array<A>): A => {
+ *   if (as.length > 0) {
+ *     return as[0]
+ *   } else {
+ *     throw new Error('empty array')
+ *   }
+ * }
+ *
+ * const head = <A>(as: Array<A>): Either<Error, A> => {
+ *   return tryCatch(() => unsafeHead(as), e => (e instanceof Error ? e : new Error('unknown error')))
+ * }
+ *
+ * assert.deepStrictEqual(head([]), left(new Error('empty array')))
+ * assert.deepStrictEqual(head([1, 2, 3]), right(1))
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+function tryCatch(f, onError) {
+    try {
+        return exports.right(f());
     }
-    getTransformer() {
-        return (entry) => this._transform(entry);
-    }
-    _transform(entry) {
-        let filepath = entry.path;
-        if (this._settings.absolute) {
-            filepath = utils.path.makeAbsolute(this._settings.cwd, filepath);
-            filepath = utils.path.unixify(filepath);
-        }
-        if (this._settings.markDirectories && entry.dirent.isDirectory()) {
-            filepath += '/';
-        }
-        if (!this._settings.objectMode) {
-            return filepath;
-        }
-        return Object.assign(Object.assign({}, entry), { path: filepath });
+    catch (e) {
+        return exports.left(onError(e));
     }
 }
-exports.default = EntryTransformer;
+exports.tryCatch = tryCatch;
+// TODO curry in v3
+/**
+ * Converts a JavaScript Object Notation (JSON) string into an object.
+ *
+ * @example
+ * import { parseJSON, toError, right, left } from 'fp-ts/Either'
+ *
+ * assert.deepStrictEqual(parseJSON('{"a":1}', toError), right({ a: 1 }))
+ * assert.deepStrictEqual(parseJSON('{"a":}', toError), left(new SyntaxError('Unexpected token } in JSON at position 5')))
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+function parseJSON(s, onError) {
+    return tryCatch(function () { return JSON.parse(s); }, onError);
+}
+exports.parseJSON = parseJSON;
+// TODO curry in v3
+/**
+ * Converts a JavaScript value to a JavaScript Object Notation (JSON) string.
+ *
+ * @example
+ * import * as E from 'fp-ts/Either'
+ * import { pipe } from 'fp-ts/function'
+ *
+ * assert.deepStrictEqual(E.stringifyJSON({ a: 1 }, E.toError), E.right('{"a":1}'))
+ * const circular: any = { ref: null }
+ * circular.ref = circular
+ * assert.deepStrictEqual(
+ *   pipe(
+ *     E.stringifyJSON(circular, E.toError),
+ *     E.mapLeft(e => e.message.includes('Converting circular structure to JSON'))
+ *   ),
+ *   E.left(true)
+ * )
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+function stringifyJSON(u, onError) {
+    return tryCatch(function () { return JSON.stringify(u); }, onError);
+}
+exports.stringifyJSON = stringifyJSON;
+/**
+ * Derivable from `MonadThrow`.
+ *
+ * @example
+ * import { fromOption, left, right } from 'fp-ts/Either'
+ * import { pipe } from 'fp-ts/function'
+ * import { none, some } from 'fp-ts/Option'
+ *
+ * assert.deepStrictEqual(
+ *   pipe(
+ *     some(1),
+ *     fromOption(() => 'error')
+ *   ),
+ *   right(1)
+ * )
+ * assert.deepStrictEqual(
+ *   pipe(
+ *     none,
+ *     fromOption(() => 'error')
+ *   ),
+ *   left('error')
+ * )
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+var fromOption = function (onNone) { return function (ma) {
+    return ma._tag === 'None' ? exports.left(onNone()) : exports.right(ma.value);
+}; };
+exports.fromOption = fromOption;
+/**
+ * Derivable from `MonadThrow`.
+ *
+ * @example
+ * import { fromPredicate, left, right } from 'fp-ts/Either'
+ * import { pipe } from 'fp-ts/function'
+ *
+ * assert.deepStrictEqual(
+ *   pipe(
+ *     1,
+ *     fromPredicate(
+ *       (n) => n > 0,
+ *       () => 'error'
+ *     )
+ *   ),
+ *   right(1)
+ * )
+ * assert.deepStrictEqual(
+ *   pipe(
+ *     -1,
+ *     fromPredicate(
+ *       (n) => n > 0,
+ *       () => 'error'
+ *     )
+ *   ),
+ *   left('error')
+ * )
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+var fromPredicate = function (predicate, onFalse) { return function (a) { return (predicate(a) ? exports.right(a) : exports.left(onFalse(a))); }; };
+exports.fromPredicate = fromPredicate;
+// -------------------------------------------------------------------------------------
+// destructors
+// -------------------------------------------------------------------------------------
+/**
+ * Takes two functions and an `Either` value, if the value is a `Left` the inner value is applied to the first function,
+ * if the value is a `Right` the inner value is applied to the second function.
+ *
+ * @example
+ * import { fold, left, right } from 'fp-ts/Either'
+ * import { pipe } from 'fp-ts/function'
+ *
+ * function onLeft(errors: Array<string>): string {
+ *   return `Errors: ${errors.join(', ')}`
+ * }
+ *
+ * function onRight(value: number): string {
+ *   return `Ok: ${value}`
+ * }
+ *
+ * assert.strictEqual(
+ *   pipe(
+ *     right(1),
+ *     fold(onLeft, onRight)
+ *   ),
+ *   'Ok: 1'
+ * )
+ * assert.strictEqual(
+ *   pipe(
+ *     left(['error 1', 'error 2']),
+ *     fold(onLeft, onRight)
+ *   ),
+ *   'Errors: error 1, error 2'
+ * )
+ *
+ * @category destructors
+ * @since 2.0.0
+ */
+function fold(onLeft, onRight) {
+    return function (ma) { return (exports.isLeft(ma) ? onLeft(ma.left) : onRight(ma.right)); };
+}
+exports.fold = fold;
+/**
+ * Less strict version of [`getOrElse`](#getOrElse).
+ *
+ * @category destructors
+ * @since 2.6.0
+ */
+var getOrElseW = function (onLeft) { return function (ma) {
+    return exports.isLeft(ma) ? onLeft(ma.left) : ma.right;
+}; };
+exports.getOrElseW = getOrElseW;
+/**
+ * Returns the wrapped value if it's a `Right` or a default value if is a `Left`.
+ *
+ * @example
+ * import { getOrElse, left, right } from 'fp-ts/Either'
+ * import { pipe } from 'fp-ts/function'
+ *
+ * assert.deepStrictEqual(
+ *   pipe(
+ *     right(1),
+ *     getOrElse(() => 0)
+ *   ),
+ *   1
+ * )
+ * assert.deepStrictEqual(
+ *   pipe(
+ *     left('error'),
+ *     getOrElse(() => 0)
+ *   ),
+ *   0
+ * )
+ *
+ * @category destructors
+ * @since 2.0.0
+ */
+exports.getOrElse = exports.getOrElseW;
+// -------------------------------------------------------------------------------------
+// combinators
+// -------------------------------------------------------------------------------------
+/**
+ * @category combinators
+ * @since 2.9.0
+ */
+function fromNullableK(e) {
+    var from = fromNullable(e);
+    return function (f) { return function () {
+        var a = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            a[_i] = arguments[_i];
+        }
+        return from(f.apply(void 0, a));
+    }; };
+}
+exports.fromNullableK = fromNullableK;
+/**
+ * @category combinators
+ * @since 2.9.0
+ */
+function chainNullableK(e) {
+    var from = fromNullableK(e);
+    return function (f) { return exports.chain(from(f)); };
+}
+exports.chainNullableK = chainNullableK;
+/**
+ * Returns a `Right` if is a `Left` (and vice versa).
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+function swap(ma) {
+    return exports.isLeft(ma) ? exports.right(ma.left) : exports.left(ma.right);
+}
+exports.swap = swap;
+/**
+ * Useful for recovering from errors.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+function orElse(onLeft) {
+    return function (ma) { return (exports.isLeft(ma) ? onLeft(ma.left) : ma); };
+}
+exports.orElse = orElse;
+/**
+ * Less strict version of [`filterOrElse`](#filterOrElse).
+ *
+ * @since 2.9.0
+ */
+var filterOrElseW = function (predicate, onFalse) {
+    return exports.chainW(function (a) { return (predicate(a) ? exports.right(a) : exports.left(onFalse(a))); });
+};
+exports.filterOrElseW = filterOrElseW;
+/**
+ * Derivable from `MonadThrow`.
+ *
+ * @example
+ * import { filterOrElse, left, right } from 'fp-ts/Either'
+ * import { pipe } from 'fp-ts/function'
+ *
+ * assert.deepStrictEqual(
+ *   pipe(
+ *     right(1),
+ *     filterOrElse(
+ *       (n) => n > 0,
+ *       () => 'error'
+ *     )
+ *   ),
+ *   right(1)
+ * )
+ * assert.deepStrictEqual(
+ *   pipe(
+ *     right(-1),
+ *     filterOrElse(
+ *       (n) => n > 0,
+ *       () => 'error'
+ *     )
+ *   ),
+ *   left('error')
+ * )
+ * assert.deepStrictEqual(
+ *   pipe(
+ *     left('a'),
+ *     filterOrElse(
+ *       (n) => n > 0,
+ *       () => 'error'
+ *     )
+ *   ),
+ *   left('a')
+ * )
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.filterOrElse = exports.filterOrElseW;
+// -------------------------------------------------------------------------------------
+// non-pipeables
+// -------------------------------------------------------------------------------------
+var map_ = function (fa, f) { return function_1.pipe(fa, exports.map(f)); };
+var ap_ = function (fab, fa) { return function_1.pipe(fab, exports.ap(fa)); };
+/* istanbul ignore next */
+var chain_ = function (ma, f) { return function_1.pipe(ma, exports.chain(f)); };
+/* istanbul ignore next */
+var reduce_ = function (fa, b, f) { return function_1.pipe(fa, exports.reduce(b, f)); };
+/* istanbul ignore next */
+var foldMap_ = function (M) { return function (fa, f) {
+    var foldMapM = exports.foldMap(M);
+    return function_1.pipe(fa, foldMapM(f));
+}; };
+/* istanbul ignore next */
+var reduceRight_ = function (fa, b, f) { return function_1.pipe(fa, exports.reduceRight(b, f)); };
+var traverse_ = function (F) {
+    var traverseF = exports.traverse(F);
+    return function (ta, f) { return function_1.pipe(ta, traverseF(f)); };
+};
+var bimap_ = function (fa, f, g) { return function_1.pipe(fa, exports.bimap(f, g)); };
+var mapLeft_ = function (fa, f) { return function_1.pipe(fa, exports.mapLeft(f)); };
+/* istanbul ignore next */
+var alt_ = function (fa, that) { return function_1.pipe(fa, exports.alt(that)); };
+/* istanbul ignore next */
+var extend_ = function (wa, f) { return function_1.pipe(wa, exports.extend(f)); };
+var chainRec_ = function (a, f) {
+    return ChainRec_1.tailRec(f(a), function (e) {
+        return exports.isLeft(e) ? exports.right(exports.left(e.left)) : exports.isLeft(e.right) ? exports.left(f(e.right.left)) : exports.right(exports.right(e.right.right));
+    });
+};
+// -------------------------------------------------------------------------------------
+// pipeables
+// -------------------------------------------------------------------------------------
+/**
+ * `map` can be used to turn functions `(a: A) => B` into functions `(fa: F<A>) => F<B>` whose argument and return types
+ * use the type constructor `F` to represent some computational context.
+ *
+ * @category Functor
+ * @since 2.0.0
+ */
+var map = function (f) { return function (fa) {
+    return exports.isLeft(fa) ? fa : exports.right(f(fa.right));
+}; };
+exports.map = map;
+/**
+ * Map a pair of functions over the two type arguments of the bifunctor.
+ *
+ * @category Bifunctor
+ * @since 2.0.0
+ */
+var bimap = function (f, g) { return function (fa) { return (exports.isLeft(fa) ? exports.left(f(fa.left)) : exports.right(g(fa.right))); }; };
+exports.bimap = bimap;
+/**
+ * Map a function over the first type argument of a bifunctor.
+ *
+ * @category Bifunctor
+ * @since 2.0.0
+ */
+var mapLeft = function (f) { return function (fa) {
+    return exports.isLeft(fa) ? exports.left(f(fa.left)) : fa;
+}; };
+exports.mapLeft = mapLeft;
+/**
+ * Less strict version of [`ap`](#ap).
+ *
+ * @category Apply
+ * @since 2.8.0
+ */
+var apW = function (fa) { return function (fab) {
+    return exports.isLeft(fab) ? fab : exports.isLeft(fa) ? fa : exports.right(fab.right(fa.right));
+}; };
+exports.apW = apW;
+/**
+ * Apply a function to an argument under a type constructor.
+ *
+ * @category Apply
+ * @since 2.0.0
+ */
+exports.ap = exports.apW;
+/**
+ * Combine two effectful actions, keeping only the result of the first.
+ *
+ * Derivable from `Apply`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+var apFirst = function (fb) {
+    return function_1.flow(exports.map(function (a) { return function () { return a; }; }), exports.ap(fb));
+};
+exports.apFirst = apFirst;
+/**
+ * Combine two effectful actions, keeping only the result of the second.
+ *
+ * Derivable from `Apply`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+var apSecond = function (fb) {
+    return function_1.flow(exports.map(function () { return function (b) { return b; }; }), exports.ap(fb));
+};
+exports.apSecond = apSecond;
+/**
+ * Wrap a value into the type constructor.
+ *
+ * Equivalent to [`right`](#right).
+ *
+ * @example
+ * import * as E from 'fp-ts/Either'
+ *
+ * assert.deepStrictEqual(E.of('a'), E.right('a'))
+ *
+ * @category Applicative
+ * @since 2.7.0
+ */
+exports.of = exports.right;
+/**
+ * Less strict version of [`chain`](#chain).
+ *
+ * @category Monad
+ * @since 2.6.0
+ */
+var chainW = function (f) { return function (ma) {
+    return exports.isLeft(ma) ? ma : f(ma.right);
+}; };
+exports.chainW = chainW;
+/**
+ * Composes computations in sequence, using the return value of one computation to determine the next computation.
+ *
+ * @category Monad
+ * @since 2.0.0
+ */
+exports.chain = exports.chainW;
+/**
+ * Less strict version of [`chainFirst`](#chainFirst)
+ *
+ * Derivable from `Monad`.
+ *
+ * @category combinators
+ * @since 2.8.0
+ */
+var chainFirstW = function (f) { return function (ma) {
+    return function_1.pipe(ma, exports.chainW(function (a) {
+        return function_1.pipe(f(a), exports.map(function () { return a; }));
+    }));
+}; };
+exports.chainFirstW = chainFirstW;
+/**
+ * Composes computations in sequence, using the return value of one computation to determine the next computation and
+ * keeping only the result of the first.
+ *
+ * Derivable from `Monad`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.chainFirst = exports.chainFirstW;
+/**
+ * The `flatten` function is the conventional monad join operator. It is used to remove one level of monadic structure, projecting its bound argument into the outer level.
+ *
+ * Derivable from `Monad`.
+ *
+ * @example
+ * import * as E from 'fp-ts/Either'
+ *
+ * assert.deepStrictEqual(E.flatten(E.right(E.right('a'))), E.right('a'))
+ * assert.deepStrictEqual(E.flatten(E.right(E.left('e'))), E.left('e'))
+ * assert.deepStrictEqual(E.flatten(E.left('e')), E.left('e'))
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.flatten = 
+/*#__PURE__*/
+exports.chain(function_1.identity);
+/**
+ * Less strict version of [`alt`](#alt).
+ *
+ * @category Alt
+ * @since 2.9.0
+ */
+var altW = function (that) { return function (fa) { return (exports.isLeft(fa) ? that() : fa); }; };
+exports.altW = altW;
+/**
+ * Identifies an associative operation on a type constructor. It is similar to `Semigroup`, except that it applies to
+ * types of kind `* -> *`.
+ *
+ * @category Alt
+ * @since 2.0.0
+ */
+exports.alt = exports.altW;
+/**
+ * @category Extend
+ * @since 2.0.0
+ */
+var extend = function (f) { return function (wa) {
+    return exports.isLeft(wa) ? wa : exports.right(f(wa));
+}; };
+exports.extend = extend;
+/**
+ * Derivable from `Extend`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.duplicate = 
+/*#__PURE__*/
+exports.extend(function_1.identity);
+/**
+ * Left-associative fold of a structure.
+ *
+ * @example
+ * import { pipe } from 'fp-ts/function'
+ * import * as E from 'fp-ts/Either'
+ *
+ * const startWith = 'prefix'
+ * const concat = (a: string, b: string) => `${a}:${b}`
+ *
+ * assert.deepStrictEqual(
+ *   pipe(E.right('a'), E.reduce(startWith, concat)),
+ *   'prefix:a',
+ * )
+ *
+ * assert.deepStrictEqual(
+ *   pipe(E.left('e'), E.reduce(startWith, concat)),
+ *   'prefix',
+ * )
+ *
+ * @category Foldable
+ * @since 2.0.0
+ */
+var reduce = function (b, f) { return function (fa) {
+    return exports.isLeft(fa) ? b : f(b, fa.right);
+}; };
+exports.reduce = reduce;
+/**
+ * Map each element of the structure to a monoid, and combine the results.
+ *
+ * @example
+ * import { pipe } from 'fp-ts/function';
+ * import * as E from 'fp-ts/Either'
+ * import { monoidString } from 'fp-ts/Monoid'
+ *
+ * const yell = (a: string) => `${a}!`
+ *
+ * assert.deepStrictEqual(
+ *   pipe(E.right('a'), E.foldMap(monoidString)(yell)),
+ *   'a!',
+ * )
+ *
+ * assert.deepStrictEqual(
+ *   pipe(E.left('e'), E.foldMap(monoidString)(yell)),
+ *   monoidString.empty,
+ * )
+ *
+ * @category Foldable
+ * @since 2.0.0
+ */
+var foldMap = function (M) { return function (f) { return function (fa) {
+    return exports.isLeft(fa) ? M.empty : f(fa.right);
+}; }; };
+exports.foldMap = foldMap;
+/**
+ * Right-associative fold of a structure.
+ *
+ * @example
+ * import { pipe } from 'fp-ts/function'
+ * import * as E from 'fp-ts/Either'
+ *
+ * const startWith = 'postfix'
+ * const concat = (a: string, b: string) => `${a}:${b}`
+ *
+ * assert.deepStrictEqual(
+ *   pipe(E.right('a'), E.reduceRight(startWith, concat)),
+ *   'a:postfix',
+ * )
+ *
+ * assert.deepStrictEqual(
+ *   pipe(E.left('e'), E.reduceRight(startWith, concat)),
+ *   'postfix',
+ * )
+ *
+ * @category Foldable
+ * @since 2.0.0
+ */
+var reduceRight = function (b, f) { return function (fa) {
+    return exports.isLeft(fa) ? b : f(fa.right, b);
+}; };
+exports.reduceRight = reduceRight;
+/**
+ * Map each element of a structure to an action, evaluate these actions from left to right, and collect the results.
+ *
+ * @example
+ * import { pipe } from 'fp-ts/function'
+ * import * as A from 'fp-ts/Array'
+ * import * as E from 'fp-ts/Either'
+ * import * as O from 'fp-ts/Option'
+ *
+ * assert.deepStrictEqual(
+ *   pipe(E.right(['a']), E.traverse(O.option)(A.head)),
+ *   O.some(E.right('a')),
+ *  )
+ *
+ * assert.deepStrictEqual(
+ *   pipe(E.right([]), E.traverse(O.option)(A.head)),
+ *   O.none,
+ * )
+ *
+ * @category Traversable
+ * @since 2.6.3
+ */
+var traverse = function (F) { return function (f) { return function (ta) { return (exports.isLeft(ta) ? F.of(exports.left(ta.left)) : F.map(f(ta.right), exports.right)); }; }; };
+exports.traverse = traverse;
+/**
+ * Evaluate each monadic action in the structure from left to right, and collect the results.
+ *
+ * @example
+ * import { pipe } from 'fp-ts/function'
+ * import * as E from 'fp-ts/Either'
+ * import * as O from 'fp-ts/Option'
+ *
+ * assert.deepStrictEqual(
+ *   pipe(E.right(O.some('a')), E.sequence(O.option)),
+ *   O.some(E.right('a')),
+ *  )
+ *
+ * assert.deepStrictEqual(
+ *   pipe(E.right(O.none), E.sequence(O.option)),
+ *   O.none
+ * )
+ *
+ * @category Traversable
+ * @since 2.6.3
+ */
+var sequence = function (F) { return function (ma) {
+    return exports.isLeft(ma) ? F.of(exports.left(ma.left)) : F.map(ma.right, exports.right);
+}; };
+exports.sequence = sequence;
+/**
+ * @category MonadThrow
+ * @since 2.6.3
+ */
+exports.throwError = exports.left;
+// -------------------------------------------------------------------------------------
+// instances
+// -------------------------------------------------------------------------------------
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.URI = 'Either';
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+function getShow(SE, SA) {
+    return {
+        show: function (ma) { return (exports.isLeft(ma) ? "left(" + SE.show(ma.left) + ")" : "right(" + SA.show(ma.right) + ")"); }
+    };
+}
+exports.getShow = getShow;
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+function getEq(EL, EA) {
+    return {
+        equals: function (x, y) {
+            return x === y || (exports.isLeft(x) ? exports.isLeft(y) && EL.equals(x.left, y.left) : exports.isRight(y) && EA.equals(x.right, y.right));
+        }
+    };
+}
+exports.getEq = getEq;
+/**
+ * Semigroup returning the left-most non-`Left` value. If both operands are `Right`s then the inner values are
+ * concatenated using the provided `Semigroup`
+ *
+ * @example
+ * import { getSemigroup, left, right } from 'fp-ts/Either'
+ * import { semigroupSum } from 'fp-ts/Semigroup'
+ *
+ * const S = getSemigroup<string, number>(semigroupSum)
+ * assert.deepStrictEqual(S.concat(left('a'), left('b')), left('a'))
+ * assert.deepStrictEqual(S.concat(left('a'), right(2)), right(2))
+ * assert.deepStrictEqual(S.concat(right(1), left('b')), right(1))
+ * assert.deepStrictEqual(S.concat(right(1), right(2)), right(3))
+ *
+ * @category instances
+ * @since 2.0.0
+ */
+function getSemigroup(S) {
+    return {
+        concat: function (x, y) { return (exports.isLeft(y) ? x : exports.isLeft(x) ? y : exports.right(S.concat(x.right, y.right))); }
+    };
+}
+exports.getSemigroup = getSemigroup;
+/**
+ * Semigroup returning the left-most `Left` value. If both operands are `Right`s then the inner values
+ * are concatenated using the provided `Semigroup`
+ *
+ * @example
+ * import { getApplySemigroup, left, right } from 'fp-ts/Either'
+ * import { semigroupSum } from 'fp-ts/Semigroup'
+ *
+ * const S = getApplySemigroup<string, number>(semigroupSum)
+ * assert.deepStrictEqual(S.concat(left('a'), left('b')), left('a'))
+ * assert.deepStrictEqual(S.concat(left('a'), right(2)), left('a'))
+ * assert.deepStrictEqual(S.concat(right(1), left('b')), left('b'))
+ * assert.deepStrictEqual(S.concat(right(1), right(2)), right(3))
+ *
+ * @category instances
+ * @since 2.0.0
+ */
+function getApplySemigroup(S) {
+    return {
+        concat: function (x, y) { return (exports.isLeft(x) ? x : exports.isLeft(y) ? y : exports.right(S.concat(x.right, y.right))); }
+    };
+}
+exports.getApplySemigroup = getApplySemigroup;
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+function getApplyMonoid(M) {
+    return {
+        concat: getApplySemigroup(M).concat,
+        empty: exports.right(M.empty)
+    };
+}
+exports.getApplyMonoid = getApplyMonoid;
+/**
+ * Builds a `Filterable` instance for `Either` given `Monoid` for the left side
+ *
+ * @category instances
+ * @since 3.0.0
+ */
+function getFilterable(M) {
+    var empty = exports.left(M.empty);
+    var compact = function (ma) {
+        return exports.isLeft(ma) ? ma : ma.right._tag === 'None' ? empty : exports.right(ma.right.value);
+    };
+    var separate = function (ma) {
+        return exports.isLeft(ma)
+            ? { left: ma, right: ma }
+            : exports.isLeft(ma.right)
+                ? { left: exports.right(ma.right.left), right: empty }
+                : { left: empty, right: exports.right(ma.right.right) };
+    };
+    var partitionMap = function (ma, f) {
+        if (exports.isLeft(ma)) {
+            return { left: ma, right: ma };
+        }
+        var e = f(ma.right);
+        return exports.isLeft(e) ? { left: exports.right(e.left), right: empty } : { left: empty, right: exports.right(e.right) };
+    };
+    var partition = function (ma, p) {
+        return exports.isLeft(ma)
+            ? { left: ma, right: ma }
+            : p(ma.right)
+                ? { left: empty, right: exports.right(ma.right) }
+                : { left: exports.right(ma.right), right: empty };
+    };
+    var filterMap = function (ma, f) {
+        if (exports.isLeft(ma)) {
+            return ma;
+        }
+        var ob = f(ma.right);
+        return ob._tag === 'None' ? empty : exports.right(ob.value);
+    };
+    var filter = function (ma, predicate) {
+        return exports.isLeft(ma) ? ma : predicate(ma.right) ? ma : empty;
+    };
+    return {
+        URI: exports.URI,
+        _E: undefined,
+        map: map_,
+        compact: compact,
+        separate: separate,
+        filter: filter,
+        filterMap: filterMap,
+        partition: partition,
+        partitionMap: partitionMap
+    };
+}
+exports.getFilterable = getFilterable;
+/**
+ * Builds `Witherable` instance for `Either` given `Monoid` for the left side
+ *
+ * @category instances
+ * @since 2.0.0
+ */
+function getWitherable(M) {
+    var F_ = getFilterable(M);
+    var wither = function (F) {
+        var traverseF = traverse_(F);
+        return function (ma, f) { return F.map(traverseF(ma, f), F_.compact); };
+    };
+    var wilt = function (F) {
+        var traverseF = traverse_(F);
+        return function (ma, f) { return F.map(traverseF(ma, f), F_.separate); };
+    };
+    return {
+        URI: exports.URI,
+        _E: undefined,
+        map: map_,
+        compact: F_.compact,
+        separate: F_.separate,
+        filter: F_.filter,
+        filterMap: F_.filterMap,
+        partition: F_.partition,
+        partitionMap: F_.partitionMap,
+        traverse: traverse_,
+        sequence: exports.sequence,
+        reduce: reduce_,
+        foldMap: foldMap_,
+        reduceRight: reduceRight_,
+        wither: wither,
+        wilt: wilt
+    };
+}
+exports.getWitherable = getWitherable;
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+function getApplicativeValidation(SE) {
+    return {
+        URI: exports.URI,
+        _E: undefined,
+        map: map_,
+        ap: function (fab, fa) {
+            return exports.isLeft(fab)
+                ? exports.isLeft(fa)
+                    ? exports.left(SE.concat(fab.left, fa.left))
+                    : fab
+                : exports.isLeft(fa)
+                    ? fa
+                    : exports.right(fab.right(fa.right));
+        },
+        of: exports.of
+    };
+}
+exports.getApplicativeValidation = getApplicativeValidation;
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+function getAltValidation(SE) {
+    return {
+        URI: exports.URI,
+        _E: undefined,
+        map: map_,
+        alt: function (me, that) {
+            if (exports.isRight(me)) {
+                return me;
+            }
+            var ea = that();
+            return exports.isLeft(ea) ? exports.left(SE.concat(me.left, ea.left)) : ea;
+        }
+    };
+}
+exports.getAltValidation = getAltValidation;
+// TODO: remove in v3
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+function getValidation(SE) {
+    var applicativeValidation = getApplicativeValidation(SE);
+    var altValidation = getAltValidation(SE);
+    return {
+        URI: exports.URI,
+        _E: undefined,
+        map: map_,
+        of: exports.of,
+        chain: chain_,
+        bimap: bimap_,
+        mapLeft: mapLeft_,
+        reduce: reduce_,
+        foldMap: foldMap_,
+        reduceRight: reduceRight_,
+        extend: extend_,
+        traverse: traverse_,
+        sequence: exports.sequence,
+        chainRec: chainRec_,
+        throwError: exports.throwError,
+        ap: applicativeValidation.ap,
+        alt: altValidation.alt
+    };
+}
+exports.getValidation = getValidation;
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+function getValidationSemigroup(SE, SA) {
+    return {
+        concat: function (x, y) {
+            return exports.isLeft(x) ? (exports.isLeft(y) ? exports.left(SE.concat(x.left, y.left)) : x) : exports.isLeft(y) ? y : exports.right(SA.concat(x.right, y.right));
+        }
+    };
+}
+exports.getValidationSemigroup = getValidationSemigroup;
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Functor = {
+    URI: exports.URI,
+    map: map_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Applicative = {
+    URI: exports.URI,
+    map: map_,
+    ap: ap_,
+    of: exports.of
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Monad = {
+    URI: exports.URI,
+    map: map_,
+    ap: ap_,
+    of: exports.of,
+    chain: chain_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Foldable = {
+    URI: exports.URI,
+    reduce: reduce_,
+    foldMap: foldMap_,
+    reduceRight: reduceRight_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Traversable = {
+    URI: exports.URI,
+    map: map_,
+    reduce: reduce_,
+    foldMap: foldMap_,
+    reduceRight: reduceRight_,
+    traverse: traverse_,
+    sequence: exports.sequence
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Bifunctor = {
+    URI: exports.URI,
+    bimap: bimap_,
+    mapLeft: mapLeft_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Alt = {
+    URI: exports.URI,
+    map: map_,
+    alt: alt_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Extend = {
+    URI: exports.URI,
+    map: map_,
+    extend: extend_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.ChainRec = {
+    URI: exports.URI,
+    map: map_,
+    ap: ap_,
+    chain: chain_,
+    chainRec: chainRec_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.MonadThrow = {
+    URI: exports.URI,
+    map: map_,
+    ap: ap_,
+    of: exports.of,
+    chain: chain_,
+    throwError: exports.throwError
+};
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+function getValidationMonoid(SE, SA) {
+    return {
+        concat: getValidationSemigroup(SE, SA).concat,
+        empty: exports.right(SA.empty)
+    };
+}
+exports.getValidationMonoid = getValidationMonoid;
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.either = {
+    URI: exports.URI,
+    map: map_,
+    of: exports.of,
+    ap: ap_,
+    chain: chain_,
+    reduce: reduce_,
+    foldMap: foldMap_,
+    reduceRight: reduceRight_,
+    traverse: traverse_,
+    sequence: exports.sequence,
+    bimap: bimap_,
+    mapLeft: mapLeft_,
+    alt: alt_,
+    extend: extend_,
+    chainRec: chainRec_,
+    throwError: exports.throwError
+};
+// -------------------------------------------------------------------------------------
+// utils
+// -------------------------------------------------------------------------------------
+/**
+ * Default value for the `onError` argument of `tryCatch`
+ *
+ * @since 2.0.0
+ */
+function toError(e) {
+    return e instanceof Error ? e : new Error(String(e));
+}
+exports.toError = toError;
+/**
+ * @since 2.0.0
+ */
+function elem(E) {
+    return function (a, ma) { return (exports.isLeft(ma) ? false : E.equals(a, ma.right)); };
+}
+exports.elem = elem;
+/**
+ * Returns `false` if `Left` or returns the result of the application of the given predicate to the `Right` value.
+ *
+ * @example
+ * import { exists, left, right } from 'fp-ts/Either'
+ *
+ * const gt2 = exists((n: number) => n > 2)
+ *
+ * assert.strictEqual(gt2(left('a')), false)
+ * assert.strictEqual(gt2(right(1)), false)
+ * assert.strictEqual(gt2(right(3)), true)
+ *
+ * @since 2.0.0
+ */
+function exists(predicate) {
+    return function (ma) { return (exports.isLeft(ma) ? false : predicate(ma.right)); };
+}
+exports.exists = exists;
+// -------------------------------------------------------------------------------------
+// do notation
+// -------------------------------------------------------------------------------------
+/**
+ * @since 2.9.0
+ */
+exports.Do = 
+/*#__PURE__*/
+exports.of({});
+/**
+ * @since 2.8.0
+ */
+var bindTo = function (name) {
+    return exports.map(function_1.bindTo_(name));
+};
+exports.bindTo = bindTo;
+/**
+ * @since 2.8.0
+ */
+var bindW = function (name, f) {
+    return exports.chainW(function (a) {
+        return function_1.pipe(f(a), exports.map(function (b) { return function_1.bind_(a, name, b); }));
+    });
+};
+exports.bindW = bindW;
+/**
+ * @since 2.8.0
+ */
+exports.bind = exports.bindW;
+// -------------------------------------------------------------------------------------
+// pipeable sequence S
+// -------------------------------------------------------------------------------------
+/**
+ * @since 2.8.0
+ */
+var apSW = function (name, fb) {
+    return function_1.flow(exports.map(function (a) { return function (b) { return function_1.bind_(a, name, b); }; }), exports.apW(fb));
+};
+exports.apSW = apSW;
+/**
+ * @since 2.8.0
+ */
+exports.apS = exports.apSW;
+// -------------------------------------------------------------------------------------
+// array utils
+// -------------------------------------------------------------------------------------
+/**
+ *
+ * @since 2.9.0
+ */
+var traverseArrayWithIndex = function (f) { return function (arr) {
+    // tslint:disable-next-line: readonly-array
+    var result = [];
+    for (var i = 0; i < arr.length; i++) {
+        var e = f(i, arr[i]);
+        if (e._tag === 'Left') {
+            return e;
+        }
+        result.push(e.right);
+    }
+    return exports.right(result);
+}; };
+exports.traverseArrayWithIndex = traverseArrayWithIndex;
+/**
+ * map an array using provided function to Either then transform to Either of the array
+ * this function has the same behavior of `A.traverse(E.either)` but it's optimized and performs better
+ *
+ * @example
+ *
+ *
+ * import { traverseArray, left, right, fromPredicate } from 'fp-ts/Either'
+ * import { pipe } from 'fp-ts/function'
+ * import * as A from 'fp-ts/Array'
+ *
+ * const arr = A.range(0, 10)
+ * assert.deepStrictEqual(
+ *   pipe(
+ *     arr,
+ *     traverseArray((x) => right(x))
+ *   ),
+ *   right(arr)
+ * )
+ * assert.deepStrictEqual(
+ *   pipe(
+ *     arr,
+ *     traverseArray(
+ *       fromPredicate(
+ *         (x) => x > 5,
+ *         () => 'a'
+ *       )
+ *     )
+ *   ),
+ *   left('a')
+ * )
+ * @since 2.9.0
+ */
+var traverseArray = function (f) { return exports.traverseArrayWithIndex(function (_, a) { return f(a); }); };
+exports.traverseArray = traverseArray;
+/**
+ * convert an array of either to an either of array
+ * this function has the same behavior of `A.sequence(E.either)` but it's optimized and performs better
+ *
+ * @example
+ *
+ * import { sequenceArray, left, right } from 'fp-ts/Either'
+ * import { pipe } from 'fp-ts/function'
+ * import * as A from 'fp-ts/Array'
+ *
+ * const arr = A.range(0, 10)
+ * assert.deepStrictEqual(pipe(arr, A.map(right), sequenceArray), right(arr))
+ * assert.deepStrictEqual(pipe(arr, A.map(right), A.cons(left('Error')), sequenceArray), left('Error'))
+ *
+ * @since 2.9.0
+ */
+exports.sequenceArray = 
+/*#__PURE__*/
+exports.traverseArray(function_1.identity);
 
 
 /***/ }),
+/* 312 */,
+/* 313 */,
+/* 314 */,
+/* 315 */,
+/* 316 */,
+/* 317 */
+/***/ (function(__unusedmodule, exports) {
 
-/***/ 320:
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+
+
+/***/ }),
+/* 318 */,
+/* 319 */,
+/* 320 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
@@ -4836,8 +13129,9 @@ exports.default = Matcher;
 
 
 /***/ }),
-
-/***/ 323:
+/* 321 */,
+/* 322 */,
+/* 323 */
 /***/ (function(module) {
 
 "use strict";
@@ -4865,8 +13159,23 @@ isStream.transform = function (stream) {
 
 
 /***/ }),
+/* 324 */,
+/* 325 */,
+/* 326 */
+/***/ (function(__unusedmodule, exports) {
 
-/***/ 332:
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+
+
+/***/ }),
+/* 327 */,
+/* 328 */,
+/* 329 */,
+/* 330 */,
+/* 331 */,
+/* 332 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
@@ -4930,15 +13239,333 @@ exports.default = Settings;
 
 
 /***/ }),
+/* 333 */,
+/* 334 */,
+/* 335 */,
+/* 336 */,
+/* 337 */,
+/* 338 */
+/***/ (function(__unusedmodule, exports) {
 
-/***/ 357:
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getDualBooleanAlgebra = exports.getFunctionBooleanAlgebra = exports.booleanAlgebraVoid = exports.booleanAlgebraBoolean = void 0;
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.booleanAlgebraBoolean = {
+    meet: function (x, y) { return x && y; },
+    join: function (x, y) { return x || y; },
+    zero: false,
+    one: true,
+    implies: function (x, y) { return !x || y; },
+    not: function (x) { return !x; }
+};
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.booleanAlgebraVoid = {
+    meet: function () { return undefined; },
+    join: function () { return undefined; },
+    zero: undefined,
+    one: undefined,
+    implies: function () { return undefined; },
+    not: function () { return undefined; }
+};
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+function getFunctionBooleanAlgebra(B) {
+    return function () { return ({
+        meet: function (x, y) { return function (a) { return B.meet(x(a), y(a)); }; },
+        join: function (x, y) { return function (a) { return B.join(x(a), y(a)); }; },
+        zero: function () { return B.zero; },
+        one: function () { return B.one; },
+        implies: function (x, y) { return function (a) { return B.implies(x(a), y(a)); }; },
+        not: function (x) { return function (a) { return B.not(x(a)); }; }
+    }); };
+}
+exports.getFunctionBooleanAlgebra = getFunctionBooleanAlgebra;
+/**
+ * Every boolean algebras has a dual algebra, which involves reversing one/zero as well as join/meet.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+function getDualBooleanAlgebra(B) {
+    return {
+        meet: function (x, y) { return B.join(x, y); },
+        join: function (x, y) { return B.meet(x, y); },
+        zero: B.one,
+        one: B.zero,
+        implies: function (x, y) { return B.join(B.not(x), y); },
+        not: B.not
+    };
+}
+exports.getDualBooleanAlgebra = getDualBooleanAlgebra;
+
+
+/***/ }),
+/* 339 */,
+/* 340 */,
+/* 341 */,
+/* 342 */
+/***/ (function(__unusedmodule, exports) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+
+
+/***/ }),
+/* 343 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.filterMap = exports.separate = exports.compact = exports.fromArray = exports.toggle = exports.remove = exports.insert = exports.singleton = exports.foldMap = exports.reduce = exports.getIntersectionSemigroup = exports.getUnionMonoid = exports.difference = exports.partitionMap = exports.intersection = exports.union = exports.elem = exports.partition = exports.filter = exports.subset = exports.chain = exports.every = exports.map = exports.some = exports.getEq = exports.toArray = exports.empty = exports.getShow = void 0;
+var RS = __importStar(__webpack_require__(695));
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.getShow = RS.getShow;
+/**
+ * @since 2.0.0
+ */
+exports.empty = new Set();
+/**
+ * @category constructors
+ * @since 2.0.0
+ */
+// tslint:disable-next-line: readonly-array
+exports.toArray = RS.toReadonlyArray;
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.getEq = RS.getEq;
+/**
+ * @since 2.0.0
+ */
+exports.some = RS.some;
+/**
+ * `map` can be used to turn functions `(a: A) => B` into functions `(fa: F<A>) => F<B>` whose argument and return types
+ * use the type constructor `F` to represent some computational context.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.map = RS.map;
+/**
+ * @since 2.0.0
+ */
+exports.every = RS.every;
+/**
+ * Composes computations in sequence, using the return value of one computation to determine the next computation.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.chain = RS.chain;
+// TODO: remove non-curried overloading in v3
+/**
+ * `true` if and only if every element in the first set is an element of the second set
+ *
+ * @since 2.0.0
+ */
+exports.subset = RS.isSubset;
+function filter(predicate) {
+    return RS.filter(predicate);
+}
+exports.filter = filter;
+function partition(predicate) {
+    return RS.partition(predicate);
+}
+exports.partition = partition;
+// TODO: remove non-curried overloading in v3
+/**
+ * Test if a value is a member of a set
+ *
+ * @since 2.0.0
+ */
+exports.elem = RS.elem;
+// TODO: remove non-curried overloading in v3
+/**
+ * Form the union of two sets
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.union = RS.union;
+// TODO: remove non-curried overloading in v3
+/**
+ * The set of elements which are in both the first and second set
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.intersection = RS.intersection;
+/**
+ * @since 2.0.0
+ */
+exports.partitionMap = RS.partitionMap;
+// TODO: remove non-curried overloading in v3
+/**
+ * Form the set difference (`x` - `y`)
+ *
+ * @example
+ * import { difference } from 'fp-ts/Set'
+ * import { eqNumber } from 'fp-ts/Eq'
+ * import { pipe } from 'fp-ts/function'
+ *
+ * assert.deepStrictEqual(pipe(new Set([1, 2]), difference(eqNumber)(new Set([1, 3]))), new Set([2]))
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.difference = RS.difference;
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.getUnionMonoid = RS.getUnionMonoid;
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.getIntersectionSemigroup = RS.getIntersectionSemigroup;
+/**
+ * @since 2.0.0
+ */
+exports.reduce = RS.reduce;
+/**
+ * @since 2.0.0
+ */
+exports.foldMap = RS.foldMap;
+/**
+ * Create a set with one element
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+exports.singleton = RS.singleton;
+/**
+ * Insert a value into a set
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.insert = RS.insert;
+/**
+ * Delete a value from a set
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.remove = RS.remove;
+/**
+ * Checks an element is a member of a set;
+ * If yes, removes the value from the set
+ * If no, inserts the value to the set
+ *
+ * @category combinators
+ * @since 2.5.0
+ */
+function toggle(E) {
+    var elemE = exports.elem(E);
+    var removeE = exports.remove(E);
+    var insertE = exports.insert(E);
+    return function (a) { return function (set) { return (elemE(a, set) ? removeE : insertE)(a)(set); }; };
+}
+exports.toggle = toggle;
+/**
+ * Create a set from an array
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+// tslint:disable-next-line: readonly-array
+exports.fromArray = RS.fromArray;
+/**
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.compact = RS.compact;
+/**
+ * @since 2.0.0
+ */
+exports.separate = RS.separate;
+/**
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.filterMap = RS.filterMap;
+
+
+/***/ }),
+/* 344 */,
+/* 345 */,
+/* 346 */,
+/* 347 */,
+/* 348 */,
+/* 349 */,
+/* 350 */,
+/* 351 */,
+/* 352 */,
+/* 353 */,
+/* 354 */,
+/* 355 */,
+/* 356 */
+/***/ (function(__unusedmodule, exports) {
+
+"use strict";
+
+/**
+ * Type defunctionalization (as describe in [Lightweight higher-kinded polymorphism](https://www.cl.cam.ac.uk/~jdy22/papers/lightweight-higher-kinded-polymorphism.pdf))
+ *
+ * @since 2.0.0
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+
+
+/***/ }),
+/* 357 */
 /***/ (function(module) {
 
 module.exports = require("assert");
 
 /***/ }),
-
-/***/ 363:
+/* 358 */,
+/* 359 */,
+/* 360 */,
+/* 361 */,
+/* 362 */,
+/* 363 */
 /***/ (function(module) {
 
 module.exports = register
@@ -4972,8 +13599,700 @@ function register (state, name, method, options) {
 
 
 /***/ }),
+/* 364 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
 
-/***/ 366:
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.reduceRight = exports.reduceWithIndex = exports.reduce = exports.mapWithIndex = exports.map = exports.flatten = exports.extend = exports.duplicate = exports.chainFirst = exports.chain = exports.apSecond = exports.apFirst = exports.ap = exports.alt = exports.altW = exports.foldMap = exports.foldMapWithIndex = exports.intersperse = exports.prependToAll = exports.unzip = exports.zip = exports.zipWith = exports.fold = exports.concat = exports.of = exports.filterWithIndex = exports.filter = exports.modifyAt = exports.updateAt = exports.insertAt = exports.sort = exports.init = exports.last = exports.groupBy = exports.groupSort = exports.group = exports.getEq = exports.getSemigroup = exports.max = exports.min = exports.reverse = exports.tail = exports.head = exports.getShow = exports.unsnoc = exports.uncons = exports.fromArray = exports.fromReadonlyArray = exports.snoc = exports.cons = void 0;
+exports.apS = exports.bind = exports.bindTo = exports.Do = exports.readonlyNonEmptyArray = exports.Comonad = exports.Alt = exports.TraversableWithIndex = exports.Traversable = exports.FoldableWithIndex = exports.Foldable = exports.Monad = exports.Applicative = exports.FunctorWithIndex = exports.Functor = exports.URI = exports.extract = exports.traverseWithIndex = exports.sequence = exports.traverse = exports.reduceRightWithIndex = void 0;
+var function_1 = __webpack_require__(231);
+var Option_1 = __webpack_require__(293);
+var RA = __importStar(__webpack_require__(717));
+var Semigroup_1 = __webpack_require__(156);
+/**
+ * Append an element to the front of an array, creating a new non empty array
+ *
+ * @example
+ * import { cons } from 'fp-ts/ReadonlyNonEmptyArray'
+ *
+ * assert.deepStrictEqual(cons(1, [2, 3, 4]), [1, 2, 3, 4])
+ *
+ * @category constructors
+ * @since 2.5.0
+ */
+exports.cons = RA.cons;
+/**
+ * Append an element to the end of an array, creating a new non empty array
+ *
+ * @example
+ * import { snoc } from 'fp-ts/ReadonlyNonEmptyArray'
+ *
+ * assert.deepStrictEqual(snoc([1, 2, 3], 4), [1, 2, 3, 4])
+ *
+ * @category constructors
+ * @since 2.5.0
+ */
+exports.snoc = RA.snoc;
+/**
+ * Builds a `ReadonlyNonEmptyArray` from an array returning `none` if `as` is an empty array
+ *
+ * @category constructors
+ * @since 2.5.0
+ */
+function fromReadonlyArray(as) {
+    return RA.isNonEmpty(as) ? Option_1.some(as) : Option_1.none;
+}
+exports.fromReadonlyArray = fromReadonlyArray;
+/**
+ * @category constructors
+ * @since 2.5.0
+ */
+// tslint:disable-next-line: readonly-array
+function fromArray(as) {
+    return fromReadonlyArray(RA.fromArray(as));
+}
+exports.fromArray = fromArray;
+/**
+ * Produces a couple of the first element of the array, and a new array of the remaining elements, if any
+ *
+ * @example
+ * import { cons, uncons } from 'fp-ts/ReadonlyNonEmptyArray'
+ *
+ * assert.deepStrictEqual(uncons(cons(1, [2, 3, 4])), [1, [2, 3, 4]])
+ *
+ * @category destructors
+ * @since 2.9.0
+ */
+function uncons(nea) {
+    return [nea[0], nea.slice(1)];
+}
+exports.uncons = uncons;
+/**
+ * Produces a couple of a copy of the array without its last element, and that last element
+ *
+ * @example
+ * import { snoc, unsnoc } from 'fp-ts/ReadonlyNonEmptyArray'
+ *
+ * assert.deepStrictEqual(unsnoc(snoc([1, 2, 3], 4)), [[1, 2, 3], 4])
+ *
+ * @category destructors
+ * @since 2.9.0
+ */
+function unsnoc(nea) {
+    var l = nea.length - 1;
+    return [nea.slice(0, l), nea[l]];
+}
+exports.unsnoc = unsnoc;
+/**
+ * @category instances
+ * @since 2.5.0
+ */
+exports.getShow = RA.getShow;
+/**
+ * @since 2.5.0
+ */
+function head(nea) {
+    return nea[0];
+}
+exports.head = head;
+/**
+ * @since 2.5.0
+ */
+function tail(nea) {
+    return nea.slice(1);
+}
+exports.tail = tail;
+/**
+ * @category combinators
+ * @since 2.5.0
+ */
+exports.reverse = RA.reverse;
+/**
+ * @since 2.5.0
+ */
+function min(ord) {
+    var S = Semigroup_1.getMeetSemigroup(ord);
+    return function (nea) { return nea.reduce(S.concat); };
+}
+exports.min = min;
+/**
+ * @since 2.5.0
+ */
+function max(ord) {
+    var S = Semigroup_1.getJoinSemigroup(ord);
+    return function (nea) { return nea.reduce(S.concat); };
+}
+exports.max = max;
+/**
+ * Builds a `Semigroup` instance for `ReadonlyNonEmptyArray`
+ *
+ * @category instances
+ * @since 2.5.0
+ */
+function getSemigroup() {
+    return {
+        concat: concat
+    };
+}
+exports.getSemigroup = getSemigroup;
+/**
+ * @example
+ * import { getEq, cons } from 'fp-ts/ReadonlyNonEmptyArray'
+ * import { eqNumber } from 'fp-ts/Eq'
+ *
+ * const E = getEq(eqNumber)
+ * assert.strictEqual(E.equals(cons(1, [2]), [1, 2]), true)
+ * assert.strictEqual(E.equals(cons(1, [2]), [1, 3]), false)
+ *
+ * @category instances
+ * @since 2.5.0
+ */
+exports.getEq = RA.getEq;
+function group(E) {
+    return function (as) {
+        var len = as.length;
+        if (len === 0) {
+            return RA.empty;
+        }
+        // tslint:disable-next-line: readonly-array
+        var r = [];
+        var head = as[0];
+        var nea = [head];
+        for (var i = 1; i < len; i++) {
+            var x = as[i];
+            if (E.equals(x, head)) {
+                nea.push(x);
+            }
+            else {
+                r.push(nea);
+                head = x;
+                nea = [head];
+            }
+        }
+        r.push(nea);
+        return r;
+    };
+}
+exports.group = group;
+function groupSort(O) {
+    var sortO = RA.sort(O);
+    var groupO = group(O);
+    return function (as) { return groupO(sortO(as)); };
+}
+exports.groupSort = groupSort;
+/**
+ * Splits an array into sub-non-empty-arrays stored in an object, based on the result of calling a `string`-returning
+ * function on each element, and grouping the results according to values returned
+ *
+ * @example
+ * import { cons, groupBy } from 'fp-ts/ReadonlyNonEmptyArray'
+ *
+ * assert.deepStrictEqual(groupBy((s: string) => String(s.length))(['foo', 'bar', 'foobar']), {
+ *   '3': cons('foo', ['bar']),
+ *   '6': cons('foobar', [])
+ * })
+ *
+ * @category constructors
+ * @since 2.5.0
+ */
+function groupBy(f) {
+    return function (as) {
+        var r = {};
+        for (var _i = 0, as_1 = as; _i < as_1.length; _i++) {
+            var a = as_1[_i];
+            var k = f(a);
+            if (r.hasOwnProperty(k)) {
+                r[k].push(a);
+            }
+            else {
+                r[k] = [a];
+            }
+        }
+        return r;
+    };
+}
+exports.groupBy = groupBy;
+/**
+ * @since 2.5.0
+ */
+function last(nea) {
+    return nea[nea.length - 1];
+}
+exports.last = last;
+/**
+ * Get all but the last element of a non empty array, creating a new array.
+ *
+ * @example
+ * import { init } from 'fp-ts/ReadonlyNonEmptyArray'
+ *
+ * assert.deepStrictEqual(init([1, 2, 3]), [1, 2])
+ * assert.deepStrictEqual(init([1]), [])
+ *
+ * @since 2.5.0
+ */
+function init(nea) {
+    return nea.slice(0, -1);
+}
+exports.init = init;
+/**
+ * @category combinators
+ * @since 2.5.0
+ */
+function sort(O) {
+    return RA.sort(O);
+}
+exports.sort = sort;
+/**
+ * @since 2.5.0
+ */
+function insertAt(i, a) {
+    return RA.insertAt(i, a);
+}
+exports.insertAt = insertAt;
+/**
+ * @since 2.5.0
+ */
+function updateAt(i, a) {
+    return RA.updateAt(i, a);
+}
+exports.updateAt = updateAt;
+/**
+ * @since 2.5.0
+ */
+function modifyAt(i, f) {
+    return RA.modifyAt(i, f);
+}
+exports.modifyAt = modifyAt;
+function filter(predicate) {
+    return filterWithIndex(function (_, a) { return predicate(a); });
+}
+exports.filter = filter;
+/**
+ * @since 2.5.0
+ */
+function filterWithIndex(predicate) {
+    return function (nea) { return fromReadonlyArray(nea.filter(function (a, i) { return predicate(i, a); })); };
+}
+exports.filterWithIndex = filterWithIndex;
+/**
+ * Wrap a value into the type constructor.
+ *
+ * @category Applicative
+ * @since 2.5.0
+ */
+exports.of = RA.of;
+function concat(fx, fy) {
+    return fx.concat(fy);
+}
+exports.concat = concat;
+/**
+ * @since 2.5.0
+ */
+function fold(S) {
+    return function (fa) { return fa.reduce(S.concat); };
+}
+exports.fold = fold;
+/**
+ * @category combinators
+ * @since 2.5.1
+ */
+exports.zipWith = RA.zipWith;
+/**
+ * @category combinators
+ * @since 2.5.1
+ */
+exports.zip = RA.zip;
+/**
+ * @since 2.5.1
+ */
+exports.unzip = RA.unzip;
+/**
+ * Prepend an element to every member of an array
+ *
+ * @example
+ * import { cons, prependToAll } from 'fp-ts/ReadonlyNonEmptyArray'
+ *
+ * assert.deepStrictEqual(prependToAll(9)(cons(1, [2, 3, 4])), cons(9, [1, 9, 2, 9, 3, 9, 4]))
+ *
+ * @category combinators
+ * @since 2.9.0
+ */
+exports.prependToAll = RA.prependToAll;
+/**
+ * Places an element in between members of an array
+ *
+ * @example
+ * import { cons, intersperse } from 'fp-ts/ReadonlyNonEmptyArray'
+ *
+ * assert.deepStrictEqual(intersperse(9)(cons(1, [2, 3, 4])), cons(1, [9, 2, 9, 3, 9, 4]))
+ *
+ * @category combinators
+ * @since 2.9.0
+ */
+exports.intersperse = RA.intersperse;
+// -------------------------------------------------------------------------------------
+// non-pipeables
+// -------------------------------------------------------------------------------------
+var map_ = RA.Functor.map;
+var mapWithIndex_ = RA.FunctorWithIndex.mapWithIndex;
+var ap_ = RA.Applicative.ap;
+var chain_ = RA.Monad.chain;
+var extend_ = RA.Extend.extend;
+var reduce_ = RA.Foldable.reduce;
+var foldMap_ = RA.Foldable.foldMap;
+var reduceRight_ = RA.Foldable.reduceRight;
+var traverse_ = RA.Traversable.traverse;
+var alt_ = RA.Alt.alt;
+var reduceWithIndex_ = RA.FoldableWithIndex.reduceWithIndex;
+var foldMapWithIndex_ = RA.FoldableWithIndex
+    .foldMapWithIndex;
+var reduceRightWithIndex_ = RA.FoldableWithIndex
+    .reduceRightWithIndex;
+var traverseWithIndex_ = RA.TraversableWithIndex
+    .traverseWithIndex;
+// -------------------------------------------------------------------------------------
+// pipeables
+// -------------------------------------------------------------------------------------
+/**
+ * @category FoldableWithIndex
+ * @since 2.5.0
+ */
+var foldMapWithIndex = function (S) { return function (f) { return function (fa) { return fa.slice(1).reduce(function (s, a, i) { return S.concat(s, f(i + 1, a)); }, f(0, fa[0])); }; }; };
+exports.foldMapWithIndex = foldMapWithIndex;
+/**
+ * @category Foldable
+ * @since 2.5.0
+ */
+var foldMap = function (S) { return function (f) { return function (fa) {
+    return fa.slice(1).reduce(function (s, a) { return S.concat(s, f(a)); }, f(fa[0]));
+}; }; };
+exports.foldMap = foldMap;
+/**
+ * Less strict version of [`alt`](#alt).
+ *
+ * @category Alt
+ * @since 2.9.0
+ */
+exports.altW = RA.altW;
+/**
+ * Identifies an associative operation on a type constructor. It is similar to `Semigroup`, except that it applies to
+ * types of kind `* -> *`.
+ *
+ * @category Alt
+ * @since 2.6.2
+ */
+exports.alt = RA.alt;
+/**
+ * @category Apply
+ * @since 2.5.0
+ */
+exports.ap = RA.ap;
+/**
+ * Combine two effectful actions, keeping only the result of the first.
+ *
+ * Derivable from `Apply`.
+ *
+ * @category combinators
+ * @since 2.5.0
+ */
+exports.apFirst = RA.apFirst;
+/**
+ * Combine two effectful actions, keeping only the result of the second.
+ *
+ * Derivable from `Apply`.
+ *
+ * @category combinators
+ * @since 2.5.0
+ */
+exports.apSecond = RA.apSecond;
+/**
+ * Composes computations in sequence, using the return value of one computation to determine the next computation.
+ *
+ * @category Monad
+ * @since 2.5.0
+ */
+exports.chain = RA.chain;
+/**
+ * Composes computations in sequence, using the return value of one computation to determine the next computation and
+ * keeping only the result of the first.
+ *
+ * Derivable from `Monad`.
+ *
+ * @category combinators
+ * @since 2.5.0
+ */
+exports.chainFirst = RA.chainFirst;
+/**
+ * Derivable from `Extend`.
+ *
+ * @category combinators
+ * @since 2.5.0
+ */
+exports.duplicate = RA.duplicate;
+/**
+ * @category Extend
+ * @since 2.5.0
+ */
+exports.extend = RA.extend;
+/**
+ * Derivable from `Monad`.
+ *
+ * @category combinators
+ * @since 2.5.0
+ */
+exports.flatten = RA.flatten;
+/**
+ * `map` can be used to turn functions `(a: A) => B` into functions `(fa: F<A>) => F<B>` whose argument and return types
+ * use the type constructor `F` to represent some computational context.
+ *
+ * @category Functor
+ * @since 2.5.0
+ */
+exports.map = RA.map;
+/**
+ * @category FunctorWithIndex
+ * @since 2.5.0
+ */
+exports.mapWithIndex = RA.mapWithIndex;
+/**
+ * @category Foldable
+ * @since 2.5.0
+ */
+exports.reduce = RA.reduce;
+/**
+ * @category FoldableWithIndex
+ * @since 2.5.0
+ */
+exports.reduceWithIndex = RA.reduceWithIndex;
+/**
+ * @category Foldable
+ * @since 2.5.0
+ */
+exports.reduceRight = RA.reduceRight;
+/**
+ * @category FoldableWithIndex
+ * @since 2.5.0
+ */
+exports.reduceRightWithIndex = RA.reduceRightWithIndex;
+/**
+ * @since 2.6.3
+ */
+exports.traverse = RA.traverse;
+/**
+ * @since 2.6.3
+ */
+exports.sequence = RA.sequence;
+/**
+ * @since 2.6.3
+ */
+exports.traverseWithIndex = RA.traverseWithIndex;
+/**
+ * @since 2.6.3
+ */
+exports.extract = head;
+// -------------------------------------------------------------------------------------
+// instances
+// -------------------------------------------------------------------------------------
+/**
+ * @category instances
+ * @since 2.5.0
+ */
+exports.URI = 'ReadonlyNonEmptyArray';
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Functor = {
+    URI: exports.URI,
+    map: map_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.FunctorWithIndex = {
+    URI: exports.URI,
+    map: map_,
+    mapWithIndex: mapWithIndex_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Applicative = {
+    URI: exports.URI,
+    map: map_,
+    ap: ap_,
+    of: exports.of
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Monad = {
+    URI: exports.URI,
+    map: map_,
+    ap: ap_,
+    of: exports.of,
+    chain: chain_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Foldable = {
+    URI: exports.URI,
+    reduce: reduce_,
+    foldMap: foldMap_,
+    reduceRight: reduceRight_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.FoldableWithIndex = {
+    URI: exports.URI,
+    reduce: reduce_,
+    foldMap: foldMap_,
+    reduceRight: reduceRight_,
+    reduceWithIndex: reduceWithIndex_,
+    foldMapWithIndex: foldMapWithIndex_,
+    reduceRightWithIndex: reduceRightWithIndex_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Traversable = {
+    URI: exports.URI,
+    map: map_,
+    reduce: reduce_,
+    foldMap: foldMap_,
+    reduceRight: reduceRight_,
+    traverse: traverse_,
+    sequence: exports.sequence
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.TraversableWithIndex = {
+    URI: exports.URI,
+    map: map_,
+    mapWithIndex: mapWithIndex_,
+    reduce: reduce_,
+    foldMap: foldMap_,
+    reduceRight: reduceRight_,
+    traverse: traverse_,
+    sequence: exports.sequence,
+    reduceWithIndex: reduceWithIndex_,
+    foldMapWithIndex: foldMapWithIndex_,
+    reduceRightWithIndex: reduceRightWithIndex_,
+    traverseWithIndex: traverseWithIndex_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Alt = {
+    URI: exports.URI,
+    map: map_,
+    alt: alt_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Comonad = {
+    URI: exports.URI,
+    map: map_,
+    extend: extend_,
+    extract: exports.extract
+};
+// TODO: remove in v3
+/**
+ * @category instances
+ * @since 2.5.0
+ */
+exports.readonlyNonEmptyArray = {
+    URI: exports.URI,
+    of: exports.of,
+    map: map_,
+    mapWithIndex: mapWithIndex_,
+    ap: ap_,
+    chain: chain_,
+    extend: extend_,
+    extract: exports.extract,
+    reduce: reduce_,
+    foldMap: foldMap_,
+    reduceRight: reduceRight_,
+    traverse: traverse_,
+    sequence: exports.sequence,
+    reduceWithIndex: reduceWithIndex_,
+    foldMapWithIndex: foldMapWithIndex_,
+    reduceRightWithIndex: reduceRightWithIndex_,
+    traverseWithIndex: traverseWithIndex_,
+    alt: alt_
+};
+// -------------------------------------------------------------------------------------
+// do notation
+// -------------------------------------------------------------------------------------
+/**
+ * @since 2.9.0
+ */
+exports.Do = 
+/*#__PURE__*/
+exports.of({});
+/**
+ * @since 2.8.0
+ */
+var bindTo = function (name) { return exports.map(function_1.bindTo_(name)); };
+exports.bindTo = bindTo;
+/**
+ * @since 2.8.0
+ */
+var bind = function (name, f) {
+    return exports.chain(function (a) {
+        return function_1.pipe(f(a), exports.map(function (b) { return function_1.bind_(a, name, b); }));
+    });
+};
+exports.bind = bind;
+// -------------------------------------------------------------------------------------
+// pipeable sequence S
+// -------------------------------------------------------------------------------------
+/**
+ * @since 2.8.0
+ */
+var apS = function (name, fb) {
+    return function_1.flow(exports.map(function (a) { return function (b) { return function_1.bind_(a, name, b); }; }), exports.ap(fb));
+};
+exports.apS = apS;
+
+
+/***/ }),
+/* 365 */,
+/* 366 */
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
 "use strict";
@@ -4981,7 +14300,7 @@ function register (state, name, method, options) {
 
 const path = __webpack_require__(622);
 const scan = __webpack_require__(537);
-const parse = __webpack_require__(806);
+const parse = __webpack_require__(902);
 const utils = __webpack_require__(265);
 const constants = __webpack_require__(199);
 const isObject = val => val && typeof val === 'object' && !Array.isArray(val);
@@ -5319,8 +14638,650 @@ module.exports = picomatch;
 
 
 /***/ }),
+/* 367 */,
+/* 368 */,
+/* 369 */,
+/* 370 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
 
-/***/ 375:
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.sequenceS = exports.sequenceT = void 0;
+var function_1 = __webpack_require__(231);
+function curried(f, n, acc) {
+    return function (x) {
+        var combined = Array(acc.length + 1);
+        for (var i = 0; i < acc.length; i++) {
+            combined[i] = acc[i];
+        }
+        combined[acc.length] = x;
+        return n === 0 ? f.apply(null, combined) : curried(f, n - 1, combined);
+    };
+}
+var tupleConstructors = {
+    1: function (a) { return [a]; },
+    2: function (a) { return function (b) { return [a, b]; }; },
+    3: function (a) { return function (b) { return function (c) { return [a, b, c]; }; }; },
+    4: function (a) { return function (b) { return function (c) { return function (d) { return [a, b, c, d]; }; }; }; },
+    5: function (a) { return function (b) { return function (c) { return function (d) { return function (e) { return [a, b, c, d, e]; }; }; }; }; }
+};
+function getTupleConstructor(len) {
+    if (!tupleConstructors.hasOwnProperty(len)) {
+        tupleConstructors[len] = curried(function_1.tuple, len - 1, []);
+    }
+    return tupleConstructors[len];
+}
+function sequenceT(F) {
+    return function () {
+        var args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            args[_i] = arguments[_i];
+        }
+        var len = args.length;
+        var f = getTupleConstructor(len);
+        var fas = F.map(args[0], f);
+        for (var i = 1; i < len; i++) {
+            fas = F.ap(fas, args[i]);
+        }
+        return fas;
+    };
+}
+exports.sequenceT = sequenceT;
+function getRecordConstructor(keys) {
+    var len = keys.length;
+    switch (len) {
+        case 1:
+            return function (a) {
+                var _a;
+                return (_a = {}, _a[keys[0]] = a, _a);
+            };
+        case 2:
+            return function (a) { return function (b) {
+                var _a;
+                return (_a = {}, _a[keys[0]] = a, _a[keys[1]] = b, _a);
+            }; };
+        case 3:
+            return function (a) { return function (b) { return function (c) {
+                var _a;
+                return (_a = {}, _a[keys[0]] = a, _a[keys[1]] = b, _a[keys[2]] = c, _a);
+            }; }; };
+        case 4:
+            return function (a) { return function (b) { return function (c) { return function (d) {
+                var _a;
+                return (_a = {},
+                    _a[keys[0]] = a,
+                    _a[keys[1]] = b,
+                    _a[keys[2]] = c,
+                    _a[keys[3]] = d,
+                    _a);
+            }; }; }; };
+        case 5:
+            return function (a) { return function (b) { return function (c) { return function (d) { return function (e) {
+                var _a;
+                return (_a = {},
+                    _a[keys[0]] = a,
+                    _a[keys[1]] = b,
+                    _a[keys[2]] = c,
+                    _a[keys[3]] = d,
+                    _a[keys[4]] = e,
+                    _a);
+            }; }; }; }; };
+        default:
+            return curried(function () {
+                var args = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    args[_i] = arguments[_i];
+                }
+                var r = {};
+                for (var i = 0; i < len; i++) {
+                    r[keys[i]] = args[i];
+                }
+                return r;
+            }, len - 1, []);
+    }
+}
+function sequenceS(F) {
+    return function (r) {
+        var keys = Object.keys(r);
+        var len = keys.length;
+        var f = getRecordConstructor(keys);
+        var fr = F.map(r[keys[0]], f);
+        for (var i = 1; i < len; i++) {
+            fr = F.ap(fr, r[keys[i]]);
+        }
+        return fr;
+    };
+}
+exports.sequenceS = sequenceS;
+/* tslint:enable:readonly-array */
+
+
+/***/ }),
+/* 371 */,
+/* 372 */,
+/* 373 */,
+/* 374 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.apS = exports.bind = exports.bindTo = exports.Do = exports.tree = exports.Comonad = exports.Traversable = exports.Foldable = exports.Monad = exports.Applicative = exports.Functor = exports.URI = exports.of = exports.sequence = exports.traverse = exports.extract = exports.reduceRight = exports.foldMap = exports.reduce = exports.map = exports.flatten = exports.duplicate = exports.extend = exports.chainFirst = exports.chain = exports.apSecond = exports.apFirst = exports.ap = exports.fold = exports.elem = exports.unfoldForestM = exports.unfoldTreeM = exports.unfoldForest = exports.unfoldTree = exports.drawTree = exports.drawForest = exports.getEq = exports.getShow = exports.make = void 0;
+var A = __importStar(__webpack_require__(694));
+var Eq_1 = __webpack_require__(725);
+var function_1 = __webpack_require__(231);
+/**
+ * @category constructors
+ * @since 2.0.0
+ */
+function make(value, forest) {
+    if (forest === void 0) { forest = A.empty; }
+    return {
+        value: value,
+        forest: forest
+    };
+}
+exports.make = make;
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+function getShow(S) {
+    var show = function (t) {
+        return t.forest === A.empty || t.forest.length === 0
+            ? "make(" + S.show(t.value) + ")"
+            : "make(" + S.show(t.value) + ", [" + t.forest.map(show).join(', ') + "])";
+    };
+    return {
+        show: show
+    };
+}
+exports.getShow = getShow;
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+function getEq(E) {
+    var SA;
+    var R = Eq_1.fromEquals(function (x, y) { return E.equals(x.value, y.value) && SA.equals(x.forest, y.forest); });
+    SA = A.getEq(R);
+    return R;
+}
+exports.getEq = getEq;
+var draw = function (indentation, forest) {
+    var r = '';
+    var len = forest.length;
+    var tree;
+    for (var i = 0; i < len; i++) {
+        tree = forest[i];
+        var isLast = i === len - 1;
+        r += indentation + (isLast ? '└' : '├') + '─ ' + tree.value;
+        r += draw(indentation + (len > 1 && !isLast ? '│  ' : '   '), tree.forest);
+    }
+    return r;
+};
+/**
+ * Neat 2-dimensional drawing of a forest
+ *
+ * @since 2.0.0
+ */
+function drawForest(forest) {
+    return draw('\n', forest);
+}
+exports.drawForest = drawForest;
+/**
+ * Neat 2-dimensional drawing of a tree
+ *
+ * @example
+ * import { make, drawTree, tree } from 'fp-ts/Tree'
+ *
+ * const fa = make('a', [
+ *   tree.of('b'),
+ *   tree.of('c'),
+ *   make('d', [tree.of('e'), tree.of('f')])
+ * ])
+ *
+ * assert.strictEqual(drawTree(fa), `a
+ * ├─ b
+ * ├─ c
+ * └─ d
+ *    ├─ e
+ *    └─ f`)
+ *
+ *
+ * @since 2.0.0
+ */
+function drawTree(tree) {
+    return tree.value + drawForest(tree.forest);
+}
+exports.drawTree = drawTree;
+/**
+ * Build a tree from a seed value
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+function unfoldTree(b, f) {
+    var _a = f(b), a = _a[0], bs = _a[1];
+    return { value: a, forest: unfoldForest(bs, f) };
+}
+exports.unfoldTree = unfoldTree;
+/**
+ * Build a tree from a seed value
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+function unfoldForest(bs, f) {
+    return bs.map(function (b) { return unfoldTree(b, f); });
+}
+exports.unfoldForest = unfoldForest;
+function unfoldTreeM(M) {
+    var unfoldForestMM = unfoldForestM(M);
+    return function (b, f) { return M.chain(f(b), function (_a) {
+        var a = _a[0], bs = _a[1];
+        return M.chain(unfoldForestMM(bs, f), function (ts) { return M.of({ value: a, forest: ts }); });
+    }); };
+}
+exports.unfoldTreeM = unfoldTreeM;
+function unfoldForestM(M) {
+    var traverseM = A.traverse(M);
+    return function (bs, f) {
+        return function_1.pipe(bs, traverseM(function (b) { return unfoldTreeM(M)(b, f); }));
+    };
+}
+exports.unfoldForestM = unfoldForestM;
+// TODO: curry in v3
+/**
+ * @since 2.0.0
+ */
+function elem(E) {
+    var go = function (a, fa) {
+        if (E.equals(a, fa.value)) {
+            return true;
+        }
+        return fa.forest.some(function (tree) { return go(a, tree); });
+    };
+    return go;
+}
+exports.elem = elem;
+/**
+ * Fold a tree into a "summary" value in depth-first order.
+ *
+ * For each node in the tree, apply `f` to the `value` and the result of applying `f` to each `forest`.
+ *
+ * This is also known as the catamorphism on trees.
+ *
+ * @example
+ * import { fold, make } from 'fp-ts/Tree'
+ *
+ * const t = make(1, [make(2), make(3)])
+ *
+ * const sum = (as: Array<number>) => as.reduce((a, acc) => a + acc, 0)
+ *
+ * // Sum the values in a tree:
+ * assert.deepStrictEqual(fold((a: number, bs: Array<number>) => a + sum(bs))(t), 6)
+ *
+ * // Find the maximum value in the tree:
+ * assert.deepStrictEqual(fold((a: number, bs: Array<number>) => bs.reduce((b, acc) => Math.max(b, acc), a))(t), 3)
+ *
+ * // Count the number of leaves in the tree:
+ * assert.deepStrictEqual(fold((_: number, bs: Array<number>) => (bs.length === 0 ? 1 : sum(bs)))(t), 2)
+ *
+ * @category destructors
+ * @since 2.6.0
+ */
+function fold(f) {
+    var go = function (tree) { return f(tree.value, tree.forest.map(go)); };
+    return go;
+}
+exports.fold = fold;
+// -------------------------------------------------------------------------------------
+// non-pipeables
+// -------------------------------------------------------------------------------------
+/* istanbul ignore next */
+var map_ = function (fa, f) { return function_1.pipe(fa, exports.map(f)); };
+var ap_ = function (fab, fa) {
+    return function_1.pipe(fab, exports.chain(function (f) { return function_1.pipe(fa, exports.map(f)); }));
+};
+/* istanbul ignore next */
+var chain_ = function (ma, f) { return function_1.pipe(ma, exports.chain(f)); };
+/* istanbul ignore next */
+var reduce_ = function (fa, b, f) { return function_1.pipe(fa, exports.reduce(b, f)); };
+/* istanbul ignore next */
+var foldMap_ = function (M) {
+    var foldMapM = exports.foldMap(M);
+    return function (fa, f) { return function_1.pipe(fa, foldMapM(f)); };
+};
+/* istanbul ignore next */
+var reduceRight_ = function (fa, b, f) { return function_1.pipe(fa, exports.reduceRight(b, f)); };
+/* istanbul ignore next */
+var extend_ = function (wa, f) { return function_1.pipe(wa, exports.extend(f)); };
+/* istanbul ignore next */
+var traverse_ = function (F) {
+    var traverseF = exports.traverse(F);
+    return function (ta, f) { return function_1.pipe(ta, traverseF(f)); };
+};
+// -------------------------------------------------------------------------------------
+// pipeables
+// -------------------------------------------------------------------------------------
+/**
+ * Apply a function to an argument under a type constructor.
+ *
+ * @category Apply
+ * @since 2.0.0
+ */
+var ap = function (fa) { return function (fab) { return ap_(fab, fa); }; };
+exports.ap = ap;
+/**
+ * Combine two effectful actions, keeping only the result of the first.
+ *
+ * Derivable from `Apply`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+var apFirst = function (fb) {
+    return function_1.flow(exports.map(function (a) { return function () { return a; }; }), exports.ap(fb));
+};
+exports.apFirst = apFirst;
+/**
+ * Combine two effectful actions, keeping only the result of the second.
+ *
+ * Derivable from `Apply`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+var apSecond = function (fb) {
+    return function_1.flow(exports.map(function () { return function (b) { return b; }; }), exports.ap(fb));
+};
+exports.apSecond = apSecond;
+/**
+ * Composes computations in sequence, using the return value of one computation to determine the next computation.
+ *
+ * @category Monad
+ * @since 2.0.0
+ */
+var chain = function (f) { return function (ma) {
+    var _a = f(ma.value), value = _a.value, forest = _a.forest;
+    var concat = A.getMonoid().concat;
+    return {
+        value: value,
+        forest: concat(forest, ma.forest.map(exports.chain(f)))
+    };
+}; };
+exports.chain = chain;
+/**
+ * Composes computations in sequence, using the return value of one computation to determine the next computation and
+ * keeping only the result of the first.
+ *
+ * Derivable from `Monad`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+var chainFirst = function (f) {
+    return exports.chain(function (a) {
+        return function_1.pipe(f(a), exports.map(function () { return a; }));
+    });
+};
+exports.chainFirst = chainFirst;
+/**
+ * @category Extend
+ * @since 2.0.0
+ */
+var extend = function (f) { return function (wa) { return ({
+    value: f(wa),
+    forest: wa.forest.map(exports.extend(f))
+}); }; };
+exports.extend = extend;
+/**
+ * Derivable from `Extend`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.duplicate = 
+/*#__PURE__*/
+exports.extend(function_1.identity);
+/**
+ * Derivable from `Monad`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.flatten = 
+/*#__PURE__*/
+exports.chain(function_1.identity);
+/**
+ * `map` can be used to turn functions `(a: A) => B` into functions `(fa: F<A>) => F<B>` whose argument and return types
+ * use the type constructor `F` to represent some computational context.
+ *
+ * @category Functor
+ * @since 2.0.0
+ */
+var map = function (f) { return function (fa) { return ({
+    value: f(fa.value),
+    forest: fa.forest.map(exports.map(f))
+}); }; };
+exports.map = map;
+/**
+ * @category Foldable
+ * @since 2.0.0
+ */
+var reduce = function (b, f) { return function (fa) {
+    var r = f(b, fa.value);
+    var len = fa.forest.length;
+    for (var i = 0; i < len; i++) {
+        r = function_1.pipe(fa.forest[i], exports.reduce(r, f));
+    }
+    return r;
+}; };
+exports.reduce = reduce;
+/**
+ * @category Foldable
+ * @since 2.0.0
+ */
+var foldMap = function (M) { return function (f) {
+    return exports.reduce(M.empty, function (acc, a) { return M.concat(acc, f(a)); });
+}; };
+exports.foldMap = foldMap;
+/**
+ * @category Foldable
+ * @since 2.0.0
+ */
+var reduceRight = function (b, f) { return function (fa) {
+    var r = b;
+    var len = fa.forest.length;
+    for (var i = len - 1; i >= 0; i--) {
+        r = function_1.pipe(fa.forest[i], exports.reduceRight(r, f));
+    }
+    return f(fa.value, r);
+}; };
+exports.reduceRight = reduceRight;
+/**
+ * @category Extract
+ * @since 2.6.2
+ */
+var extract = function (wa) { return wa.value; };
+exports.extract = extract;
+/**
+ * @since 2.6.3
+ */
+var traverse = function (F) {
+    var traverseF = A.traverse(F);
+    var out = function (f) { return function (ta) {
+        return F.ap(F.map(f(ta.value), function (value) { return function (forest) { return ({
+            value: value,
+            forest: forest
+        }); }; }), function_1.pipe(ta.forest, traverseF(out(f))));
+    }; };
+    return out;
+};
+exports.traverse = traverse;
+/**
+ * @since 2.6.3
+ */
+var sequence = function (F) { return exports.traverse(F)(function_1.identity); };
+exports.sequence = sequence;
+/**
+ * Wrap a value into the type constructor.
+ *
+ * @category Applicative
+ * @since 2.7.0
+ */
+var of = function (a) { return ({
+    value: a,
+    forest: A.empty
+}); };
+exports.of = of;
+// -------------------------------------------------------------------------------------
+// instances
+// -------------------------------------------------------------------------------------
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.URI = 'Tree';
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Functor = {
+    URI: exports.URI,
+    map: map_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Applicative = {
+    URI: exports.URI,
+    map: map_,
+    ap: ap_,
+    of: exports.of
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Monad = {
+    URI: exports.URI,
+    map: map_,
+    ap: ap_,
+    of: exports.of,
+    chain: chain_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Foldable = {
+    URI: exports.URI,
+    reduce: reduce_,
+    foldMap: foldMap_,
+    reduceRight: reduceRight_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Traversable = {
+    URI: exports.URI,
+    map: map_,
+    reduce: reduce_,
+    foldMap: foldMap_,
+    reduceRight: reduceRight_,
+    traverse: traverse_,
+    sequence: exports.sequence
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Comonad = {
+    URI: exports.URI,
+    map: map_,
+    extend: extend_,
+    extract: exports.extract
+};
+// TODO: remove in v3
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.tree = {
+    URI: exports.URI,
+    map: map_,
+    of: exports.of,
+    ap: ap_,
+    chain: chain_,
+    reduce: reduce_,
+    foldMap: foldMap_,
+    reduceRight: reduceRight_,
+    traverse: traverse_,
+    sequence: exports.sequence,
+    extract: exports.extract,
+    extend: extend_
+};
+// -------------------------------------------------------------------------------------
+// do notation
+// -------------------------------------------------------------------------------------
+/**
+ * @since 2.9.0
+ */
+exports.Do = 
+/*#__PURE__*/
+exports.of({});
+/**
+ * @since 2.8.0
+ */
+var bindTo = function (name) { return exports.map(function_1.bindTo_(name)); };
+exports.bindTo = bindTo;
+/**
+ * @since 2.8.0
+ */
+var bind = function (name, f) {
+    return exports.chain(function (a) {
+        return function_1.pipe(f(a), exports.map(function (b) { return function_1.bind_(a, name, b); }));
+    });
+};
+exports.bind = bind;
+// -------------------------------------------------------------------------------------
+// pipeable sequence S
+// -------------------------------------------------------------------------------------
+/**
+ * @since 2.8.0
+ */
+var apS = function (name, fb) {
+    return function_1.flow(exports.map(function (a) { return function (b) { return function_1.bind_(a, name, b); }; }), exports.ap(fb));
+};
+exports.apS = apS;
+
+
+/***/ }),
+/* 375 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
@@ -5342,8 +15303,13 @@ exports.default = ErrorFilter;
 
 
 /***/ }),
-
-/***/ 382:
+/* 376 */,
+/* 377 */,
+/* 378 */,
+/* 379 */,
+/* 380 */,
+/* 381 */,
+/* 382 */
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
 "use strict";
@@ -5382,8 +15348,8 @@ module.exports = (ast, options = {}) => {
 
 
 /***/ }),
-
-/***/ 384:
+/* 383 */,
+/* 384 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
@@ -5455,8 +15421,7 @@ exports.convertPatternGroupToTask = convertPatternGroupToTask;
 
 
 /***/ }),
-
-/***/ 385:
+/* 385 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
@@ -5842,8 +15807,8 @@ exports.endpoint = endpoint;
 
 
 /***/ }),
-
-/***/ 387:
+/* 386 */,
+/* 387 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
@@ -5880,8 +15845,8 @@ function callSuccessCallback(callback, entries) {
 
 
 /***/ }),
-
-/***/ 389:
+/* 388 */,
+/* 389 */
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
 "use strict";
@@ -5920,8 +15885,11 @@ module.exports = readShebang;
 
 
 /***/ }),
-
-/***/ 394:
+/* 390 */,
+/* 391 */,
+/* 392 */,
+/* 393 */,
+/* 394 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
@@ -5987,8 +15955,15 @@ exports.default = SyncReader;
 
 
 /***/ }),
-
-/***/ 403:
+/* 395 */,
+/* 396 */,
+/* 397 */,
+/* 398 */,
+/* 399 */,
+/* 400 */,
+/* 401 */,
+/* 402 */,
+/* 403 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
@@ -6019,8 +15994,9 @@ exports.default = Settings;
 
 
 /***/ }),
-
-/***/ 406:
+/* 404 */,
+/* 405 */,
+/* 406 */
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
 "use strict";
@@ -6094,16 +16070,80 @@ module.exports = FastGlob;
 
 
 /***/ }),
+/* 407 */,
+/* 408 */,
+/* 409 */,
+/* 410 */
+/***/ (function(__unusedmodule, exports) {
 
-/***/ 413:
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.invert = exports.monoidOrdering = exports.semigroupOrdering = exports.eqOrdering = exports.sign = void 0;
+/**
+ * @since 2.0.0
+ */
+function sign(n) {
+    return n <= -1 ? -1 : n >= 1 ? 1 : 0;
+}
+exports.sign = sign;
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.eqOrdering = {
+    equals: function (x, y) { return x === y; }
+};
+/**
+ * Use `monoidOrdering` instead
+ *
+ * @category instances
+ * @since 2.0.0
+ * @deprecated
+ */
+exports.semigroupOrdering = {
+    concat: function (x, y) { return (x !== 0 ? x : y); }
+};
+/**
+ * @category instances
+ * @since 2.4.0
+ */
+exports.monoidOrdering = {
+    // tslint:disable-next-line: deprecation
+    concat: exports.semigroupOrdering.concat,
+    empty: 0
+};
+/**
+ * @since 2.0.0
+ */
+function invert(O) {
+    switch (O) {
+        case -1:
+            return 1;
+        case 1:
+            return -1;
+        default:
+            return 0;
+    }
+}
+exports.invert = invert;
+
+
+/***/ }),
+/* 411 */,
+/* 412 */,
+/* 413 */
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
 module.exports = __webpack_require__(141);
 
 
 /***/ }),
-
-/***/ 418:
+/* 414 */,
+/* 415 */,
+/* 416 */,
+/* 417 */,
+/* 418 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
@@ -6143,8 +16183,181 @@ exports.removeLeadingDotSegment = removeLeadingDotSegment;
 
 
 /***/ }),
+/* 419 */,
+/* 420 */,
+/* 421 */,
+/* 422 */,
+/* 423 */,
+/* 424 */,
+/* 425 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
 
-/***/ 427:
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.execute = exports.evaluate = exports.execWriter = exports.evalWriter = exports.writer = exports.Functor = exports.getMonad = exports.URI = exports.map = exports.censor = exports.listens = exports.pass = exports.listen = exports.tell = void 0;
+var function_1 = __webpack_require__(231);
+// tslint:enable:readonly-array
+// -------------------------------------------------------------------------------------
+// combinators
+// -------------------------------------------------------------------------------------
+/**
+ * Appends a value to the accumulator
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+var tell = function (w) { return function () { return [undefined, w]; }; };
+exports.tell = tell;
+// tslint:disable:readonly-array
+/**
+ * Modifies the result to include the changes to the accumulator
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+var listen = function (fa) { return function () {
+    var _a = fa(), a = _a[0], w = _a[1];
+    return [[a, w], w];
+}; };
+exports.listen = listen;
+// tslint:enable:readonly-array
+// tslint:disable:readonly-array
+/**
+ * Applies the returned function to the accumulator
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+var pass = function (fa) { return function () {
+    var _a = fa(), _b = _a[0], a = _b[0], f = _b[1], w = _a[1];
+    return [a, f(w)];
+}; };
+exports.pass = pass;
+// tslint:enable:readonly-array
+// tslint:disable:readonly-array
+/**
+ * Projects a value from modifications made to the accumulator during an action
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+var listens = function (f) { return function (fa) { return function () {
+    var _a = fa(), a = _a[0], w = _a[1];
+    return [[a, f(w)], w];
+}; }; };
+exports.listens = listens;
+// tslint:enable:readonly-array
+/**
+ * Modify the final accumulator value by applying a function
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+var censor = function (f) { return function (fa) { return function () {
+    var _a = fa(), a = _a[0], w = _a[1];
+    return [a, f(w)];
+}; }; };
+exports.censor = censor;
+// -------------------------------------------------------------------------------------
+// non-pipeables
+// -------------------------------------------------------------------------------------
+/* istanbul ignore next */
+var map_ = function (fa, f) { return function_1.pipe(fa, exports.map(f)); };
+// -------------------------------------------------------------------------------------
+// pipeables
+// -------------------------------------------------------------------------------------
+/**
+ * `map` can be used to turn functions `(a: A) => B` into functions `(fa: F<A>) => F<B>` whose argument and return types
+ * use the type constructor `F` to represent some computational context.
+ *
+ * @category Functor
+ * @since 2.0.0
+ */
+var map = function (f) { return function (fa) { return function () {
+    var _a = fa(), a = _a[0], w = _a[1];
+    return [f(a), w];
+}; }; };
+exports.map = map;
+// -------------------------------------------------------------------------------------
+// instances
+// -------------------------------------------------------------------------------------
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.URI = 'Writer';
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+function getMonad(M) {
+    return {
+        URI: exports.URI,
+        _E: undefined,
+        map: map_,
+        ap: function (fab, fa) { return function () {
+            var _a = fab(), f = _a[0], w1 = _a[1];
+            var _b = fa(), a = _b[0], w2 = _b[1];
+            return [f(a), M.concat(w1, w2)];
+        }; },
+        of: function (a) { return function () { return [a, M.empty]; }; },
+        chain: function (fa, f) { return function () {
+            var _a = fa(), a = _a[0], w1 = _a[1];
+            var _b = f(a)(), b = _b[0], w2 = _b[1];
+            return [b, M.concat(w1, w2)];
+        }; }
+    };
+}
+exports.getMonad = getMonad;
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Functor = {
+    URI: exports.URI,
+    map: map_
+};
+// TODO: remove in v3
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.writer = exports.Functor;
+// -------------------------------------------------------------------------------------
+// utils
+// -------------------------------------------------------------------------------------
+/**
+ * Use `evaluate` instead
+ *
+ * @since 2.0.0
+ * @deprecated
+ */
+var evalWriter = function (fa) { return fa()[0]; };
+exports.evalWriter = evalWriter;
+/**
+ * Use `execute` instead
+ *
+ * @since 2.0.0
+ * @deprecated
+ */
+var execWriter = function (fa) { return fa()[1]; };
+exports.execWriter = execWriter;
+/**
+ * @since 2.8.0
+ */
+var evaluate = function (fa) { return fa()[0]; };
+exports.evaluate = evaluate;
+/**
+ * @since 2.8.0
+ */
+var execute = function (fa) { return fa()[1]; };
+exports.execute = execute;
+
+
+/***/ }),
+/* 426 */,
+/* 427 */
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
 "use strict";
@@ -6190,8 +16403,878 @@ function errname(uv, code) {
 
 
 /***/ }),
+/* 428 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
 
-/***/ 431:
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.alt = exports.altW = exports.flatten = exports.chainFirst = exports.chainFirstW = exports.chain = exports.chainW = exports.of = exports.apSecond = exports.apFirst = exports.ap = exports.apW = exports.mapLeft = exports.bimap = exports.map = exports.chainTaskEitherK = exports.chainTaskEitherKW = exports.fromTaskEitherK = exports.chainIOEitherK = exports.chainIOEitherKW = exports.fromIOEitherK = exports.chainEitherK = exports.chainEitherKW = exports.fromEitherK = exports.filterOrElse = exports.filterOrElseW = exports.local = exports.swap = exports.orElse = exports.getOrElse = exports.getOrElseW = exports.fold = exports.fromPredicate = exports.fromOption = exports.fromEither = exports.asks = exports.ask = exports.leftIO = exports.rightIO = exports.fromReaderEither = exports.fromIOEither = exports.leftReaderTask = exports.rightReaderTask = exports.leftReader = exports.rightReader = exports.leftTask = exports.rightTask = exports.right = exports.left = exports.fromTaskEither = void 0;
+exports.sequenceSeqArray = exports.traverseSeqArray = exports.traverseSeqArrayWithIndex = exports.sequenceArray = exports.traverseArray = exports.traverseArrayWithIndex = exports.apS = exports.apSW = exports.bind = exports.bindW = exports.bindTo = exports.Do = exports.bracket = exports.run = exports.readerTaskEitherSeq = exports.readerTaskEither = exports.Alt = exports.Bifunctor = exports.ApplicativeSeq = exports.ApplicativePar = exports.Functor = exports.getReaderTaskValidation = exports.getAltReaderTaskValidation = exports.getApplicativeReaderTaskValidation = exports.getApplyMonoid = exports.getApplySemigroup = exports.getSemigroup = exports.URI = exports.throwError = exports.fromTask = exports.fromIO = void 0;
+var E = __importStar(__webpack_require__(311));
+var function_1 = __webpack_require__(231);
+var R = __importStar(__webpack_require__(600));
+var T = __importStar(__webpack_require__(721));
+var TE = __importStar(__webpack_require__(206));
+// -------------------------------------------------------------------------------------
+// constructors
+// -------------------------------------------------------------------------------------
+/**
+ * @category constructors
+ * @since 2.0.0
+ */
+exports.fromTaskEither = 
+/*#__PURE__*/
+R.of;
+/**
+ * @category constructors
+ * @since 2.0.0
+ */
+exports.left = 
+/*#__PURE__*/
+function_1.flow(TE.left, exports.fromTaskEither);
+/**
+ * @category constructors
+ * @since 2.0.0
+ */
+exports.right = 
+/*#__PURE__*/
+function_1.flow(TE.right, exports.fromTaskEither);
+/**
+ * @category constructors
+ * @since 2.0.0
+ */
+exports.rightTask = 
+/*#__PURE__*/
+function_1.flow(TE.rightTask, exports.fromTaskEither);
+/**
+ * @category constructors
+ * @since 2.0.0
+ */
+exports.leftTask = 
+/*#__PURE__*/
+function_1.flow(TE.leftTask, exports.fromTaskEither);
+/**
+ * @category constructors
+ * @since 2.0.0
+ */
+var rightReader = function (ma) {
+    return function_1.flow(ma, TE.right);
+};
+exports.rightReader = rightReader;
+/**
+ * @category constructors
+ * @since 2.0.0
+ */
+var leftReader = function (me) {
+    return function_1.flow(me, TE.left);
+};
+exports.leftReader = leftReader;
+/**
+ * @category constructors
+ * @since 2.5.0
+ */
+var rightReaderTask = function (ma) {
+    return function_1.flow(ma, TE.rightTask);
+};
+exports.rightReaderTask = rightReaderTask;
+/**
+ * @category constructors
+ * @since 2.5.0
+ */
+var leftReaderTask = function (me) {
+    return function_1.flow(me, TE.leftTask);
+};
+exports.leftReaderTask = leftReaderTask;
+/**
+ * @category constructors
+ * @since 2.0.0
+ */
+exports.fromIOEither = 
+/*#__PURE__*/
+function_1.flow(TE.fromIOEither, exports.fromTaskEither);
+/**
+ * @category constructors
+ * @since 2.0.0
+ */
+var fromReaderEither = function (ma) {
+    return function_1.flow(ma, TE.fromEither);
+};
+exports.fromReaderEither = fromReaderEither;
+/**
+ * @category constructors
+ * @since 2.0.0
+ */
+exports.rightIO = 
+/*#__PURE__*/
+function_1.flow(TE.rightIO, exports.fromTaskEither);
+/**
+ * @category constructors
+ * @since 2.0.0
+ */
+exports.leftIO = 
+/*#__PURE__*/
+function_1.flow(TE.leftIO, exports.fromTaskEither);
+/**
+ * @category constructors
+ * @since 2.0.0
+ */
+var ask = function () { return TE.right; };
+exports.ask = ask;
+/**
+ * @category constructors
+ * @since 2.0.0
+ */
+var asks = function (f) {
+    return function_1.flow(TE.right, TE.map(f));
+};
+exports.asks = asks;
+/**
+ * Derivable from `MonadThrow`.
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+exports.fromEither = 
+/*#__PURE__*/
+E.fold(exports.left, function (a) { return exports.right(a); });
+/**
+ * Derivable from `MonadThrow`.
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+var fromOption = function (onNone) { return function (ma) { return (ma._tag === 'None' ? exports.left(onNone()) : exports.right(ma.value)); }; };
+exports.fromOption = fromOption;
+/**
+ * Derivable from `MonadThrow`.
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+var fromPredicate = function (predicate, onFalse) { return function (a) { return (predicate(a) ? exports.right(a) : exports.left(onFalse(a))); }; };
+exports.fromPredicate = fromPredicate;
+// -------------------------------------------------------------------------------------
+// destructors
+// -------------------------------------------------------------------------------------
+/**
+ * @category destructors
+ * @since 2.0.0
+ */
+function fold(onLeft, onRight) {
+    return function (ma) { return function (r) {
+        return function_1.pipe(ma(r), TE.fold(function (e) { return onLeft(e)(r); }, function (a) { return onRight(a)(r); }));
+    }; };
+}
+exports.fold = fold;
+/**
+ * Less strict version of [`getOrElse`](#getOrElse).
+ *
+ * @category destructors
+ * @since 2.6.0
+ */
+var getOrElseW = function (onLeft) { return function (ma) { return function (r) {
+    return TE.getOrElseW(function (e) { return onLeft(e)(r); })(ma(r));
+}; }; };
+exports.getOrElseW = getOrElseW;
+/**
+ * @category destructors
+ * @since 2.0.0
+ */
+exports.getOrElse = exports.getOrElseW;
+// -------------------------------------------------------------------------------------
+// combinators
+// -------------------------------------------------------------------------------------
+/**
+ * @category combinators
+ * @since 2.0.0
+ */
+function orElse(onLeft) {
+    return function (ma) { return function (r) { return TE.orElse(function (e) { return onLeft(e)(r); })(ma(r)); }; };
+}
+exports.orElse = orElse;
+/**
+ * @category combinators
+ * @since 2.0.0
+ */
+var swap = function (ma) { return function_1.flow(ma, TE.swap); };
+exports.swap = swap;
+// TODO: remove in v3
+/**
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.local = R.local;
+/**
+ * Less strict version of [`filterOrElse`](#filterOrElse).
+ *
+ * @since 2.9.0
+ */
+var filterOrElseW = function (predicate, onFalse) {
+    return exports.chainW(function (a) { return (predicate(a) ? exports.right(a) : exports.left(onFalse(a))); });
+};
+exports.filterOrElseW = filterOrElseW;
+/**
+ * Derivable from `MonadThrow`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.filterOrElse = exports.filterOrElseW;
+/**
+ * @category combinators
+ * @since 2.4.0
+ */
+function fromEitherK(f) {
+    return function () {
+        var a = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            a[_i] = arguments[_i];
+        }
+        return exports.fromEither(f.apply(void 0, a));
+    };
+}
+exports.fromEitherK = fromEitherK;
+/**
+ * Less strict version of [`chainEitherK`](#chainEitherK).
+ *
+ * @category combinators
+ * @since 2.6.1
+ */
+var chainEitherKW = function (f) { return exports.chainW(fromEitherK(f)); };
+exports.chainEitherKW = chainEitherKW;
+/**
+ * @category combinators
+ * @since 2.4.0
+ */
+exports.chainEitherK = exports.chainEitherKW;
+/**
+ * @category combinators
+ * @since 2.4.0
+ */
+function fromIOEitherK(f) {
+    return function () {
+        var a = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            a[_i] = arguments[_i];
+        }
+        return exports.fromIOEither(f.apply(void 0, a));
+    };
+}
+exports.fromIOEitherK = fromIOEitherK;
+/**
+ * Less strict version of [`chainIOEitherK`](#chainIOEitherK).
+ *
+ * @category combinators
+ * @since 2.6.1
+ */
+var chainIOEitherKW = function (f) { return exports.chainW(fromIOEitherK(f)); };
+exports.chainIOEitherKW = chainIOEitherKW;
+/**
+ * @category combinators
+ * @since 2.4.0
+ */
+exports.chainIOEitherK = exports.chainIOEitherKW;
+/**
+ * @category combinators
+ * @since 2.4.0
+ */
+function fromTaskEitherK(f) {
+    return function () {
+        var a = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            a[_i] = arguments[_i];
+        }
+        return exports.fromTaskEither(f.apply(void 0, a));
+    };
+}
+exports.fromTaskEitherK = fromTaskEitherK;
+/**
+ * Less strict version of [`chainTaskEitherK`](#chainTaskEitherK).
+ *
+ * @category combinators
+ * @since 2.6.1
+ */
+var chainTaskEitherKW = function (f) { return exports.chainW(fromTaskEitherK(f)); };
+exports.chainTaskEitherKW = chainTaskEitherKW;
+/**
+ * @category combinators
+ * @since 2.4.0
+ */
+exports.chainTaskEitherK = exports.chainTaskEitherKW;
+// -------------------------------------------------------------------------------------
+// non-pipeables
+// -------------------------------------------------------------------------------------
+var map_ = function (fa, f) { return function_1.pipe(fa, exports.map(f)); };
+var apPar_ = function (fab, fa) { return function_1.pipe(fab, exports.ap(fa)); };
+var apSeq_ = function (fab, fa) {
+    return function_1.pipe(fab, exports.chain(function (f) { return function_1.pipe(fa, exports.map(f)); }));
+};
+/* istanbul ignore next */
+var chain_ = function (ma, f) { return function_1.pipe(ma, exports.chain(f)); };
+/* istanbul ignore next */
+var alt_ = function (fa, that) { return function_1.pipe(fa, exports.alt(that)); };
+/* istanbul ignore next */
+var bimap_ = function (fa, f, g) { return function_1.pipe(fa, exports.bimap(f, g)); };
+/* istanbul ignore next */
+var mapLeft_ = function (fa, f) { return function_1.pipe(fa, exports.mapLeft(f)); };
+// -------------------------------------------------------------------------------------
+// pipeables
+// -------------------------------------------------------------------------------------
+/**
+ * `map` can be used to turn functions `(a: A) => B` into functions `(fa: F<A>) => F<B>` whose argument and return types
+ * use the type constructor `F` to represent some computational context.
+ *
+ * @category Functor
+ * @since 2.0.0
+ */
+var map = function (f) { return function (fa) { return function_1.flow(fa, TE.map(f)); }; };
+exports.map = map;
+/**
+ * Map a pair of functions over the two last type arguments of the bifunctor.
+ *
+ * @category Bifunctor
+ * @since 2.0.0
+ */
+var bimap = function (f, g) { return function (fa) { return function (r) {
+    return function_1.pipe(fa(r), TE.bimap(f, g));
+}; }; };
+exports.bimap = bimap;
+/**
+ * Map a function over the second type argument of a bifunctor.
+ *
+ * @category Bifunctor
+ * @since 2.0.0
+ */
+var mapLeft = function (f) { return function (fa) { return function (r) { return function_1.pipe(fa(r), TE.mapLeft(f)); }; }; };
+exports.mapLeft = mapLeft;
+/**
+ * Less strict version of [`ap`](#ap).
+ *
+ * @category Apply
+ * @since 2.8.0
+ */
+var apW = function (fa) { return function (fab) { return function (r) { return function_1.pipe(fab(r), TE.apW(fa(r))); }; }; };
+exports.apW = apW;
+/**
+ * Apply a function to an argument under a type constructor.
+ *
+ * @category Apply
+ * @since 2.0.0
+ */
+exports.ap = exports.apW;
+/**
+ * Combine two effectful actions, keeping only the result of the first.
+ *
+ * Derivable from `Apply`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+var apFirst = function (fb) {
+    return function_1.flow(exports.map(function (a) { return function () { return a; }; }), exports.ap(fb));
+};
+exports.apFirst = apFirst;
+/**
+ * Combine two effectful actions, keeping only the result of the second.
+ *
+ * Derivable from `Apply`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+var apSecond = function (fb) {
+    return function_1.flow(exports.map(function () { return function (b) { return b; }; }), exports.ap(fb));
+};
+exports.apSecond = apSecond;
+/**
+ * Wrap a value into the type constructor.
+ *
+ * Equivalent to [`right`](#right).
+ *
+ * @category Applicative
+ * @since 2.7.0
+ */
+exports.of = exports.right;
+/**
+ * Less strict version of [`chain`](#chain).
+ *
+ * @category Monad
+ * @since 2.6.0
+ */
+var chainW = function (f) { return function (fa) { return function (r) {
+    return function_1.pipe(fa(r), TE.chainW(function (a) { return f(a)(r); }));
+}; }; };
+exports.chainW = chainW;
+/**
+ * Composes computations in sequence, using the return value of one computation to determine the next computation.
+ *
+ * @category Monad
+ * @since 2.0.0
+ */
+exports.chain = exports.chainW;
+/**
+ * Less strict version of [`chainFirst`](#chainFirst).
+ *
+ * Derivable from `Monad`.
+ *
+ * @category combinators
+ * @since 2.8.0
+ */
+var chainFirstW = function (f) {
+    return exports.chainW(function (a) {
+        return function_1.pipe(f(a), exports.map(function () { return a; }));
+    });
+};
+exports.chainFirstW = chainFirstW;
+/**
+ * Composes computations in sequence, using the return value of one computation to determine the next computation and
+ * keeping only the result of the first.
+ *
+ * Derivable from `Monad`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.chainFirst = exports.chainFirstW;
+/**
+ * Derivable from `Monad`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.flatten = 
+/*#__PURE__*/
+exports.chain(function_1.identity);
+/**
+ * Less strict version of [`alt`](#alt).
+ *
+ * @category Alt
+ * @since 2.9.0
+ */
+var altW = function (that) { return function (fa) { return function (r) {
+    return function_1.pipe(fa(r), TE.altW(function () { return that()(r); }));
+}; }; };
+exports.altW = altW;
+/**
+ * Identifies an associative operation on a type constructor. It is similar to `Semigroup`, except that it applies to
+ * types of kind `* -> *`.
+ *
+ * @category Alt
+ * @since 2.0.0
+ */
+exports.alt = exports.altW;
+/**
+ * @category MonadIO
+ * @since 2.0.0
+ */
+exports.fromIO = exports.rightIO;
+/**
+ * @category MonadTask
+ * @since 2.0.0
+ */
+exports.fromTask = exports.rightTask;
+/**
+ * @category MonadThrow
+ * @since 2.0.0
+ */
+exports.throwError = exports.left;
+// -------------------------------------------------------------------------------------
+// instances
+// -------------------------------------------------------------------------------------
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.URI = 'ReaderTaskEither';
+/**
+ * Semigroup returning the left-most non-`Left` value. If both operands are `Right`s then the inner values are
+ * concatenated using the provided `Semigroup`
+ *
+ * @category instances
+ * @since 2.0.0
+ */
+function getSemigroup(S) {
+    return R.getSemigroup(TE.getSemigroup(S));
+}
+exports.getSemigroup = getSemigroup;
+/**
+ * Semigroup returning the left-most `Left` value. If both operands are `Right`s then the inner values
+ * are concatenated using the provided `Semigroup`
+ *
+ * @category instances
+ * @since 2.0.0
+ */
+function getApplySemigroup(S) {
+    return R.getSemigroup(TE.getApplySemigroup(S));
+}
+exports.getApplySemigroup = getApplySemigroup;
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+function getApplyMonoid(M) {
+    return {
+        concat: getApplySemigroup(M).concat,
+        empty: exports.right(M.empty)
+    };
+}
+exports.getApplyMonoid = getApplyMonoid;
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+function getApplicativeReaderTaskValidation(A, SE) {
+    var AV = TE.getApplicativeTaskValidation(A, SE);
+    var ap = function (fga) {
+        return function_1.flow(R.map(function (gab) { return function (ga) { return AV.ap(gab, ga); }; }), R.ap(fga));
+    };
+    return {
+        URI: exports.URI,
+        _E: undefined,
+        map: map_,
+        ap: function (fab, fa) { return function_1.pipe(fab, ap(fa)); },
+        of: exports.of
+    };
+}
+exports.getApplicativeReaderTaskValidation = getApplicativeReaderTaskValidation;
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+function getAltReaderTaskValidation(SE) {
+    var A = TE.getAltTaskValidation(SE);
+    return {
+        URI: exports.URI,
+        _E: undefined,
+        map: map_,
+        alt: function (me, that) { return function (r) { return A.alt(me(r), function () { return that()(r); }); }; }
+    };
+}
+exports.getAltReaderTaskValidation = getAltReaderTaskValidation;
+// TODO: remove in v3
+/**
+ * @category instances
+ * @since 2.3.0
+ */
+function getReaderTaskValidation(SE) {
+    var applicativeReaderTaskValidation = getApplicativeReaderTaskValidation(T.ApplicativePar, SE);
+    var altReaderTaskValidation = getAltReaderTaskValidation(SE);
+    return {
+        URI: exports.URI,
+        _E: undefined,
+        map: map_,
+        of: exports.of,
+        chain: chain_,
+        bimap: bimap_,
+        mapLeft: mapLeft_,
+        ap: applicativeReaderTaskValidation.ap,
+        alt: altReaderTaskValidation.alt,
+        fromIO: exports.fromIO,
+        fromTask: exports.fromTask,
+        throwError: exports.throwError
+    };
+}
+exports.getReaderTaskValidation = getReaderTaskValidation;
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Functor = {
+    URI: exports.URI,
+    map: map_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.ApplicativePar = {
+    URI: exports.URI,
+    map: map_,
+    ap: apPar_,
+    of: exports.of
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.ApplicativeSeq = {
+    URI: exports.URI,
+    map: map_,
+    ap: apSeq_,
+    of: exports.of
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Bifunctor = {
+    URI: exports.URI,
+    bimap: bimap_,
+    mapLeft: mapLeft_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Alt = {
+    URI: exports.URI,
+    map: map_,
+    alt: alt_
+};
+// TODO: remove in v3
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.readerTaskEither = {
+    URI: exports.URI,
+    map: map_,
+    of: exports.of,
+    ap: apPar_,
+    chain: chain_,
+    alt: alt_,
+    bimap: bimap_,
+    mapLeft: mapLeft_,
+    fromIO: exports.fromIO,
+    fromTask: exports.fromTask,
+    throwError: exports.throwError
+};
+// TODO: remove in v3
+/**
+ * Like `readerTaskEither` but `ap` is sequential
+ *
+ * @category instances
+ * @since 2.0.0
+ */
+exports.readerTaskEitherSeq = {
+    URI: exports.URI,
+    map: map_,
+    of: exports.of,
+    ap: apSeq_,
+    chain: chain_,
+    alt: alt_,
+    bimap: bimap_,
+    mapLeft: mapLeft_,
+    fromIO: exports.fromIO,
+    fromTask: exports.fromTask,
+    throwError: exports.throwError
+};
+// -------------------------------------------------------------------------------------
+// utils
+// -------------------------------------------------------------------------------------
+// TODO: remove in v3
+/**
+ * @since 2.0.0
+ */
+/* istanbul ignore next */
+function run(ma, r) {
+    return ma(r)();
+}
+exports.run = run;
+/**
+ * Make sure that a resource is cleaned up in the event of an exception (\*). The release action is called regardless of
+ * whether the body action throws (\*) or returns.
+ *
+ * (\*) i.e. returns a `Left`
+ *
+ * Derivable from `MonadThrow`.
+ *
+ * @since 2.0.4
+ */
+function bracket(aquire, use, release) {
+    return function (r) {
+        return TE.bracket(aquire(r), function (a) { return use(a)(r); }, function (a, e) { return release(a, e)(r); });
+    };
+}
+exports.bracket = bracket;
+// -------------------------------------------------------------------------------------
+// do notation
+// -------------------------------------------------------------------------------------
+/**
+ * @since 2.9.0
+ */
+exports.Do = 
+/*#__PURE__*/
+exports.of({});
+/**
+ * @since 2.8.0
+ */
+var bindTo = function (name) { return exports.map(function_1.bindTo_(name)); };
+exports.bindTo = bindTo;
+/**
+ * @since 2.8.0
+ */
+var bindW = function (name, f) {
+    return exports.chainW(function (a) {
+        return function_1.pipe(f(a), exports.map(function (b) { return function_1.bind_(a, name, b); }));
+    });
+};
+exports.bindW = bindW;
+/**
+ * @since 2.8.0
+ */
+exports.bind = exports.bindW;
+// -------------------------------------------------------------------------------------
+// pipeable sequence S
+// -------------------------------------------------------------------------------------
+/**
+ * @since 2.8.0
+ */
+var apSW = function (name, fb) {
+    return function_1.flow(exports.map(function (a) { return function (b) { return function_1.bind_(a, name, b); }; }), exports.apW(fb));
+};
+exports.apSW = apSW;
+/**
+ * @since 2.8.0
+ */
+exports.apS = exports.apSW;
+// -------------------------------------------------------------------------------------
+// array utils
+// -------------------------------------------------------------------------------------
+/**
+ * @since 2.9.0
+ */
+var traverseArrayWithIndex = function (f) { return function (arr) { return function (r) { return function () {
+    return Promise.all(arr.map(function (x, i) { return f(i, x)(r)(); })).then(E.sequenceArray);
+}; }; }; };
+exports.traverseArrayWithIndex = traverseArrayWithIndex;
+/**
+ * @since 2.9.0
+ */
+var traverseArray = function (f) { return exports.traverseArrayWithIndex(function (_, a) { return f(a); }); };
+exports.traverseArray = traverseArray;
+/**
+ * @since 2.9.0
+ */
+exports.sequenceArray = 
+/*#__PURE__*/
+exports.traverseArray(function_1.identity);
+/**
+ * @since 2.9.0
+ */
+var traverseSeqArrayWithIndex = function (f) { return function (arr) { return function (r) { return function () { return __awaiter(void 0, void 0, void 0, function () {
+    var result, i, b;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                result = [];
+                i = 0;
+                _a.label = 1;
+            case 1:
+                if (!(i < arr.length)) return [3 /*break*/, 4];
+                return [4 /*yield*/, f(i, arr[i])(r)()];
+            case 2:
+                b = _a.sent();
+                if (E.isLeft(b)) {
+                    return [2 /*return*/, b];
+                }
+                result.push(b.right);
+                _a.label = 3;
+            case 3:
+                i++;
+                return [3 /*break*/, 1];
+            case 4: return [2 /*return*/, E.right(result)];
+        }
+    });
+}); }; }; }; };
+exports.traverseSeqArrayWithIndex = traverseSeqArrayWithIndex;
+/**
+ * @since 2.9.0
+ */
+var traverseSeqArray = function (f) {
+    return exports.traverseSeqArrayWithIndex(function (_, a) { return f(a); });
+};
+exports.traverseSeqArray = traverseSeqArray;
+/**
+ * @since 2.9.0
+ */
+exports.sequenceSeqArray = 
+/*#__PURE__*/
+exports.traverseSeqArray(function_1.identity);
+
+
+/***/ }),
+/* 429 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.fanin = exports.splitChoice = void 0;
+var function_1 = __webpack_require__(231);
+function splitChoice(F) {
+    return function (pab, pcd) { return F.compose(F.left(pab), F.right(pcd)); };
+}
+exports.splitChoice = splitChoice;
+function fanin(F) {
+    var splitChoiceF = splitChoice(F);
+    return function (pac, pbc) {
+        var join = F.promap(F.id(), function (e) { return (e._tag === 'Left' ? e.left : e.right); }, function_1.identity);
+        return F.compose(join, splitChoiceF(pac, pbc));
+    };
+}
+exports.fanin = fanin;
+
+
+/***/ }),
+/* 430 */,
+/* 431 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
@@ -6276,8 +17359,10 @@ function escapeProperty(s) {
 //# sourceMappingURL=command.js.map
 
 /***/ }),
-
-/***/ 435:
+/* 432 */,
+/* 433 */,
+/* 434 */,
+/* 435 */
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
 "use strict";
@@ -6341,8 +17426,11 @@ module.exports = compile;
 
 
 /***/ }),
-
-/***/ 440:
+/* 436 */,
+/* 437 */,
+/* 438 */,
+/* 439 */,
+/* 440 */
 /***/ (function(module) {
 
 "use strict";
@@ -6382,8 +17470,7 @@ module.exports = reusify
 
 
 /***/ }),
-
-/***/ 441:
+/* 441 */
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
 "use strict";
@@ -6503,15 +17590,16 @@ module.exports = expand;
 
 
 /***/ }),
-
-/***/ 444:
+/* 442 */,
+/* 443 */,
+/* 444 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.string = exports.stream = exports.pattern = exports.path = exports.fs = exports.errno = exports.array = void 0;
-const array = __webpack_require__(231);
+const array = __webpack_require__(933);
 exports.array = array;
 const errno = __webpack_require__(115);
 exports.errno = errno;
@@ -6528,8 +17616,10 @@ exports.string = string;
 
 
 /***/ }),
-
-/***/ 448:
+/* 445 */,
+/* 446 */,
+/* 447 */,
+/* 448 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
@@ -6712,8 +17802,11 @@ exports.Octokit = Octokit;
 
 
 /***/ }),
-
-/***/ 453:
+/* 449 */,
+/* 450 */,
+/* 451 */,
+/* 452 */,
+/* 453 */
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
 var once = __webpack_require__(969)
@@ -6801,8 +17894,7 @@ module.exports = pump
 
 
 /***/ }),
-
-/***/ 454:
+/* 454 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8458,8 +19550,14 @@ exports.FetchError = FetchError;
 
 
 /***/ }),
-
-/***/ 462:
+/* 455 */,
+/* 456 */,
+/* 457 */,
+/* 458 */,
+/* 459 */,
+/* 460 */,
+/* 461 */,
+/* 462 */
 /***/ (function(module) {
 
 "use strict";
@@ -8511,8 +19609,7 @@ module.exports.argument = escapeArgument;
 
 
 /***/ }),
-
-/***/ 463:
+/* 463 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
@@ -8574,8 +19671,611 @@ exports.RequestError = RequestError;
 
 
 /***/ }),
+/* 464 */,
+/* 465 */,
+/* 466 */,
+/* 467 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
 
-/***/ 469:
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.reduceRight = exports.reduceWithIndex = exports.reduce = exports.mapWithIndex = exports.map = exports.flatten = exports.extend = exports.duplicate = exports.chainFirst = exports.chain = exports.apSecond = exports.apFirst = exports.ap = exports.alt = exports.altW = exports.foldMap = exports.foldMapWithIndex = exports.intersperse = exports.prependToAll = exports.unzip = exports.zip = exports.zipWith = exports.fold = exports.concat = exports.of = exports.filterWithIndex = exports.filter = exports.copy = exports.modifyAt = exports.updateAt = exports.insertAt = exports.sort = exports.init = exports.last = exports.groupBy = exports.groupSort = exports.group = exports.getEq = exports.getSemigroup = exports.max = exports.min = exports.reverse = exports.tail = exports.head = exports.getShow = exports.unsnoc = exports.uncons = exports.fromArray = exports.snoc = exports.cons = void 0;
+exports.apS = exports.bind = exports.bindTo = exports.Do = exports.nonEmptyArray = exports.Comonad = exports.Alt = exports.TraversableWithIndex = exports.Traversable = exports.FoldableWithIndex = exports.Foldable = exports.Monad = exports.Applicative = exports.FunctorWithIndex = exports.Functor = exports.URI = exports.extract = exports.traverseWithIndex = exports.sequence = exports.traverse = exports.reduceRightWithIndex = void 0;
+var RNEA = __importStar(__webpack_require__(364));
+/* tslint:enable:readonly-keyword */
+/**
+ * Append an element to the front of an array, creating a new non empty array
+ *
+ * @example
+ * import { cons } from 'fp-ts/NonEmptyArray'
+ *
+ * assert.deepStrictEqual(cons(1, [2, 3, 4]), [1, 2, 3, 4])
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+exports.cons = RNEA.cons;
+/**
+ * Append an element to the end of an array, creating a new non empty array
+ *
+ * @example
+ * import { snoc } from 'fp-ts/NonEmptyArray'
+ *
+ * assert.deepStrictEqual(snoc([1, 2, 3], 4), [1, 2, 3, 4])
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+exports.snoc = RNEA.snoc;
+/**
+ * Builds a `NonEmptyArray` from an `Array` returning `none` if `as` is an empty array
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+exports.fromArray = RNEA.fromArray;
+/**
+ * Produces a couple of the first element of the array, and a new array of the remaining elements, if any
+ *
+ * @example
+ * import { cons, uncons } from 'fp-ts/NonEmptyArray'
+ *
+ * assert.deepStrictEqual(uncons(cons(1, [2, 3, 4])), [1, [2, 3, 4]])
+ *
+ * @category destructors
+ * @since 2.9.0
+ */
+exports.uncons = RNEA.uncons;
+/**
+ * Produces a couple of a copy of the array without its last element, and that last element
+ *
+ * @example
+ * import { snoc, unsnoc } from 'fp-ts/NonEmptyArray'
+ *
+ * assert.deepStrictEqual(unsnoc(snoc([1, 2, 3], 4)), [[1, 2, 3], 4])
+ *
+ * @category destructors
+ * @since 2.9.0
+ */
+exports.unsnoc = RNEA.unsnoc;
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.getShow = RNEA.getShow;
+/**
+ * @since 2.0.0
+ */
+exports.head = RNEA.head;
+/**
+ * @since 2.0.0
+ */
+exports.tail = RNEA.tail;
+/**
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.reverse = RNEA.reverse;
+/**
+ * @since 2.0.0
+ */
+exports.min = RNEA.min;
+/**
+ * @since 2.0.0
+ */
+exports.max = RNEA.max;
+/**
+ * Builds a `Semigroup` instance for `NonEmptyArray`
+ *
+ * @category instances
+ * @since 2.0.0
+ */
+exports.getSemigroup = RNEA.getSemigroup;
+/**
+ * @example
+ * import { getEq, cons } from 'fp-ts/NonEmptyArray'
+ * import { eqNumber } from 'fp-ts/Eq'
+ *
+ * const E = getEq(eqNumber)
+ * assert.strictEqual(E.equals(cons(1, [2]), [1, 2]), true)
+ * assert.strictEqual(E.equals(cons(1, [2]), [1, 3]), false)
+ *
+ * @category instances
+ * @since 2.0.0
+ */
+exports.getEq = RNEA.getEq;
+function group(E) {
+    return RNEA.group(E);
+}
+exports.group = group;
+/**
+ * Sort and then group the elements of an array into non empty arrays.
+ *
+ * @example
+ * import { cons, groupSort } from 'fp-ts/NonEmptyArray'
+ * import { ordNumber } from 'fp-ts/Ord'
+ *
+ * assert.deepStrictEqual(groupSort(ordNumber)([1, 2, 1, 1]), [cons(1, [1, 1]), cons(2, [])])
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.groupSort = RNEA.groupSort;
+/**
+ * Splits an array into sub-non-empty-arrays stored in an object, based on the result of calling a `string`-returning
+ * function on each element, and grouping the results according to values returned
+ *
+ * @example
+ * import { cons, groupBy } from 'fp-ts/NonEmptyArray'
+ *
+ * assert.deepStrictEqual(groupBy((s: string) => String(s.length))(['foo', 'bar', 'foobar']), {
+ *   '3': cons('foo', ['bar']),
+ *   '6': cons('foobar', [])
+ * })
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+exports.groupBy = RNEA.groupBy;
+/**
+ * @since 2.0.0
+ */
+exports.last = RNEA.last;
+/**
+ * Get all but the last element of a non empty array, creating a new array.
+ *
+ * @example
+ * import { init } from 'fp-ts/NonEmptyArray'
+ *
+ * assert.deepStrictEqual(init([1, 2, 3]), [1, 2])
+ * assert.deepStrictEqual(init([1]), [])
+ *
+ * @since 2.2.0
+ */
+exports.init = RNEA.init;
+/**
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.sort = RNEA.sort;
+/**
+ * @since 2.0.0
+ */
+exports.insertAt = RNEA.insertAt;
+/**
+ * @since 2.0.0
+ */
+exports.updateAt = RNEA.updateAt;
+/**
+ * @since 2.0.0
+ */
+exports.modifyAt = RNEA.modifyAt;
+/**
+ * @category combinators
+ * @since 2.0.0
+ */
+function copy(nea) {
+    var l = nea.length;
+    var as = Array(l);
+    for (var i = 0; i < l; i++) {
+        as[i] = nea[i];
+    }
+    return as;
+}
+exports.copy = copy;
+function filter(predicate) {
+    return RNEA.filter(predicate);
+}
+exports.filter = filter;
+/**
+ * @since 2.0.0
+ */
+exports.filterWithIndex = RNEA.filterWithIndex;
+/**
+ * Wrap a value into the type constructor.
+ *
+ * @category Applicative
+ * @since 2.0.0
+ */
+exports.of = RNEA.of;
+function concat(fx, fy) {
+    return RNEA.concat(fx, fy);
+}
+exports.concat = concat;
+/**
+ * @since 2.5.0
+ */
+exports.fold = RNEA.fold;
+/**
+ * @category combinators
+ * @since 2.5.1
+ */
+exports.zipWith = RNEA.zipWith;
+/**
+ * @category combinators
+ * @since 2.5.1
+ */
+exports.zip = RNEA.zip;
+/**
+ * @since 2.5.1
+ */
+exports.unzip = RNEA.unzip;
+/**
+ * Prepend an element to every member of an array
+ *
+ * @example
+ * import { cons, prependToAll } from 'fp-ts/NonEmptyArray'
+ *
+ * assert.deepStrictEqual(prependToAll(9)(cons(1, [2, 3, 4])), cons(9, [1, 9, 2, 9, 3, 9, 4]))
+ *
+ * @category combinators
+ * @since 2.9.0
+ */
+exports.prependToAll = RNEA.prependToAll;
+/**
+ * Places an element in between members of an array
+ *
+ * @example
+ * import { cons, intersperse } from 'fp-ts/NonEmptyArray'
+ *
+ * assert.deepStrictEqual(intersperse(9)(cons(1, [2, 3, 4])), cons(1, [9, 2, 9, 3, 9, 4]))
+ *
+ * @category combinators
+ * @since 2.9.0
+ */
+exports.intersperse = RNEA.intersperse;
+// -------------------------------------------------------------------------------------
+// non-pipeables
+// -------------------------------------------------------------------------------------
+var map_ = RNEA.Functor.map;
+var mapWithIndex_ = RNEA.FunctorWithIndex.mapWithIndex;
+var ap_ = RNEA.Applicative.ap;
+var chain_ = RNEA.Monad.chain;
+var extend_ = RNEA.Comonad.extend;
+var reduce_ = RNEA.Foldable.reduce;
+var foldMap_ = RNEA.Foldable.foldMap;
+var reduceRight_ = RNEA.Foldable.reduceRight;
+var traverse_ = RNEA.Traversable.traverse;
+var alt_ = RNEA.Alt.alt;
+var reduceWithIndex_ = RNEA.FoldableWithIndex
+    .reduceWithIndex;
+var foldMapWithIndex_ = RNEA.FoldableWithIndex
+    .foldMapWithIndex;
+var reduceRightWithIndex_ = RNEA.FoldableWithIndex
+    .reduceRightWithIndex;
+var traverseWithIndex_ = RNEA.TraversableWithIndex
+    .traverseWithIndex;
+// -------------------------------------------------------------------------------------
+// pipeables
+// -------------------------------------------------------------------------------------
+/**
+ * @category FoldableWithIndex
+ * @since 2.0.0
+ */
+exports.foldMapWithIndex = RNEA.foldMapWithIndex;
+/**
+ * @category Foldable
+ * @since 2.0.0
+ */
+exports.foldMap = RNEA.foldMap;
+/**
+ * Less strict version of [`alt`](#alt).
+ *
+ * @category Alt
+ * @since 2.9.0
+ */
+exports.altW = RNEA.altW;
+/**
+ * Identifies an associative operation on a type constructor. It is similar to `Semigroup`, except that it applies to
+ * types of kind `* -> *`.
+ *
+ * @category Alt
+ * @since 2.6.2
+ */
+exports.alt = RNEA.alt;
+/**
+ * Apply a function to an argument under a type constructor.
+ *
+ * @category Apply
+ * @since 2.0.0
+ */
+exports.ap = RNEA.ap;
+/**
+ * Combine two effectful actions, keeping only the result of the first.
+ *
+ * Derivable from `Apply`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.apFirst = RNEA.apFirst;
+/**
+ * Combine two effectful actions, keeping only the result of the second.
+ *
+ * Derivable from `Apply`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.apSecond = RNEA.apSecond;
+/**
+ * Composes computations in sequence, using the return value of one computation to determine the next computation.
+ *
+ * @category Monad
+ * @since 2.0.0
+ */
+exports.chain = RNEA.chain;
+/**
+ * Composes computations in sequence, using the return value of one computation to determine the next computation and
+ * keeping only the result of the first.
+ *
+ * Derivable from `Monad`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.chainFirst = RNEA.chainFirst;
+/**
+ * Derivable from `Extend`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.duplicate = RNEA.duplicate;
+/**
+ * @category Extend
+ * @since 2.0.0
+ */
+exports.extend = RNEA.extend;
+/**
+ * Derivable from `Monad`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.flatten = RNEA.flatten;
+/**
+ * `map` can be used to turn functions `(a: A) => B` into functions `(fa: F<A>) => F<B>` whose argument and return types
+ * use the type constructor `F` to represent some computational context.
+ *
+ * @category Functor
+ * @since 2.0.0
+ */
+exports.map = RNEA.map;
+/**
+ * @category FunctorWithIndex
+ * @since 2.0.0
+ */
+exports.mapWithIndex = RNEA.mapWithIndex;
+/**
+ * @category Foldable
+ * @since 2.0.0
+ */
+exports.reduce = RNEA.reduce;
+/**
+ * @category FoldableWithIndex
+ * @since 2.0.0
+ */
+exports.reduceWithIndex = RNEA.reduceWithIndex;
+/**
+ * @category Foldable
+ * @since 2.0.0
+ */
+exports.reduceRight = RNEA.reduceRight;
+/**
+ * @category FoldableWithIndex
+ * @since 2.0.0
+ */
+exports.reduceRightWithIndex = RNEA.reduceRightWithIndex;
+/**
+ * @since 2.6.3
+ */
+exports.traverse = RNEA.traverse;
+/**
+ * @since 2.6.3
+ */
+exports.sequence = RNEA.sequence;
+/**
+ * @since 2.6.3
+ */
+exports.traverseWithIndex = RNEA.traverseWithIndex;
+/**
+ * @since 2.7.0
+ */
+exports.extract = exports.head;
+// -------------------------------------------------------------------------------------
+// instances
+// -------------------------------------------------------------------------------------
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.URI = 'NonEmptyArray';
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Functor = {
+    URI: exports.URI,
+    map: map_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.FunctorWithIndex = {
+    URI: exports.URI,
+    map: map_,
+    mapWithIndex: mapWithIndex_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Applicative = {
+    URI: exports.URI,
+    map: map_,
+    ap: ap_,
+    of: exports.of
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Monad = {
+    URI: exports.URI,
+    map: map_,
+    ap: ap_,
+    of: exports.of,
+    chain: chain_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Foldable = {
+    URI: exports.URI,
+    reduce: reduce_,
+    foldMap: foldMap_,
+    reduceRight: reduceRight_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.FoldableWithIndex = {
+    URI: exports.URI,
+    reduce: reduce_,
+    foldMap: foldMap_,
+    reduceRight: reduceRight_,
+    reduceWithIndex: reduceWithIndex_,
+    foldMapWithIndex: foldMapWithIndex_,
+    reduceRightWithIndex: reduceRightWithIndex_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Traversable = {
+    URI: exports.URI,
+    map: map_,
+    reduce: reduce_,
+    foldMap: foldMap_,
+    reduceRight: reduceRight_,
+    traverse: traverse_,
+    sequence: exports.sequence
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.TraversableWithIndex = {
+    URI: exports.URI,
+    map: map_,
+    mapWithIndex: mapWithIndex_,
+    reduce: reduce_,
+    foldMap: foldMap_,
+    reduceRight: reduceRight_,
+    traverse: traverse_,
+    sequence: exports.sequence,
+    reduceWithIndex: reduceWithIndex_,
+    foldMapWithIndex: foldMapWithIndex_,
+    reduceRightWithIndex: reduceRightWithIndex_,
+    traverseWithIndex: traverseWithIndex_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Alt = {
+    URI: exports.URI,
+    map: map_,
+    alt: alt_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Comonad = {
+    URI: exports.URI,
+    map: map_,
+    extend: extend_,
+    extract: exports.extract
+};
+// TODO: remove in v3
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.nonEmptyArray = {
+    URI: exports.URI,
+    of: exports.of,
+    map: map_,
+    mapWithIndex: mapWithIndex_,
+    ap: ap_,
+    chain: chain_,
+    extend: extend_,
+    extract: exports.extract,
+    reduce: reduce_,
+    foldMap: foldMap_,
+    reduceRight: reduceRight_,
+    traverse: traverse_,
+    sequence: exports.sequence,
+    reduceWithIndex: reduceWithIndex_,
+    foldMapWithIndex: foldMapWithIndex_,
+    reduceRightWithIndex: reduceRightWithIndex_,
+    traverseWithIndex: traverseWithIndex_,
+    alt: alt_
+};
+// -------------------------------------------------------------------------------------
+// do notation
+// -------------------------------------------------------------------------------------
+/**
+ * @since 2.9.0
+ */
+exports.Do = 
+/*#__PURE__*/
+exports.of({});
+/**
+ * @since 2.8.0
+ */
+exports.bindTo = RNEA.bindTo;
+/**
+ * @since 2.8.0
+ */
+exports.bind = RNEA.bind;
+// -------------------------------------------------------------------------------------
+// pipeable sequence S
+// -------------------------------------------------------------------------------------
+/**
+ * @since 2.8.0
+ */
+exports.apS = RNEA.apS;
+
+
+/***/ }),
+/* 468 */,
+/* 469 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
@@ -8617,8 +20317,7 @@ exports.getOctokit = getOctokit;
 //# sourceMappingURL=github.js.map
 
 /***/ }),
-
-/***/ 470:
+/* 470 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
@@ -8862,8 +20561,75 @@ exports.getState = getState;
 //# sourceMappingURL=core.js.map
 
 /***/ }),
+/* 471 */,
+/* 472 */,
+/* 473 */,
+/* 474 */,
+/* 475 */,
+/* 476 */,
+/* 477 */,
+/* 478 */,
+/* 479 */,
+/* 480 */
+/***/ (function(__unusedmodule, exports) {
 
-/***/ 486:
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.lcm = exports.gcd = exports.fieldNumber = void 0;
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.fieldNumber = {
+    add: function (x, y) { return x + y; },
+    zero: 0,
+    mul: function (x, y) { return x * y; },
+    one: 1,
+    sub: function (x, y) { return x - y; },
+    degree: function (_) { return 1; },
+    div: function (x, y) { return x / y; },
+    mod: function (x, y) { return x % y; }
+};
+/**
+ * The *greatest common divisor* of two values
+ *
+ * @since 2.0.0
+ */
+function gcd(E, field) {
+    var zero = field.zero;
+    var f = function (x, y) { return (E.equals(y, zero) ? x : f(y, field.mod(x, y))); };
+    return f;
+}
+exports.gcd = gcd;
+/**
+ * The *least common multiple* of two values
+ *
+ * @since 2.0.0
+ */
+function lcm(E, F) {
+    var zero = F.zero;
+    var gcdSF = gcd(E, F);
+    return function (x, y) { return (E.equals(x, zero) || E.equals(y, zero) ? zero : F.div(F.mul(x, y), gcdSF(x, y))); };
+}
+exports.lcm = lcm;
+
+
+/***/ }),
+/* 481 */
+/***/ (function(__unusedmodule, exports) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+
+
+/***/ }),
+/* 482 */,
+/* 483 */,
+/* 484 */,
+/* 485 */,
+/* 486 */
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
 /*!
@@ -8917,8 +20683,9 @@ module.exports = function isGlob(str, options) {
 
 
 /***/ }),
-
-/***/ 489:
+/* 487 */,
+/* 488 */,
+/* 489 */
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
 "use strict";
@@ -8972,8 +20739,428 @@ module.exports = resolveCommand;
 
 
 /***/ }),
+/* 490 */,
+/* 491 */,
+/* 492 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
 
-/***/ 510:
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.sequenceArray = exports.traverseArray = exports.traverseArrayWithIndex = exports.apS = exports.apSW = exports.bind = exports.bindW = exports.bindTo = exports.Do = exports.run = exports.readerTaskSeq = exports.readerTask = exports.Monad = exports.ApplicativeSeq = exports.ApplicativePar = exports.Functor = exports.getMonoid = exports.getSemigroup = exports.URI = exports.flatten = exports.chainFirst = exports.chain = exports.chainW = exports.of = exports.apSecond = exports.apFirst = exports.ap = exports.apW = exports.map = exports.chainTaskK = exports.fromTaskK = exports.chainIOK = exports.fromIOK = exports.local = exports.asks = exports.ask = exports.fromIO = exports.fromReader = exports.fromTask = void 0;
+var function_1 = __webpack_require__(231);
+var R = __importStar(__webpack_require__(600));
+var T = __importStar(__webpack_require__(721));
+// -------------------------------------------------------------------------------------
+// constructors
+// -------------------------------------------------------------------------------------
+/**
+ * @category constructors
+ * @since 2.3.0
+ */
+exports.fromTask = 
+/*#__PURE__*/
+R.of;
+/**
+ * @category constructors
+ * @since 2.3.0
+ */
+var fromReader = function (ma) { return function_1.flow(ma, T.of); };
+exports.fromReader = fromReader;
+/**
+ * @category constructors
+ * @since 2.3.0
+ */
+exports.fromIO = 
+/*#__PURE__*/
+function_1.flow(T.fromIO, exports.fromTask);
+/**
+ * @category constructors
+ * @since 2.3.0
+ */
+var ask = function () { return T.of; };
+exports.ask = ask;
+/**
+ * @category constructors
+ * @since 2.3.0
+ */
+var asks = function (f) { return function_1.flow(T.of, T.map(f)); };
+exports.asks = asks;
+// -------------------------------------------------------------------------------------
+// combinators
+// -------------------------------------------------------------------------------------
+// TODO: remove in v3
+/**
+ * @category combinators
+ * @since 2.3.0
+ */
+exports.local = R.local;
+/**
+ * @category combinators
+ * @since 2.4.0
+ */
+function fromIOK(f) {
+    return function () {
+        var a = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            a[_i] = arguments[_i];
+        }
+        return exports.fromIO(f.apply(void 0, a));
+    };
+}
+exports.fromIOK = fromIOK;
+/**
+ * @category combinators
+ * @since 2.4.0
+ */
+var chainIOK = function (f) {
+    return exports.chain(function (a) { return exports.fromIO(f(a)); });
+};
+exports.chainIOK = chainIOK;
+/**
+ * @category combinators
+ * @since 2.4.0
+ */
+function fromTaskK(f) {
+    return function () {
+        var a = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            a[_i] = arguments[_i];
+        }
+        return exports.fromTask(f.apply(void 0, a));
+    };
+}
+exports.fromTaskK = fromTaskK;
+/**
+ * @category combinators
+ * @since 2.4.0
+ */
+var chainTaskK = function (f) {
+    return exports.chain(function (a) { return exports.fromTask(f(a)); });
+};
+exports.chainTaskK = chainTaskK;
+// -------------------------------------------------------------------------------------
+// non-pipeables
+// -------------------------------------------------------------------------------------
+var map_ = function (fa, f) { return function_1.pipe(fa, exports.map(f)); };
+var apPar_ = function (fab, fa) { return function_1.pipe(fab, exports.ap(fa)); };
+var apSeq_ = function (fab, fa) {
+    return function_1.pipe(fab, exports.chain(function (f) { return function_1.pipe(fa, exports.map(f)); }));
+};
+var chain_ = function (ma, f) { return function_1.pipe(ma, exports.chain(f)); };
+// -------------------------------------------------------------------------------------
+// pipeables
+// -------------------------------------------------------------------------------------
+/**
+ * `map` can be used to turn functions `(a: A) => B` into functions `(fa: F<A>) => F<B>` whose argument and return types
+ * use the type constructor `F` to represent some computational context.
+ *
+ * @category Functor
+ * @since 2.3.0
+ */
+var map = function (f) { return function (fa) {
+    return function_1.flow(fa, T.map(f));
+}; };
+exports.map = map;
+/**
+ * Less strict version of [`ap`](#ap).
+ *
+ * @category Apply
+ * @since 2.8.0
+ */
+var apW = function (fa) { return function (fab) { return function (r) { return function_1.pipe(fab(r), T.ap(fa(r))); }; }; };
+exports.apW = apW;
+/**
+ * Apply a function to an argument under a type constructor.
+ *
+ * @category Apply
+ * @since 2.3.0
+ */
+exports.ap = exports.apW;
+/**
+ * Combine two effectful actions, keeping only the result of the first.
+ *
+ * Derivable from `Apply`.
+ *
+ * @category combinators
+ * @since 2.3.0
+ */
+var apFirst = function (fb) {
+    return function_1.flow(exports.map(function (a) { return function () { return a; }; }), exports.ap(fb));
+};
+exports.apFirst = apFirst;
+/**
+ * Combine two effectful actions, keeping only the result of the second.
+ *
+ * Derivable from `Apply`.
+ *
+ * @category combinators
+ * @since 2.3.0
+ */
+var apSecond = function (fb) {
+    return function_1.flow(exports.map(function () { return function (b) { return b; }; }), exports.ap(fb));
+};
+exports.apSecond = apSecond;
+/**
+ * Wrap a value into the type constructor.
+ *
+ * @category Applicative
+ * @since 2.3.0
+ */
+var of = function (a) { return function () { return T.of(a); }; };
+exports.of = of;
+/**
+ * Less strict version of  [`chain`](#chain).
+ *
+ * @category Monad
+ * @since 2.6.7
+ */
+var chainW = function (f) { return function (fa) { return function (r) {
+    return function_1.pipe(fa(r), T.chain(function (a) { return f(a)(r); }));
+}; }; };
+exports.chainW = chainW;
+/**
+ * Composes computations in sequence, using the return value of one computation to determine the next computation.
+ *
+ * @category Monad
+ * @since 2.3.0
+ */
+exports.chain = exports.chainW;
+/**
+ * Composes computations in sequence, using the return value of one computation to determine the next computation and
+ * keeping only the result of the first.
+ *
+ * Derivable from `Monad`.
+ *
+ * @category combinators
+ * @since 2.3.0
+ */
+var chainFirst = function (f) {
+    return exports.chain(function (a) {
+        return function_1.pipe(f(a), exports.map(function () { return a; }));
+    });
+};
+exports.chainFirst = chainFirst;
+/**
+ * Derivable from `Monad`.
+ *
+ * @category combinators
+ * @since 2.3.0
+ */
+exports.flatten = 
+/*#__PURE__*/
+exports.chain(function_1.identity);
+// -------------------------------------------------------------------------------------
+// instances
+// -------------------------------------------------------------------------------------
+/**
+ * @category instances
+ * @since 2.3.0
+ */
+exports.URI = 'ReaderTask';
+/**
+ * @category instances
+ * @since 2.3.0
+ */
+function getSemigroup(S) {
+    return R.getSemigroup(T.getSemigroup(S));
+}
+exports.getSemigroup = getSemigroup;
+/**
+ * @category instances
+ * @since 2.3.0
+ */
+function getMonoid(M) {
+    return {
+        concat: getSemigroup(M).concat,
+        empty: exports.of(M.empty)
+    };
+}
+exports.getMonoid = getMonoid;
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Functor = {
+    URI: exports.URI,
+    map: map_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.ApplicativePar = {
+    URI: exports.URI,
+    map: map_,
+    ap: apPar_,
+    of: exports.of
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.ApplicativeSeq = {
+    URI: exports.URI,
+    map: map_,
+    ap: apSeq_,
+    of: exports.of
+};
+/**
+ * @internal
+ */
+exports.Monad = {
+    URI: exports.URI,
+    map: map_,
+    of: exports.of,
+    ap: apPar_,
+    chain: chain_
+};
+// TODO: remove in v3
+/**
+ * @category instances
+ * @since 2.3.0
+ */
+exports.readerTask = {
+    URI: exports.URI,
+    map: map_,
+    of: exports.of,
+    ap: apPar_,
+    chain: chain_,
+    fromIO: exports.fromIO,
+    fromTask: exports.fromTask
+};
+// TODO: remove in v3
+/**
+ * Like `readerTask` but `ap` is sequential
+ *
+ * @category instances
+ * @since 2.3.0
+ */
+exports.readerTaskSeq = {
+    URI: exports.URI,
+    map: map_,
+    of: exports.of,
+    ap: apSeq_,
+    chain: chain_,
+    fromIO: exports.fromIO,
+    fromTask: exports.fromTask
+};
+// -------------------------------------------------------------------------------------
+// utils
+// -------------------------------------------------------------------------------------
+// TODO: remove in v3
+/**
+ * @since 2.4.0
+ */
+/* istanbul ignore next */
+function run(ma, r) {
+    return ma(r)();
+}
+exports.run = run;
+// -------------------------------------------------------------------------------------
+// do notation
+// -------------------------------------------------------------------------------------
+/**
+ * @since 2.9.0
+ */
+exports.Do = 
+/*#__PURE__*/
+exports.of({});
+/**
+ * @since 2.8.0
+ */
+var bindTo = function (name) {
+    return exports.map(function_1.bindTo_(name));
+};
+exports.bindTo = bindTo;
+/**
+ * @since 2.8.0
+ */
+var bindW = function (name, f) {
+    return exports.chainW(function (a) {
+        return function_1.pipe(f(a), exports.map(function (b) { return function_1.bind_(a, name, b); }));
+    });
+};
+exports.bindW = bindW;
+/**
+ * @since 2.8.0
+ */
+exports.bind = exports.bindW;
+// -------------------------------------------------------------------------------------
+// pipeable sequence S
+// -------------------------------------------------------------------------------------
+/**
+ * @since 2.8.0
+ */
+var apSW = function (name, fb) {
+    return function_1.flow(exports.map(function (a) { return function (b) { return function_1.bind_(a, name, b); }; }), exports.apW(fb));
+};
+exports.apSW = apSW;
+/**
+ * @since 2.8.0
+ */
+exports.apS = exports.apSW;
+// -------------------------------------------------------------------------------------
+// array utils
+// -------------------------------------------------------------------------------------
+/**
+ * @since 2.9.0
+ */
+var traverseArrayWithIndex = function (f) {
+    return function_1.flow(R.traverseArrayWithIndex(f), R.map(T.sequenceArray));
+};
+exports.traverseArrayWithIndex = traverseArrayWithIndex;
+/**
+ * @since 2.9.0
+ */
+var traverseArray = function (f) { return exports.traverseArrayWithIndex(function (_, a) { return f(a); }); };
+exports.traverseArray = traverseArray;
+/**
+ * @since 2.9.0
+ */
+exports.sequenceArray = 
+/*#__PURE__*/
+exports.traverseArray(function_1.identity);
+
+
+/***/ }),
+/* 493 */,
+/* 494 */,
+/* 495 */,
+/* 496 */,
+/* 497 */,
+/* 498 */,
+/* 499 */,
+/* 500 */,
+/* 501 */,
+/* 502 */,
+/* 503 */,
+/* 504 */,
+/* 505 */,
+/* 506 */,
+/* 507 */,
+/* 508 */,
+/* 509 */,
+/* 510 */
 /***/ (function(module) {
 
 module.exports = addHook
@@ -9025,8 +21212,15 @@ function addHook (state, kind, name, hook) {
 
 
 /***/ }),
-
-/***/ 519:
+/* 511 */,
+/* 512 */,
+/* 513 */,
+/* 514 */,
+/* 515 */,
+/* 516 */,
+/* 517 */,
+/* 518 */,
+/* 519 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
@@ -9076,8 +21270,8 @@ exports.default = ReaderSync;
 
 
 /***/ }),
-
-/***/ 521:
+/* 520 */,
+/* 521 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
@@ -9137,8 +21331,7 @@ exports.getOctokitOptions = getOctokitOptions;
 //# sourceMappingURL=utils.js.map
 
 /***/ }),
-
-/***/ 522:
+/* 522 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
@@ -9178,8 +21371,7 @@ function getSettings(settingsOrOptions = {}) {
 
 
 /***/ }),
-
-/***/ 523:
+/* 523 */
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
 var register = __webpack_require__(363)
@@ -9242,8 +21434,9 @@ module.exports.Collection = Hook.Collection
 
 
 /***/ }),
-
-/***/ 526:
+/* 524 */,
+/* 525 */,
+/* 526 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
@@ -9273,8 +21466,17 @@ main();
 
 
 /***/ }),
-
-/***/ 537:
+/* 527 */,
+/* 528 */,
+/* 529 */,
+/* 530 */,
+/* 531 */,
+/* 532 */,
+/* 533 */,
+/* 534 */,
+/* 535 */,
+/* 536 */,
+/* 537 */
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
 "use strict";
@@ -9664,8 +21866,7 @@ module.exports = scan;
 
 
 /***/ }),
-
-/***/ 538:
+/* 538 */
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
 "use strict";
@@ -9816,8 +22017,7 @@ function pauseStreams (streams, options) {
 
 
 /***/ }),
-
-/***/ 539:
+/* 539 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
@@ -10355,8 +22555,28 @@ exports.HttpClient = HttpClient;
 
 
 /***/ }),
+/* 540 */,
+/* 541 */,
+/* 542 */,
+/* 543 */,
+/* 544 */,
+/* 545 */
+/***/ (function(__unusedmodule, exports) {
 
-/***/ 553:
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+
+
+/***/ }),
+/* 546 */,
+/* 547 */,
+/* 548 */,
+/* 549 */,
+/* 550 */,
+/* 551 */,
+/* 552 */,
+/* 553 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
@@ -10398,8 +22618,132 @@ exports.default = default_1;
 
 
 /***/ }),
+/* 554 */
+/***/ (function(__unusedmodule, exports) {
 
-/***/ 561:
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+
+
+/***/ }),
+/* 555 */,
+/* 556 */,
+/* 557 */,
+/* 558 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.traced = exports.Functor = exports.URI = exports.map = exports.getComonad = exports.censor = exports.listens = exports.listen = exports.tracks = void 0;
+var function_1 = __webpack_require__(231);
+// TODO: curry in v3
+/**
+ * Extracts a value at a relative position which depends on the current value.
+ *
+ * @since 2.0.0
+ */
+function tracks(M, f) {
+    return function (wa) { return wa(f(wa(M.empty))); };
+}
+exports.tracks = tracks;
+// tslint:disable:readonly-array
+/**
+ * Get the current position
+ *
+ * @since 2.0.0
+ */
+function listen(wa) {
+    return function (e) { return [wa(e), e]; };
+}
+exports.listen = listen;
+// tslint:enable:readonly-array
+// tslint:disable:readonly-array
+/**
+ * Get a value which depends on the current position
+ *
+ * @since 2.0.0
+ */
+function listens(f) {
+    return function (wa) { return function (e) { return [wa(e), f(e)]; }; };
+}
+exports.listens = listens;
+// tslint:enable:readonly-array
+/**
+ * Apply a function to the current position
+ *
+ * @since 2.0.0
+ */
+function censor(f) {
+    return function (wa) { return function (e) { return wa(f(e)); }; };
+}
+exports.censor = censor;
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+function getComonad(monoid) {
+    function extend(wa, f) {
+        return function (p1) { return f(function (p2) { return wa(monoid.concat(p1, p2)); }); };
+    }
+    function extract(wa) {
+        return wa(monoid.empty);
+    }
+    return {
+        URI: exports.URI,
+        _E: undefined,
+        map: map_,
+        extend: extend,
+        extract: extract
+    };
+}
+exports.getComonad = getComonad;
+// -------------------------------------------------------------------------------------
+// non-pipeables
+// -------------------------------------------------------------------------------------
+/* istanbul ignore next */
+var map_ = function (fa, f) { return function_1.pipe(fa, exports.map(f)); };
+// -------------------------------------------------------------------------------------
+// pipeables
+// -------------------------------------------------------------------------------------
+/**
+ * `map` can be used to turn functions `(a: A) => B` into functions `(fa: F<A>) => F<B>` whose argument and return types
+ * use the type constructor `F` to represent some computational context.
+ *
+ * @category Functor
+ * @since 2.0.0
+ */
+var map = function (f) { return function (fa) { return function (p) { return f(fa(p)); }; }; };
+exports.map = map;
+// -------------------------------------------------------------------------------------
+// instances
+// -------------------------------------------------------------------------------------
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.URI = 'Traced';
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Functor = {
+    URI: exports.URI,
+    map: map_
+};
+// TODO: remove in v3
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.traced = exports.Functor;
+
+
+/***/ }),
+/* 559 */,
+/* 560 */,
+/* 561 */
 /***/ (function(module) {
 
 function webpackEmptyContext(req) {
@@ -10417,8 +22761,274 @@ module.exports = webpackEmptyContext;
 webpackEmptyContext.id = 561;
 
 /***/ }),
+/* 562 */,
+/* 563 */,
+/* 564 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
 
-/***/ 568:
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.taskThese = exports.bifunctorTaskThese = exports.functorTaskThese = exports.getMonad = exports.getApplicative = exports.getSemigroup = exports.URI = exports.fromTask = exports.fromIO = exports.of = exports.mapLeft = exports.bimap = exports.map = exports.swap = exports.toTuple = exports.fold = exports.fromIOEither = exports.leftIO = exports.rightIO = exports.leftTask = exports.rightTask = exports.both = exports.right = exports.left = void 0;
+var function_1 = __webpack_require__(231);
+var T = __importStar(__webpack_require__(721));
+var TH = __importStar(__webpack_require__(766));
+/**
+ * @category constructors
+ * @since 2.4.0
+ */
+exports.left = 
+/*#__PURE__*/
+function_1.flow(TH.left, T.of);
+/**
+ * @category constructors
+ * @since 2.4.0
+ */
+exports.right = 
+/*#__PURE__*/
+function_1.flow(TH.right, T.of);
+/**
+ * @category constructors
+ * @since 2.4.0
+ */
+exports.both = 
+/*#__PURE__*/
+function_1.flow(TH.both, T.of);
+/**
+ * @category constructors
+ * @since 2.4.0
+ */
+exports.rightTask = 
+/*#__PURE__*/
+T.map(TH.right);
+/**
+ * @category constructors
+ * @since 2.4.0
+ */
+exports.leftTask = 
+/*#__PURE__*/
+T.map(TH.left);
+/**
+ * @category constructors
+ * @since 2.4.0
+ */
+exports.rightIO = 
+/*#__PURE__*/
+function_1.flow(T.fromIO, exports.rightTask);
+/**
+ * @category constructors
+ * @since 2.4.0
+ */
+exports.leftIO = 
+/*#__PURE__*/
+function_1.flow(T.fromIO, exports.leftTask);
+/**
+ * @category constructors
+ * @since 2.4.0
+ */
+exports.fromIOEither = 
+/*#__PURE__*/
+T.fromIO;
+// -------------------------------------------------------------------------------------
+// destructors
+// -------------------------------------------------------------------------------------
+/**
+ * @category destructors
+ * @since 2.4.0
+ */
+exports.fold = 
+/*#__PURE__*/
+function_1.flow(TH.fold, T.chain);
+// TODO: make lazy in v3
+/* tslint:disable:readonly-array */
+/**
+ * @category destructors
+ * @since 2.4.0
+ */
+exports.toTuple = 
+/*#__PURE__*/
+function_1.flow(TH.toTuple, T.map);
+/* tslint:enable:readonly-array */
+// -------------------------------------------------------------------------------------
+// combinators
+// -------------------------------------------------------------------------------------
+/**
+ * @category combinators
+ * @since 2.4.0
+ */
+exports.swap = 
+/*#__PURE__*/
+T.map(TH.swap);
+// -------------------------------------------------------------------------------------
+// non-pipeables
+// -------------------------------------------------------------------------------------
+var map_ = function (fa, f) { return function_1.pipe(fa, exports.map(f)); };
+/* istanbul ignore next */
+var bimap_ = function (fa, f, g) { return function_1.pipe(fa, exports.bimap(f, g)); };
+/* istanbul ignore next */
+var mapLeft_ = function (fa, f) { return function_1.pipe(fa, exports.mapLeft(f)); };
+// -------------------------------------------------------------------------------------
+// pipeables
+// -------------------------------------------------------------------------------------
+/**
+ * `map` can be used to turn functions `(a: A) => B` into functions `(fa: F<A>) => F<B>` whose argument and return types
+ * use the type constructor `F` to represent some computational context.
+ *
+ * @category Functor
+ * @since 2.4.0
+ */
+var map = function (f) { return T.map(TH.map(f)); };
+exports.map = map;
+/**
+ * Map a pair of functions over the two type arguments of the bifunctor.
+ *
+ * @category Bifunctor
+ * @since 2.4.0
+ */
+var bimap = function (f, g) {
+    return T.map(TH.bimap(f, g));
+};
+exports.bimap = bimap;
+/**
+ * Map a function over the first type argument of a bifunctor.
+ *
+ * @category Bifunctor
+ * @since 2.4.0
+ */
+var mapLeft = function (f) {
+    return T.map(TH.mapLeft(f));
+};
+exports.mapLeft = mapLeft;
+/**
+ * Wrap a value into the type constructor.
+ *
+ * Equivalent to [`right`](#right).
+ *
+ * @category Applicative
+ * @since 2.7.0
+ */
+exports.of = exports.right;
+/**
+ * @category MonadIO
+ * @since 2.7.0
+ */
+exports.fromIO = exports.rightIO;
+/**
+ * @category MonadIO
+ * @since 2.7.0
+ */
+exports.fromTask = exports.rightTask;
+// -------------------------------------------------------------------------------------
+// instances
+// -------------------------------------------------------------------------------------
+/**
+ * @category instances
+ * @since 2.4.0
+ */
+exports.URI = 'TaskThese';
+/**
+ * @category instances
+ * @since 2.4.0
+ */
+function getSemigroup(SE, SA) {
+    return T.getSemigroup(TH.getSemigroup(SE, SA));
+}
+exports.getSemigroup = getSemigroup;
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+function getApplicative(A, SE) {
+    var AV = TH.getApplicative(SE);
+    var ap = function (fga) { return function (fgab) {
+        return A.ap(A.map(fgab, function (h) { return function (ga) { return AV.ap(h, ga); }; }), fga);
+    }; };
+    return {
+        URI: exports.URI,
+        _E: undefined,
+        map: map_,
+        ap: function (fab, fa) { return function_1.pipe(fab, ap(fa)); },
+        of: exports.of
+    };
+}
+exports.getApplicative = getApplicative;
+// TODO: remove in v3 in favour of a non-constrained Monad / MonadTask instance
+/**
+ * @category instances
+ * @since 2.4.0
+ */
+function getMonad(SE) {
+    var A = getApplicative(T.ApplicativePar, SE);
+    return {
+        URI: exports.URI,
+        _E: undefined,
+        map: map_,
+        ap: A.ap,
+        of: exports.of,
+        chain: function (ma, f) {
+            return function_1.pipe(ma, T.chain(TH.fold(exports.left, f, function (e1, a) {
+                return function_1.pipe(f(a), T.map(TH.fold(function (e2) { return TH.left(SE.concat(e1, e2)); }, function (b) { return TH.both(e1, b); }, function (e2, b) { return TH.both(SE.concat(e1, e2), b); })));
+            })));
+        },
+        fromIO: exports.fromIO,
+        fromTask: exports.fromTask
+    };
+}
+exports.getMonad = getMonad;
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.functorTaskThese = {
+    URI: exports.URI,
+    map: map_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.bifunctorTaskThese = {
+    URI: exports.URI,
+    bimap: bimap_,
+    mapLeft: mapLeft_
+};
+// TODO: remove in v3
+/**
+ * @category instances
+ * @since 2.4.0
+ */
+exports.taskThese = {
+    URI: exports.URI,
+    map: map_,
+    bimap: bimap_,
+    mapLeft: mapLeft_
+};
+
+
+/***/ }),
+/* 565 */,
+/* 566 */,
+/* 567 */,
+/* 568 */
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
 "use strict";
@@ -10550,102 +23160,1207 @@ module.exports = parse;
 
 
 /***/ }),
-
-/***/ 589:
-/***/ (function(__unusedmodule, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const path = __webpack_require__(622);
-const deep_1 = __webpack_require__(887);
-const entry_1 = __webpack_require__(703);
-const error_1 = __webpack_require__(375);
-const entry_2 = __webpack_require__(317);
-class Provider {
-    constructor(_settings) {
-        this._settings = _settings;
-        this.errorFilter = new error_1.default(this._settings);
-        this.entryFilter = new entry_1.default(this._settings, this._getMicromatchOptions());
-        this.deepFilter = new deep_1.default(this._settings, this._getMicromatchOptions());
-        this.entryTransformer = new entry_2.default(this._settings);
-    }
-    _getRootDirectory(task) {
-        return path.resolve(this._settings.cwd, task.base);
-    }
-    _getReaderOptions(task) {
-        const basePath = task.base === '.' ? '' : task.base;
-        return {
-            basePath,
-            pathSegmentSeparator: '/',
-            concurrency: this._settings.concurrency,
-            deepFilter: this.deepFilter.getFilter(basePath, task.positive, task.negative),
-            entryFilter: this.entryFilter.getFilter(task.positive, task.negative),
-            errorFilter: this.errorFilter.getFilter(),
-            followSymbolicLinks: this._settings.followSymbolicLinks,
-            fs: this._settings.fs,
-            stats: this._settings.stats,
-            throwErrorOnBrokenSymbolicLink: this._settings.throwErrorOnBrokenSymbolicLink,
-            transform: this.entryTransformer.getTransformer()
-        };
-    }
-    _getMicromatchOptions() {
-        return {
-            dot: this._settings.dot,
-            matchBase: this._settings.baseNameMatch,
-            nobrace: !this._settings.braceExpansion,
-            nocase: !this._settings.caseSensitiveMatch,
-            noext: !this._settings.extglob,
-            noglobstar: !this._settings.globstar,
-            posix: true,
-            strictSlashes: false
-        };
-    }
-}
-exports.default = Provider;
-
-
-/***/ }),
-
-/***/ 593:
+/* 569 */,
+/* 570 */,
+/* 571 */,
+/* 572 */,
+/* 573 */,
+/* 574 */,
+/* 575 */,
+/* 576 */,
+/* 577 */,
+/* 578 */,
+/* 579 */
 /***/ (function(__unusedmodule, exports) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.read = void 0;
-function read(path, settings) {
-    const lstat = settings.fs.lstatSync(path);
-    if (!lstat.isSymbolicLink() || !settings.followSymbolicLink) {
-        return lstat;
-    }
-    try {
-        const stat = settings.fs.statSync(path);
-        if (settings.markSymbolicLink) {
-            stat.isSymbolicLink = () => true;
-        }
-        return stat;
-    }
-    catch (error) {
-        if (!settings.throwErrorOnBrokenSymbolicLink) {
-            return lstat;
-        }
-        throw error;
-    }
+exports.getReaderM = void 0;
+function getReaderM(M) {
+    return {
+        map: function (ma, f) { return function (r) { return M.map(ma(r), f); }; },
+        of: function (a) { return function () { return M.of(a); }; },
+        ap: function (mab, ma) { return function (r) { return M.ap(mab(r), ma(r)); }; },
+        chain: function (ma, f) { return function (r) { return M.chain(ma(r), function (a) { return f(a)(r); }); }; },
+        ask: function () { return M.of; },
+        asks: function (f) { return function (r) { return M.map(M.of(r), f); }; },
+        local: function (ma, f) { return function (q) { return ma(f(q)); }; },
+        fromReader: function (ma) { return function (r) { return M.of(ma(r)); }; },
+        fromM: function (ma) { return function () { return ma; }; }
+    };
 }
-exports.read = read;
+exports.getReaderM = getReaderM;
 
 
 /***/ }),
+/* 580 */,
+/* 581 */,
+/* 582 */,
+/* 583 */
+/***/ (function(module) {
 
-/***/ 605:
+"use strict";
+/*!
+ * is-number <https://github.com/jonschlinkert/is-number>
+ *
+ * Copyright (c) 2014-present, Jon Schlinkert.
+ * Released under the MIT License.
+ */
+
+
+
+module.exports = function(num) {
+  if (typeof num === 'number') {
+    return num - num === 0;
+  }
+  if (typeof num === 'string' && num.trim() !== '') {
+    return Number.isFinite ? Number.isFinite(+num) : isFinite(+num);
+  }
+  return false;
+};
+
+
+/***/ }),
+/* 584 */,
+/* 585 */,
+/* 586 */,
+/* 587 */,
+/* 588 */,
+/* 589 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Alt = exports.Monad = exports.Applicative = exports.ApplicativeSeq = exports.ApplicativePar = exports.Bifunctor = exports.Functor = exports.getFilterable = exports.getIOValidation = exports.getAltIOValidation = exports.getApplicativeIOValidation = exports.getApplyMonoid = exports.getApplySemigroup = exports.getSemigroup = exports.URI = exports.throwError = exports.fromIO = exports.alt = exports.altW = exports.flatten = exports.chainFirst = exports.chainFirstW = exports.chain = exports.chainW = exports.of = exports.apSecond = exports.apFirst = exports.ap = exports.apW = exports.mapLeft = exports.bimap = exports.map = exports.chainEitherK = exports.chainEitherKW = exports.fromEitherK = exports.filterOrElse = exports.filterOrElseW = exports.swap = exports.orElse = exports.getOrElse = exports.getOrElseW = exports.fold = exports.tryCatch = exports.fromPredicate = exports.fromOption = exports.fromEither = exports.leftIO = exports.rightIO = exports.right = exports.left = void 0;
+exports.sequenceSeqArray = exports.traverseSeqArray = exports.traverseSeqArrayWithIndex = exports.sequenceArray = exports.traverseArray = exports.traverseArrayWithIndex = exports.apS = exports.apSW = exports.bind = exports.bindW = exports.bindTo = exports.Do = exports.bracket = exports.ioEither = exports.MonadThrow = exports.MonadIO = void 0;
+var E = __importStar(__webpack_require__(311));
+var Filterable_1 = __webpack_require__(718);
+var function_1 = __webpack_require__(231);
+var I = __importStar(__webpack_require__(847));
+// -------------------------------------------------------------------------------------
+// constructors
+// -------------------------------------------------------------------------------------
+/**
+ * @category constructors
+ * @since 2.0.0
+ */
+exports.left = 
+/*#__PURE__*/
+function_1.flow(E.left, I.of);
+/**
+ * @category constructors
+ * @since 2.0.0
+ */
+exports.right = 
+/*#__PURE__*/
+function_1.flow(E.right, I.of);
+/**
+ * @category constructors
+ * @since 2.0.0
+ */
+exports.rightIO = 
+/*#__PURE__*/
+I.map(E.right);
+/**
+ * @category constructors
+ * @since 2.0.0
+ */
+exports.leftIO = 
+/*#__PURE__*/
+I.map(E.left);
+/**
+ * Derivable from `MonadThrow`.
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+exports.fromEither = 
+/*#__PURE__*/
+E.fold(exports.left, function (a) { return exports.right(a); });
+/**
+ * Derivable from `MonadThrow`.
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+var fromOption = function (onNone) { return function (ma) {
+    return ma._tag === 'None' ? exports.left(onNone()) : exports.right(ma.value);
+}; };
+exports.fromOption = fromOption;
+/**
+ * Derivable from `MonadThrow`.
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+var fromPredicate = function (predicate, onFalse) { return function (a) { return (predicate(a) ? exports.right(a) : exports.left(onFalse(a))); }; };
+exports.fromPredicate = fromPredicate;
+/**
+ * Constructs a new `IOEither` from a function that performs a side effect and might throw
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+function tryCatch(f, onError) {
+    return function () { return E.tryCatch(f, onError); };
+}
+exports.tryCatch = tryCatch;
+// -------------------------------------------------------------------------------------
+// destructors
+// -------------------------------------------------------------------------------------
+/**
+ * @category destructors
+ * @since 2.0.0
+ */
+exports.fold = 
+/*#__PURE__*/
+function_1.flow(E.fold, I.chain);
+/**
+ * Less strict version of [`getOrElse`](#getOrElse).
+ *
+ * @category destructors
+ * @since 2.6.0
+ */
+var getOrElseW = function (onLeft) { return function (ma) {
+    return function_1.pipe(ma, I.chain(E.fold(onLeft, I.of)));
+}; };
+exports.getOrElseW = getOrElseW;
+/**
+ * @category destructors
+ * @since 2.0.0
+ */
+exports.getOrElse = exports.getOrElseW;
+// -------------------------------------------------------------------------------------
+// combinators
+// -------------------------------------------------------------------------------------
+/**
+ * @category combinators
+ * @since 2.0.0
+ */
+var orElse = function (f) {
+    return I.chain(E.fold(f, exports.right));
+};
+exports.orElse = orElse;
+/**
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.swap = 
+/*#__PURE__*/
+I.map(E.swap);
+/**
+ * Less strict version of [`filterOrElse`](#filterOrElse).
+ *
+ * @since 2.9.0
+ */
+var filterOrElseW = function (predicate, onFalse) {
+    return exports.chainW(function (a) { return (predicate(a) ? exports.right(a) : exports.left(onFalse(a))); });
+};
+exports.filterOrElseW = filterOrElseW;
+/**
+ * Derivable from `MonadThrow`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.filterOrElse = exports.filterOrElseW;
+/**
+ * @category combinators
+ * @since 2.4.0
+ */
+function fromEitherK(f) {
+    return function () {
+        var a = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            a[_i] = arguments[_i];
+        }
+        return exports.fromEither(f.apply(void 0, a));
+    };
+}
+exports.fromEitherK = fromEitherK;
+/**
+ * Less strict version of [`chainEitherK`](#chainEitherK).
+ *
+ * @category combinators
+ * @since 2.6.1
+ */
+var chainEitherKW = function (f) { return exports.chainW(fromEitherK(f)); };
+exports.chainEitherKW = chainEitherKW;
+/**
+ * @category combinators
+ * @since 2.4.0
+ */
+exports.chainEitherK = exports.chainEitherKW;
+// -------------------------------------------------------------------------------------
+// non-pipeables
+// -------------------------------------------------------------------------------------
+/* istanbul ignore next */
+var map_ = function (fa, f) { return function_1.pipe(fa, exports.map(f)); };
+/* istanbul ignore next */
+var ap_ = function (fab, fa) { return function_1.pipe(fab, exports.ap(fa)); };
+var apSeq_ = function (fab, fa) {
+    return function_1.pipe(fab, exports.chain(function (f) { return function_1.pipe(fa, exports.map(f)); }));
+};
+/* istanbul ignore next */
+var chain_ = function (ma, f) { return function_1.pipe(ma, exports.chain(f)); };
+/* istanbul ignore next */
+var bimap_ = function (fa, f, g) { return function_1.pipe(fa, exports.bimap(f, g)); };
+/* istanbul ignore next */
+var mapLeft_ = function (fa, f) { return function_1.pipe(fa, exports.mapLeft(f)); };
+/* istanbul ignore next */
+var alt_ = function (fa, that) { return function_1.pipe(fa, exports.alt(that)); };
+// -------------------------------------------------------------------------------------
+// pipeables
+// -------------------------------------------------------------------------------------
+/**
+ * `map` can be used to turn functions `(a: A) => B` into functions `(fa: F<A>) => F<B>` whose argument and return types
+ * use the type constructor `F` to represent some computational context.
+ *
+ * @category Functor
+ * @since 2.0.0
+ */
+var map = function (f) { return I.map(E.map(f)); };
+exports.map = map;
+/**
+ * Map a pair of functions over the two type arguments of the bifunctor.
+ *
+ * @category Bifunctor
+ * @since 2.0.0
+ */
+exports.bimap = 
+/*#__PURE__*/
+function_1.flow(E.bimap, I.map);
+/**
+ * Map a function over the first type argument of a bifunctor.
+ *
+ * @category Bifunctor
+ * @since 2.0.0
+ */
+var mapLeft = function (f) { return I.map(E.mapLeft(f)); };
+exports.mapLeft = mapLeft;
+/**
+ * Less strict version of [`ap`](#ap).
+ *
+ * @category Apply
+ * @since 2.8.0
+ */
+var apW = function (fa) {
+    return function_1.flow(I.map(function (gab) { return function (ga) { return E.apW(ga)(gab); }; }), I.ap(fa));
+};
+exports.apW = apW;
+/**
+ * Apply a function to an argument under a type constructor.
+ *
+ * @category Apply
+ * @since 2.0.0
+ */
+exports.ap = exports.apW;
+/**
+ * Combine two effectful actions, keeping only the result of the first.
+ *
+ * Derivable from `Apply`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+var apFirst = function (fb) {
+    return function_1.flow(exports.map(function (a) { return function () { return a; }; }), exports.ap(fb));
+};
+exports.apFirst = apFirst;
+/**
+ * Combine two effectful actions, keeping only the result of the second.
+ *
+ * Derivable from `Apply`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+var apSecond = function (fb) {
+    return function_1.flow(exports.map(function () { return function (b) { return b; }; }), exports.ap(fb));
+};
+exports.apSecond = apSecond;
+/**
+ * Wrap a value into the type constructor.
+ *
+ * Equivalent to [`right`](#right).
+ *
+ * @category Applicative
+ * @since 2.8.5
+ */
+exports.of = exports.right;
+/**
+ * Less strict version of [`chain`](#chain).
+ *
+ * @category Monad
+ * @since 2.6.0
+ */
+var chainW = function (f) { return function (ma) {
+    return function_1.pipe(ma, I.chain(E.fold(exports.left, f)));
+}; };
+exports.chainW = chainW;
+/**
+ * Composes computations in sequence, using the return value of one computation to determine the next computation.
+ *
+ * @category Monad
+ * @since 2.0.0
+ */
+exports.chain = exports.chainW;
+/**
+ * Less strict version of [`chainFirst`](#chainFirst).
+ *
+ * Derivable from `Monad`.
+ *
+ * @category combinators
+ * @since 2.8.0
+ */
+var chainFirstW = function (f) {
+    return exports.chainW(function (a) {
+        return function_1.pipe(f(a), exports.map(function () { return a; }));
+    });
+};
+exports.chainFirstW = chainFirstW;
+/**
+ * Composes computations in sequence, using the return value of one computation to determine the next computation and
+ * keeping only the result of the first.
+ *
+ * Derivable from `Monad`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.chainFirst = exports.chainFirstW;
+/**
+ * Derivable from `Monad`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.flatten = 
+/*#__PURE__*/
+exports.chain(function_1.identity);
+/**
+ * Less strict version of [`alt`](#alt).
+ *
+ * @category Alt
+ * @since 2.9.0
+ */
+var altW = function (that) { return function (fa) {
+    return function_1.pipe(fa, I.chain(E.fold(that, exports.right)));
+}; };
+exports.altW = altW;
+/**
+ * Identifies an associative operation on a type constructor. It is similar to `Semigroup`, except that it applies to
+ * types of kind `* -> *`.
+ *
+ * @category Alt
+ * @since 2.0.0
+ */
+exports.alt = exports.altW;
+/**
+ * @category MonadIO
+ * @since 2.7.0
+ */
+exports.fromIO = exports.rightIO;
+/**
+ * @category MonadThrow
+ * @since 2.7.0
+ */
+exports.throwError = exports.left;
+// -------------------------------------------------------------------------------------
+// instances
+// -------------------------------------------------------------------------------------
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.URI = 'IOEither';
+/**
+ * Semigroup returning the left-most non-`Left` value. If both operands are `Right`s then the inner values are
+ * concatenated using the provided `Semigroup`
+ *
+ * @category instances
+ * @since 2.0.0
+ */
+function getSemigroup(S) {
+    return I.getSemigroup(E.getSemigroup(S));
+}
+exports.getSemigroup = getSemigroup;
+/**
+ * Semigroup returning the left-most `Left` value. If both operands are `Right`s then the inner values
+ * are concatenated using the provided `Semigroup`
+ *
+ * @category instances
+ * @since 2.0.0
+ */
+function getApplySemigroup(S) {
+    return I.getSemigroup(E.getApplySemigroup(S));
+}
+exports.getApplySemigroup = getApplySemigroup;
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+function getApplyMonoid(M) {
+    return {
+        concat: getApplySemigroup(M).concat,
+        empty: exports.right(M.empty)
+    };
+}
+exports.getApplyMonoid = getApplyMonoid;
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+function getApplicativeIOValidation(SE) {
+    var AV = E.getApplicativeValidation(SE);
+    var ap = function (fga) {
+        return function_1.flow(I.map(function (gab) { return function (ga) { return AV.ap(gab, ga); }; }), I.ap(fga));
+    };
+    return {
+        URI: exports.URI,
+        _E: undefined,
+        map: map_,
+        ap: function (fab, fa) { return function_1.pipe(fab, ap(fa)); },
+        of: exports.of
+    };
+}
+exports.getApplicativeIOValidation = getApplicativeIOValidation;
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+function getAltIOValidation(SE) {
+    var A = E.getAltValidation(SE);
+    return {
+        URI: exports.URI,
+        _E: undefined,
+        map: map_,
+        alt: function (me, that) { return function () { return A.alt(me(), function () { return that()(); }); }; }
+    };
+}
+exports.getAltIOValidation = getAltIOValidation;
+// TODO: remove in v3
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+function getIOValidation(SE) {
+    var applicativeIOValidation = getApplicativeIOValidation(SE);
+    var altIOValidation = getAltIOValidation(SE);
+    return {
+        URI: exports.URI,
+        _E: undefined,
+        map: map_,
+        ap: applicativeIOValidation.ap,
+        of: exports.of,
+        chain: chain_,
+        bimap: bimap_,
+        mapLeft: mapLeft_,
+        alt: altIOValidation.alt,
+        fromIO: exports.fromIO,
+        throwError: exports.throwError
+    };
+}
+exports.getIOValidation = getIOValidation;
+/**
+ * @category instances
+ * @since 2.1.0
+ */
+function getFilterable(M) {
+    var W = E.getWitherable(M);
+    var F = Filterable_1.getFilterableComposition(I.Monad, W);
+    return {
+        URI: exports.URI,
+        _E: undefined,
+        map: map_,
+        compact: F.compact,
+        separate: F.separate,
+        filter: F.filter,
+        filterMap: F.filterMap,
+        partition: F.partition,
+        partitionMap: F.partitionMap
+    };
+}
+exports.getFilterable = getFilterable;
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Functor = {
+    URI: exports.URI,
+    map: map_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Bifunctor = {
+    URI: exports.URI,
+    bimap: bimap_,
+    mapLeft: mapLeft_
+};
+/**
+ * @category instances
+ * @since 2.8.4
+ */
+exports.ApplicativePar = {
+    URI: exports.URI,
+    map: map_,
+    ap: ap_,
+    of: exports.of
+};
+/**
+ * @category instances
+ * @since 2.8.4
+ */
+exports.ApplicativeSeq = {
+    URI: exports.URI,
+    map: map_,
+    ap: apSeq_,
+    of: exports.of
+};
+/**
+ * Use `ApplicativePar` instead
+ *
+ * @since 2.7.0
+ * @category instances
+ * @deprecated
+ */
+exports.Applicative = exports.ApplicativePar;
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Monad = {
+    URI: exports.URI,
+    map: map_,
+    ap: ap_,
+    of: exports.of,
+    chain: chain_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Alt = {
+    URI: exports.URI,
+    map: map_,
+    alt: alt_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.MonadIO = {
+    URI: exports.URI,
+    map: map_,
+    ap: ap_,
+    of: exports.of,
+    chain: chain_,
+    fromIO: exports.fromIO
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.MonadThrow = {
+    URI: exports.URI,
+    map: map_,
+    ap: ap_,
+    of: exports.of,
+    chain: chain_,
+    throwError: exports.throwError
+};
+// TODO: remove in v3
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.ioEither = {
+    URI: exports.URI,
+    bimap: bimap_,
+    mapLeft: mapLeft_,
+    map: map_,
+    of: exports.of,
+    ap: ap_,
+    chain: chain_,
+    alt: alt_,
+    fromIO: exports.fromIO,
+    throwError: exports.throwError
+};
+// -------------------------------------------------------------------------------------
+// utils
+// -------------------------------------------------------------------------------------
+/**
+ * Make sure that a resource is cleaned up in the event of an exception (\*). The release action is called regardless of
+ * whether the body action throws (\*) or returns.
+ *
+ * (\*) i.e. returns a `Left`
+ *
+ * Derivable from `MonadThrow`.
+ *
+ * @since 2.0.0
+ */
+var bracket = function (acquire, use, release) {
+    return function_1.pipe(acquire, exports.chain(function (a) {
+        return function_1.pipe(function_1.pipe(use(a), I.map(E.right)), exports.chain(function (e) {
+            return function_1.pipe(release(a, e), exports.chain(function () { return (E.isLeft(e) ? exports.left(e.left) : exports.of(e.right)); }));
+        }));
+    }));
+};
+exports.bracket = bracket;
+// -------------------------------------------------------------------------------------
+// do notation
+// -------------------------------------------------------------------------------------
+/**
+ * @since 2.9.0
+ */
+exports.Do = 
+/*#__PURE__*/
+exports.of({});
+/**
+ * @since 2.8.0
+ */
+var bindTo = function (name) {
+    return exports.map(function_1.bindTo_(name));
+};
+exports.bindTo = bindTo;
+/**
+ * @since 2.8.0
+ */
+var bindW = function (name, f) {
+    return exports.chainW(function (a) {
+        return function_1.pipe(f(a), exports.map(function (b) { return function_1.bind_(a, name, b); }));
+    });
+};
+exports.bindW = bindW;
+/**
+ * @since 2.8.0
+ */
+exports.bind = exports.bindW;
+// -------------------------------------------------------------------------------------
+// pipeable sequence S
+// -------------------------------------------------------------------------------------
+/**
+ * @since 2.8.0
+ */
+var apSW = function (name, fb) {
+    return function_1.flow(exports.map(function (a) { return function (b) { return function_1.bind_(a, name, b); }; }), exports.apW(fb));
+};
+exports.apSW = apSW;
+/**
+ * @since 2.8.0
+ */
+exports.apS = exports.apSW;
+// -------------------------------------------------------------------------------------
+// array utils
+// -------------------------------------------------------------------------------------
+/**
+ * @since 2.9.0
+ */
+var traverseArrayWithIndex = function (f) {
+    return function_1.flow(I.traverseArrayWithIndex(f), I.map(E.sequenceArray));
+};
+exports.traverseArrayWithIndex = traverseArrayWithIndex;
+/**
+ * @since 2.9.0
+ */
+var traverseArray = function (f) { return exports.traverseArrayWithIndex(function (_, a) { return f(a); }); };
+exports.traverseArray = traverseArray;
+/**
+ *
+ * @since 2.9.0
+ */
+exports.sequenceArray = 
+/*#__PURE__*/
+exports.traverseArray(function_1.identity);
+/**
+ * @since 2.9.0
+ */
+var traverseSeqArrayWithIndex = function (f) { return function (arr) { return function () {
+    // tslint:disable-next-line: readonly-array
+    var result = [];
+    for (var i = 0; i < arr.length; i++) {
+        var b = f(i, arr[i])();
+        if (E.isLeft(b)) {
+            return b;
+        }
+        result.push(b.right);
+    }
+    return E.right(result);
+}; }; };
+exports.traverseSeqArrayWithIndex = traverseSeqArrayWithIndex;
+/**
+ * @since 2.9.0
+ */
+var traverseSeqArray = function (f) { return exports.traverseSeqArrayWithIndex(function (_, a) { return f(a); }); };
+exports.traverseSeqArray = traverseSeqArray;
+/**
+ * @since 2.9.0
+ */
+exports.sequenceSeqArray = 
+/*#__PURE__*/
+exports.traverseSeqArray(function_1.identity);
+
+
+/***/ }),
+/* 590 */,
+/* 591 */,
+/* 592 */,
+/* 593 */
+/***/ (function(__unusedmodule, exports) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+
+
+/***/ }),
+/* 594 */,
+/* 595 */,
+/* 596 */,
+/* 597 */,
+/* 598 */,
+/* 599 */,
+/* 600 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.sequenceArray = exports.traverseArray = exports.traverseArrayWithIndex = exports.apS = exports.apSW = exports.Do = exports.bind = exports.bindW = exports.bindTo = exports.reader = exports.Choice = exports.Strong = exports.Category = exports.Profunctor = exports.Monad = exports.Applicative = exports.Functor = exports.getMonoid = exports.getSemigroup = exports.URI = exports.id = exports.promap = exports.compose = exports.flatten = exports.chainFirst = exports.chain = exports.chainW = exports.of = exports.apSecond = exports.apFirst = exports.ap = exports.apW = exports.map = exports.local = exports.asks = exports.ask = void 0;
+var E = __importStar(__webpack_require__(311));
+var function_1 = __webpack_require__(231);
+// -------------------------------------------------------------------------------------
+// constructors
+// -------------------------------------------------------------------------------------
+/**
+ * Reads the current context
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+var ask = function () { return function_1.identity; };
+exports.ask = ask;
+/**
+ * Projects a value from the global context in a Reader
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+exports.asks = function_1.identity;
+// -------------------------------------------------------------------------------------
+// combinators
+// -------------------------------------------------------------------------------------
+/**
+ * Changes the value of the local context during the execution of the action `ma` (similar to `Contravariant`'s
+ * `contramap`).
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+var local = function (f) { return function (ma) { return function (q) { return ma(f(q)); }; }; };
+exports.local = local;
+// -------------------------------------------------------------------------------------
+// non-pipeables
+// -------------------------------------------------------------------------------------
+/* istanbul ignore next */
+var map_ = function (fa, f) { return function_1.pipe(fa, exports.map(f)); };
+/* istanbul ignore next */
+var ap_ = function (fab, fa) { return function_1.pipe(fab, exports.ap(fa)); };
+/* istanbul ignore next */
+var chain_ = function (ma, f) { return function_1.pipe(ma, exports.chain(f)); };
+var compose_ = function (bc, ab) { return function_1.pipe(bc, exports.compose(ab)); };
+var promap_ = function (fea, f, g) { return function_1.pipe(fea, exports.promap(f, g)); };
+var first_ = function (pab) { return function (_a) {
+    var a = _a[0], c = _a[1];
+    return [pab(a), c];
+}; };
+var second_ = function (pbc) { return function (_a) {
+    var a = _a[0], b = _a[1];
+    return [a, pbc(b)];
+}; };
+var left_ = function (pab) {
+    return E.fold(function (a) { return E.left(pab(a)); }, E.right);
+};
+var right_ = function (pbc) {
+    return E.fold(E.left, function (b) { return E.right(pbc(b)); });
+};
+// -------------------------------------------------------------------------------------
+// pipeables
+// -------------------------------------------------------------------------------------
+/**
+ * `map` can be used to turn functions `(a: A) => B` into functions `(fa: F<A>) => F<B>` whose argument and return types
+ * use the type constructor `F` to represent some computational context.
+ *
+ * @category Functor
+ * @since 2.0.0
+ */
+var map = function (f) { return function (fa) { return function (r) { return f(fa(r)); }; }; };
+exports.map = map;
+/**
+ * Less strict version of [`ap`](#ap).
+ *
+ * @category Apply
+ * @since 2.8.0
+ */
+var apW = function (fa) { return function (fab) { return function (r) { return fab(r)(fa(r)); }; }; };
+exports.apW = apW;
+/**
+ * Apply a function to an argument under a type constructor.
+ *
+ * @category Apply
+ * @since 2.0.0
+ */
+exports.ap = exports.apW;
+/**
+ * Combine two effectful actions, keeping only the result of the first.
+ *
+ * Derivable from `Apply`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+var apFirst = function (fb) {
+    return function_1.flow(exports.map(function (a) { return function () { return a; }; }), exports.ap(fb));
+};
+exports.apFirst = apFirst;
+/**
+ * Combine two effectful actions, keeping only the result of the second.
+ *
+ * Derivable from `Apply`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+var apSecond = function (fb) {
+    return function_1.flow(exports.map(function () { return function (b) { return b; }; }), exports.ap(fb));
+};
+exports.apSecond = apSecond;
+/**
+ * Wrap a value into the type constructor.
+ *
+ * @category Applicative
+ * @since 2.0.0
+ */
+exports.of = function_1.constant;
+/**
+ * Less strict version of [`chain`](#chain).
+ *
+ * @category Monad
+ * @since 2.6.0
+ */
+var chainW = function (f) { return function (fa) { return function (r) { return f(fa(r))(r); }; }; };
+exports.chainW = chainW;
+/**
+ * Composes computations in sequence, using the return value of one computation to determine the next computation.
+ *
+ * @category Monad
+ * @since 2.0.0
+ */
+exports.chain = exports.chainW;
+/**
+ * Composes computations in sequence, using the return value of one computation to determine the next computation and
+ * keeping only the result of the first.
+ *
+ * Derivable from `Monad`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+var chainFirst = function (f) {
+    return exports.chain(function (a) {
+        return function_1.pipe(f(a), exports.map(function () { return a; }));
+    });
+};
+exports.chainFirst = chainFirst;
+/**
+ * Derivable from `Monad`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.flatten = 
+/*#__PURE__*/
+exports.chain(function_1.identity);
+/**
+ * @category Semigroupoid
+ * @since 2.0.0
+ */
+var compose = function (ab) { return function (bc) { return function_1.flow(ab, bc); }; };
+exports.compose = compose;
+/**
+ * @category Profunctor
+ * @since 2.0.0
+ */
+var promap = function (f, g) { return function (fea) { return function (a) { return g(fea(f(a))); }; }; };
+exports.promap = promap;
+/**
+ * @category Category
+ * @since 2.0.0
+ */
+var id = function () { return function_1.identity; };
+exports.id = id;
+// -------------------------------------------------------------------------------------
+// instances
+// -------------------------------------------------------------------------------------
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.URI = 'Reader';
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+function getSemigroup(S) {
+    return {
+        concat: function (x, y) { return function (e) { return S.concat(x(e), y(e)); }; }
+    };
+}
+exports.getSemigroup = getSemigroup;
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+function getMonoid(M) {
+    return {
+        concat: getSemigroup(M).concat,
+        empty: function () { return M.empty; }
+    };
+}
+exports.getMonoid = getMonoid;
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Functor = {
+    URI: exports.URI,
+    map: map_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Applicative = {
+    URI: exports.URI,
+    map: map_,
+    ap: ap_,
+    of: exports.of
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Monad = {
+    URI: exports.URI,
+    map: map_,
+    of: exports.of,
+    ap: ap_,
+    chain: chain_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Profunctor = {
+    URI: exports.URI,
+    map: map_,
+    promap: promap_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Category = {
+    URI: exports.URI,
+    compose: compose_,
+    id: exports.id
+};
+/**
+ * @category instances
+ * @since 2.8.3
+ */
+exports.Strong = {
+    URI: exports.URI,
+    map: map_,
+    promap: promap_,
+    first: first_,
+    second: second_
+};
+/**
+ * @category instances
+ * @since 2.8.3
+ */
+exports.Choice = {
+    URI: exports.URI,
+    map: map_,
+    promap: promap_,
+    left: left_,
+    right: right_
+};
+// TODO: remove in v3
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.reader = {
+    URI: exports.URI,
+    map: map_,
+    of: exports.of,
+    ap: ap_,
+    chain: chain_,
+    promap: promap_,
+    compose: compose_,
+    id: exports.id,
+    first: first_,
+    second: second_,
+    left: left_,
+    right: right_
+};
+// -------------------------------------------------------------------------------------
+// do notation
+// -------------------------------------------------------------------------------------
+/**
+ * @since 2.8.0
+ */
+var bindTo = function (name) {
+    return exports.map(function_1.bindTo_(name));
+};
+exports.bindTo = bindTo;
+/**
+ * @since 2.8.0
+ */
+var bindW = function (name, f) {
+    return exports.chainW(function (a) {
+        return function_1.pipe(f(a), exports.map(function (b) { return function_1.bind_(a, name, b); }));
+    });
+};
+exports.bindW = bindW;
+/**
+ * @since 2.8.0
+ */
+exports.bind = exports.bindW;
+// -------------------------------------------------------------------------------------
+// pipeable sequence S
+// -------------------------------------------------------------------------------------
+/**
+ * @since 2.9.0
+ */
+exports.Do = 
+/*#__PURE__*/
+exports.of({});
+/**
+ * @since 2.8.0
+ */
+var apSW = function (name, fb) {
+    return function_1.flow(exports.map(function (a) { return function (b) { return function_1.bind_(a, name, b); }; }), exports.apW(fb));
+};
+exports.apSW = apSW;
+/**
+ * @since 2.8.0
+ */
+exports.apS = exports.apSW;
+// -------------------------------------------------------------------------------------
+// array utils
+// -------------------------------------------------------------------------------------
+/**
+ *
+ * @since 2.9.0
+ */
+var traverseArrayWithIndex = function (f) { return function (arr) { return function (r) { return arr.map(function (x, i) { return f(i, x)(r); }); }; }; };
+exports.traverseArrayWithIndex = traverseArrayWithIndex;
+/**
+ * this function has the same behavior of `A.traverse(R.reader)` but it's stack safe and optimized
+ *
+ * @example
+ * import * as RA from 'fp-ts/ReadonlyArray'
+ * import { traverseArray, Reader } from 'fp-ts/Reader'
+ * import { pipe } from 'fp-ts/function'
+ *
+ * const add: (x: number) => Reader<{value:number}, number> = x => config => x + config.value
+ * const arr = RA.range(0, 100)
+ *
+ * assert.deepStrictEqual(pipe(arr, traverseArray(add))({value: 3}), pipe(arr, RA.map(x => x + 3)))
+ *
+ * @since 2.9.0
+ */
+var traverseArray = function (f) { return exports.traverseArrayWithIndex(function (_, a) { return f(a); }); };
+exports.traverseArray = traverseArray;
+/**
+ * this function has the same behavior of `A.sequence(R.reader)` but it's stack safe and optimized
+ *
+ * @example
+ * import * as RA from 'fp-ts/ReadonlyArray'
+ * import { sequenceArray, Reader } from 'fp-ts/Reader'
+ * import { pipe } from 'fp-ts/function'
+ *
+ * const add: (x: number) => Reader<{value:number}, number> = x => config => x + config.value
+ * const arr = RA.range(0, 100)
+ *
+ * assert.deepStrictEqual(pipe(arr, RA.map(add), sequenceArray)({value: 3}), pipe(arr, RA.map(x => x + 3)))
+ *
+ * @since 2.9.0
+ */
+exports.sequenceArray = 
+/*#__PURE__*/
+exports.traverseArray(function_1.identity);
+
+
+/***/ }),
+/* 601 */,
+/* 602 */,
+/* 603 */,
+/* 604 */,
+/* 605 */
 /***/ (function(module) {
 
 module.exports = require("http");
 
 /***/ }),
-
-/***/ 608:
+/* 606 */,
+/* 607 */,
+/* 608 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
@@ -10707,8 +24422,9 @@ exports.default = ReaderStream;
 
 
 /***/ }),
-
-/***/ 611:
+/* 609 */,
+/* 610 */,
+/* 611 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
@@ -10741,15 +24457,17 @@ exports.default = Settings;
 
 
 /***/ }),
-
-/***/ 614:
+/* 612 */,
+/* 613 */,
+/* 614 */
 /***/ (function(module) {
 
 module.exports = require("events");
 
 /***/ }),
-
-/***/ 617:
+/* 615 */,
+/* 616 */,
+/* 617 */
 /***/ (function(__unusedmodule, exports) {
 
 "use strict";
@@ -10787,8 +24505,336 @@ exports.joinPathSegments = joinPathSegments;
 
 
 /***/ }),
+/* 618 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
 
-/***/ 621:
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.map_ = exports.Filterable = exports.Compactable = exports.Functor = exports.getWitherable = exports.getFilterableWithIndex = exports.URI = exports.separate = exports.partitionMap = exports.partition = exports.mapWithIndex = exports.map = exports.filterMap = exports.filter = exports.compact = exports.fromFoldable = exports.singleton = exports.getMonoid = exports.getEq = exports.empty = exports.isSubmap = exports.lookup = exports.lookupWithKey = exports.pop = exports.modifyAt = exports.updateAt = exports.deleteAt = exports.insertAt = exports.toUnfoldable = exports.toArray = exports.collect = exports.values = exports.keys = exports.elem = exports.member = exports.isEmpty = exports.size = exports.getShow = void 0;
+var RM = __importStar(__webpack_require__(182));
+/* tslint:disable:readonly-array */
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.getShow = RM.getShow;
+/**
+ * Calculate the number of key/value pairs in a map
+ *
+ * @since 2.0.0
+ */
+exports.size = RM.size;
+/**
+ * Test whether or not a map is empty
+ *
+ * @since 2.0.0
+ */
+exports.isEmpty = RM.isEmpty;
+// TODO: remove non-curried overloading in v3
+/**
+ * Test whether or not a key exists in a map
+ *
+ * @since 2.0.0
+ */
+exports.member = RM.member;
+// TODO: remove non-curried overloading in v3
+/**
+ * Test whether or not a value is a member of a map
+ *
+ * @since 2.0.0
+ */
+exports.elem = RM.elem;
+/**
+ * Get a sorted array of the keys contained in a map
+ *
+ * @since 2.0.0
+ */
+exports.keys = RM.keys;
+/**
+ * Get a sorted array of the values contained in a map
+ *
+ * @since 2.0.0
+ */
+exports.values = RM.values;
+/**
+ * @since 2.0.0
+ */
+exports.collect = RM.collect;
+/**
+ * Get a sorted of the key/value pairs contained in a map
+ *
+ * @since 2.0.0
+ */
+exports.toArray = RM.toReadonlyArray;
+function toUnfoldable(O, U) {
+    return RM.toUnfoldable(O, U);
+}
+exports.toUnfoldable = toUnfoldable;
+/**
+ * Insert or replace a key/value pair in a map
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.insertAt = RM.insertAt;
+/**
+ * Delete a key and value from a map
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.deleteAt = RM.deleteAt;
+/**
+ * @since 2.0.0
+ */
+exports.updateAt = RM.updateAt;
+/**
+ * @since 2.0.0
+ */
+exports.modifyAt = RM.modifyAt;
+/**
+ * Delete a key and value from a map, returning the value as well as the subsequent map
+ *
+ * @since 2.0.0
+ */
+exports.pop = RM.pop;
+// TODO: remove non-curried overloading in v3
+/**
+ * Lookup the value for a key in a `Map`.
+ * If the result is a `Some`, the existing key is also returned.
+ *
+ * @since 2.0.0
+ */
+exports.lookupWithKey = RM.lookupWithKey;
+// TODO: remove non-curried overloading in v3
+/**
+ * Lookup the value for a key in a `Map`.
+ *
+ * @since 2.0.0
+ */
+exports.lookup = RM.lookup;
+// TODO: remove non-curried overloading in v3
+/**
+ * Test whether or not one `Map` contains all of the keys and values contained in another `Map`
+ *
+ * @since 2.0.0
+ */
+exports.isSubmap = RM.isSubmap;
+/**
+ * @since 2.0.0
+ */
+exports.empty = new Map();
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.getEq = RM.getEq;
+/**
+ * Gets `Monoid` instance for Maps given `Semigroup` instance for their values
+ *
+ * @category instances
+ * @since 2.0.0
+ */
+exports.getMonoid = RM.getMonoid;
+/**
+ * Create a map with one key/value pair
+ *
+ * @since 2.0.0
+ */
+exports.singleton = RM.singleton;
+function fromFoldable(E, M, F) {
+    return RM.fromFoldable(E, M, F);
+}
+exports.fromFoldable = fromFoldable;
+// -------------------------------------------------------------------------------------
+// non-pipeables
+// -------------------------------------------------------------------------------------
+var map__ = RM.Functor.map;
+var filter_ = RM.Filterable.filter;
+var filterMap_ = RM.Filterable.filterMap;
+var partition_ = RM.Filterable.partition;
+var partitionMap_ = RM.Filterable.partitionMap;
+// -------------------------------------------------------------------------------------
+// pipeables
+// -------------------------------------------------------------------------------------
+/**
+ * @category Compactable
+ * @since 2.0.0
+ */
+exports.compact = RM.compact;
+/**
+ * @category Filterable
+ * @since 2.0.0
+ */
+exports.filter = RM.filter;
+/**
+ * @category Filterable
+ * @since 2.0.0
+ */
+exports.filterMap = RM.filterMap;
+/**
+ * `map` can be used to turn functions `(a: A) => B` into functions `(fa: F<A>) => F<B>` whose argument and return types
+ * use the type constructor `F` to represent some computational context.
+ *
+ * @category Functor
+ * @since 2.0.0
+ */
+exports.map = RM.map;
+/**
+ * @category FunctorWithIndex
+ * @since 2.7.1
+ */
+exports.mapWithIndex = RM.mapWithIndex;
+/**
+ * @category Filterable
+ * @since 2.0.0
+ */
+exports.partition = RM.partition;
+/**
+ * @category Filterable
+ * @since 2.0.0
+ */
+exports.partitionMap = RM.partitionMap;
+/**
+ * @category Compactable
+ * @since 2.0.0
+ */
+exports.separate = RM.separate;
+// -------------------------------------------------------------------------------------
+// instances
+// -------------------------------------------------------------------------------------
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.URI = 'Map';
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.getFilterableWithIndex = RM.getFilterableWithIndex;
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.getWitherable = RM.getWitherable;
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Functor = {
+    URI: exports.URI,
+    map: map__
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Compactable = {
+    URI: exports.URI,
+    compact: exports.compact,
+    separate: exports.separate
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Filterable = {
+    URI: exports.URI,
+    map: map__,
+    compact: exports.compact,
+    separate: exports.separate,
+    filter: filter_,
+    filterMap: filterMap_,
+    partition: partition_,
+    partitionMap: partitionMap_
+};
+// TODO: remove in v3
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.map_ = exports.Filterable;
+
+
+/***/ }),
+/* 619 */,
+/* 620 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const path = __webpack_require__(622);
+const deep_1 = __webpack_require__(887);
+const entry_1 = __webpack_require__(703);
+const error_1 = __webpack_require__(375);
+const entry_2 = __webpack_require__(912);
+class Provider {
+    constructor(_settings) {
+        this._settings = _settings;
+        this.errorFilter = new error_1.default(this._settings);
+        this.entryFilter = new entry_1.default(this._settings, this._getMicromatchOptions());
+        this.deepFilter = new deep_1.default(this._settings, this._getMicromatchOptions());
+        this.entryTransformer = new entry_2.default(this._settings);
+    }
+    _getRootDirectory(task) {
+        return path.resolve(this._settings.cwd, task.base);
+    }
+    _getReaderOptions(task) {
+        const basePath = task.base === '.' ? '' : task.base;
+        return {
+            basePath,
+            pathSegmentSeparator: '/',
+            concurrency: this._settings.concurrency,
+            deepFilter: this.deepFilter.getFilter(basePath, task.positive, task.negative),
+            entryFilter: this.entryFilter.getFilter(task.positive, task.negative),
+            errorFilter: this.errorFilter.getFilter(),
+            followSymbolicLinks: this._settings.followSymbolicLinks,
+            fs: this._settings.fs,
+            stats: this._settings.stats,
+            throwErrorOnBrokenSymbolicLink: this._settings.throwErrorOnBrokenSymbolicLink,
+            transform: this.entryTransformer.getTransformer()
+        };
+    }
+    _getMicromatchOptions() {
+        return {
+            dot: this._settings.dot,
+            matchBase: this._settings.baseNameMatch,
+            nobrace: !this._settings.braceExpansion,
+            nocase: !this._settings.caseSensitiveMatch,
+            noext: !this._settings.extglob,
+            noglobstar: !this._settings.globstar,
+            posix: true,
+            strictSlashes: false
+        };
+    }
+}
+exports.default = Provider;
+
+
+/***/ }),
+/* 621 */
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
 "use strict";
@@ -10834,22 +24880,123 @@ module.exports.env = opts => {
 
 
 /***/ }),
-
-/***/ 622:
+/* 622 */
 /***/ (function(module) {
 
 module.exports = require("path");
 
 /***/ }),
-
-/***/ 631:
+/* 623 */,
+/* 624 */,
+/* 625 */,
+/* 626 */,
+/* 627 */,
+/* 628 */,
+/* 629 */,
+/* 630 */,
+/* 631 */
 /***/ (function(module) {
 
 module.exports = require("net");
 
 /***/ }),
+/* 632 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
 
-/***/ 654:
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.fs = void 0;
+const fs = __webpack_require__(210);
+exports.fs = fs;
+
+
+/***/ }),
+/* 633 */,
+/* 634 */,
+/* 635 */,
+/* 636 */,
+/* 637 */,
+/* 638 */,
+/* 639 */,
+/* 640 */,
+/* 641 */
+/***/ (function(__unusedmodule, exports) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.read = void 0;
+function read(path, settings) {
+    const lstat = settings.fs.lstatSync(path);
+    if (!lstat.isSymbolicLink() || !settings.followSymbolicLink) {
+        return lstat;
+    }
+    try {
+        const stat = settings.fs.statSync(path);
+        if (settings.markSymbolicLink) {
+            stat.isSymbolicLink = () => true;
+        }
+        return stat;
+    }
+    catch (error) {
+        if (!settings.throwErrorOnBrokenSymbolicLink) {
+            return lstat;
+        }
+        throw error;
+    }
+}
+exports.read = read;
+
+
+/***/ }),
+/* 642 */,
+/* 643 */,
+/* 644 */,
+/* 645 */,
+/* 646 */,
+/* 647 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getOptionM = void 0;
+/**
+ * @since 2.0.0
+ */
+var Applicative_1 = __webpack_require__(767);
+var Option_1 = __webpack_require__(293);
+function getOptionM(M) {
+    var A = Applicative_1.getApplicativeComposition(M, Option_1.Applicative);
+    var fnone = M.of(Option_1.none);
+    return {
+        map: A.map,
+        ap: A.ap,
+        of: A.of,
+        chain: function (ma, f) {
+            return M.chain(ma, Option_1.fold(function () { return fnone; }, f));
+        },
+        alt: function (fa, that) {
+            return M.chain(fa, Option_1.fold(that, function (a) { return M.of(Option_1.some(a)); }));
+        },
+        fold: function (ma, onNone, onSome) { return M.chain(ma, Option_1.fold(onNone, onSome)); },
+        getOrElse: function (ma, onNone) { return M.chain(ma, Option_1.fold(onNone, M.of)); },
+        fromM: function (ma) { return M.map(ma, Option_1.some); },
+        none: function () { return fnone; }
+    };
+}
+exports.getOptionM = getOptionM;
+
+
+/***/ }),
+/* 648 */,
+/* 649 */,
+/* 650 */,
+/* 651 */,
+/* 652 */,
+/* 653 */,
+/* 654 */
 /***/ (function(module) {
 
 // This is not the set of all possible signals.
@@ -10908,15 +25055,20 @@ if (process.platform === 'linux') {
 
 
 /***/ }),
-
-/***/ 661:
+/* 655 */,
+/* 656 */,
+/* 657 */,
+/* 658 */,
+/* 659 */,
+/* 660 */,
+/* 661 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Settings = exports.scandirSync = exports.scandir = void 0;
-const async = __webpack_require__(182);
+const async = __webpack_require__(662);
 const sync = __webpack_require__(148);
 const settings_1 = __webpack_require__(403);
 exports.Settings = settings_1.default;
@@ -10941,8 +25093,106 @@ function getSettings(settingsOrOptions = {}) {
 
 
 /***/ }),
+/* 662 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
 
-/***/ 663:
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.readdir = exports.readdirWithFileTypes = exports.read = void 0;
+const fsStat = __webpack_require__(858);
+const rpl = __webpack_require__(885);
+const constants_1 = __webpack_require__(171);
+const utils = __webpack_require__(632);
+const common = __webpack_require__(185);
+function read(directory, settings, callback) {
+    if (!settings.stats && constants_1.IS_SUPPORT_READDIR_WITH_FILE_TYPES) {
+        return readdirWithFileTypes(directory, settings, callback);
+    }
+    return readdir(directory, settings, callback);
+}
+exports.read = read;
+function readdirWithFileTypes(directory, settings, callback) {
+    settings.fs.readdir(directory, { withFileTypes: true }, (readdirError, dirents) => {
+        if (readdirError !== null) {
+            return callFailureCallback(callback, readdirError);
+        }
+        const entries = dirents.map((dirent) => ({
+            dirent,
+            name: dirent.name,
+            path: common.joinPathSegments(directory, dirent.name, settings.pathSegmentSeparator)
+        }));
+        if (!settings.followSymbolicLinks) {
+            return callSuccessCallback(callback, entries);
+        }
+        const tasks = entries.map((entry) => makeRplTaskEntry(entry, settings));
+        rpl(tasks, (rplError, rplEntries) => {
+            if (rplError !== null) {
+                return callFailureCallback(callback, rplError);
+            }
+            callSuccessCallback(callback, rplEntries);
+        });
+    });
+}
+exports.readdirWithFileTypes = readdirWithFileTypes;
+function makeRplTaskEntry(entry, settings) {
+    return (done) => {
+        if (!entry.dirent.isSymbolicLink()) {
+            return done(null, entry);
+        }
+        settings.fs.stat(entry.path, (statError, stats) => {
+            if (statError !== null) {
+                if (settings.throwErrorOnBrokenSymbolicLink) {
+                    return done(statError);
+                }
+                return done(null, entry);
+            }
+            entry.dirent = utils.fs.createDirentFromStats(entry.name, stats);
+            return done(null, entry);
+        });
+    };
+}
+function readdir(directory, settings, callback) {
+    settings.fs.readdir(directory, (readdirError, names) => {
+        if (readdirError !== null) {
+            return callFailureCallback(callback, readdirError);
+        }
+        const filepaths = names.map((name) => common.joinPathSegments(directory, name, settings.pathSegmentSeparator));
+        const tasks = filepaths.map((filepath) => {
+            return (done) => fsStat.stat(filepath, settings.fsStatSettings, done);
+        });
+        rpl(tasks, (rplError, results) => {
+            if (rplError !== null) {
+                return callFailureCallback(callback, rplError);
+            }
+            const entries = [];
+            names.forEach((name, index) => {
+                const stats = results[index];
+                const entry = {
+                    name,
+                    path: filepaths[index],
+                    dirent: utils.fs.createDirentFromStats(name, stats)
+                };
+                if (settings.stats) {
+                    entry.stats = stats;
+                }
+                entries.push(entry);
+            });
+            callSuccessCallback(callback, entries);
+        });
+    });
+}
+exports.readdir = readdir;
+function callFailureCallback(callback, error) {
+    callback(error);
+}
+function callSuccessCallback(callback, result) {
+    callback(null, result);
+}
+
+
+/***/ }),
+/* 663 */
 /***/ (function(__unusedmodule, exports) {
 
 // https://d3js.org/d3-format/ v2.0.0 Copyright 2020 Mike Bostock
@@ -11290,15 +25540,943 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 
 /***/ }),
+/* 664 */,
+/* 665 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
 
-/***/ 669:
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.fanout = exports.splitStrong = void 0;
+var function_1 = __webpack_require__(231);
+function splitStrong(F) {
+    return function (pab, pcd) { return F.compose(F.first(pab), F.second(pcd)); };
+}
+exports.splitStrong = splitStrong;
+function fanout(F) {
+    var splitStrongF = splitStrong(F);
+    return function (pab, pac) {
+        var split = F.promap(F.id(), function_1.identity, function (a) { return [a, a]; });
+        return F.compose(splitStrongF(pab, pac), split);
+    };
+}
+exports.fanout = fanout;
+
+
+/***/ }),
+/* 666 */,
+/* 667 */,
+/* 668 */,
+/* 669 */
 /***/ (function(module) {
 
 module.exports = require("util");
 
 /***/ }),
+/* 670 */,
+/* 671 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
 
-/***/ 689:
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.URI = exports.separate = exports.compact = exports.reduceRight = exports.foldMap = exports.reduce = exports.partitionMap = exports.partition = exports.filterMap = exports.filter = exports.elem = exports.some = exports.every = exports.fromFoldableMap = exports.fromFoldable = exports.filterWithIndex = exports.filterMapWithIndex = exports.partitionWithIndex = exports.partitionMapWithIndex = exports.wilt = exports.wither = exports.sequence = exports.traverse = exports.traverseWithIndex = exports.singleton = exports.reduceRightWithIndex = exports.foldMapWithIndex = exports.reduceWithIndex = exports.map = exports.mapWithIndex = exports.empty = exports.lookup = exports.getMonoid = exports.getEq = exports.isSubrecord = exports.pop = exports.modifyAt = exports.updateAt = exports.deleteAt = exports.hasOwnProperty = exports.insertAt = exports.toUnfoldable = exports.toReadonlyArray = exports.collect = exports.keys = exports.isEmpty = exports.size = exports.getShow = exports.toRecord = exports.fromRecord = void 0;
+exports.readonlyRecord = exports.Witherable = exports.TraversableWithIndex = exports.Traversable = exports.FilterableWithIndex = exports.Filterable = exports.Compactable = exports.FoldableWithIndex = exports.Foldable = exports.FunctorWithIndex = exports.Functor = void 0;
+var Eq_1 = __webpack_require__(725);
+var function_1 = __webpack_require__(231);
+var Option_1 = __webpack_require__(293);
+/**
+ * @category constructors
+ * @since 2.5.0
+ */
+function fromRecord(r) {
+    return Object.assign({}, r);
+}
+exports.fromRecord = fromRecord;
+/**
+ * @category destructors
+ * @since 2.5.0
+ */
+function toRecord(r) {
+    return Object.assign({}, r);
+}
+exports.toRecord = toRecord;
+/**
+ * @category instances
+ * @since 2.5.0
+ */
+function getShow(S) {
+    return {
+        show: function (r) {
+            var elements = collect(function (k, a) { return JSON.stringify(k) + ": " + S.show(a); })(r).join(', ');
+            return elements === '' ? '{}' : "{ " + elements + " }";
+        }
+    };
+}
+exports.getShow = getShow;
+/**
+ * Calculate the number of key/value pairs in a record
+ *
+ * @since 2.5.0
+ */
+function size(r) {
+    return Object.keys(r).length;
+}
+exports.size = size;
+/**
+ * Test whether a record is empty
+ *
+ * @since 2.5.0
+ */
+function isEmpty(r) {
+    return Object.keys(r).length === 0;
+}
+exports.isEmpty = isEmpty;
+/**
+ * @since 2.5.0
+ */
+function keys(r) {
+    return Object.keys(r).sort();
+}
+exports.keys = keys;
+/**
+ * Map a record into an array
+ *
+ * @example
+ * import {collect} from 'fp-ts/ReadonlyRecord'
+ *
+ * const x: { a: string, b: boolean } = { a: 'foo', b: false }
+ * assert.deepStrictEqual(
+ *   collect((key, val) => ({key: key, value: val}))(x),
+ *   [{key: 'a', value: 'foo'}, {key: 'b', value: false}]
+ * )
+ *
+ * @since 2.5.0
+ */
+function collect(f) {
+    return function (r) {
+        // tslint:disable-next-line: readonly-array
+        var out = [];
+        for (var _i = 0, _a = keys(r); _i < _a.length; _i++) {
+            var key = _a[_i];
+            out.push(f(key, r[key]));
+        }
+        return out;
+    };
+}
+exports.collect = collect;
+/**
+ * @category destructors
+ * @since 2.5.0
+ */
+exports.toReadonlyArray = 
+/*#__PURE__*/
+collect(function (k, a) { return [k, a]; });
+function toUnfoldable(U) {
+    return function (r) {
+        var arr = exports.toReadonlyArray(r);
+        var len = arr.length;
+        return U.unfold(0, function (b) { return (b < len ? Option_1.some([arr[b], b + 1]) : Option_1.none); });
+    };
+}
+exports.toUnfoldable = toUnfoldable;
+function insertAt(k, a) {
+    return function (r) {
+        if (r[k] === a) {
+            return r;
+        }
+        var out = Object.assign({}, r);
+        out[k] = a;
+        return out;
+    };
+}
+exports.insertAt = insertAt;
+var _hasOwnProperty = Object.prototype.hasOwnProperty;
+function hasOwnProperty(k, r) {
+    return _hasOwnProperty.call(r === undefined ? this : r, k);
+}
+exports.hasOwnProperty = hasOwnProperty;
+function deleteAt(k) {
+    return function (r) {
+        if (!_hasOwnProperty.call(r, k)) {
+            return r;
+        }
+        var out = Object.assign({}, r);
+        delete out[k];
+        return out;
+    };
+}
+exports.deleteAt = deleteAt;
+/**
+ * @since 2.5.0
+ */
+function updateAt(k, a) {
+    return function (r) {
+        if (!hasOwnProperty(k, r)) {
+            return Option_1.none;
+        }
+        if (r[k] === a) {
+            return Option_1.some(r);
+        }
+        var out = Object.assign({}, r);
+        out[k] = a;
+        return Option_1.some(out);
+    };
+}
+exports.updateAt = updateAt;
+/**
+ * @since 2.5.0
+ */
+function modifyAt(k, f) {
+    return function (r) {
+        if (!hasOwnProperty(k, r)) {
+            return Option_1.none;
+        }
+        var out = Object.assign({}, r);
+        out[k] = f(r[k]);
+        return Option_1.some(out);
+    };
+}
+exports.modifyAt = modifyAt;
+function pop(k) {
+    var deleteAtk = deleteAt(k);
+    return function (r) {
+        var oa = lookup(k, r);
+        return Option_1.isNone(oa) ? Option_1.none : Option_1.some([oa.value, deleteAtk(r)]);
+    };
+}
+exports.pop = pop;
+function isSubrecord(E) {
+    return function (me, that) {
+        if (that === undefined) {
+            var isSubrecordE_1 = isSubrecord(E);
+            return function (that) { return isSubrecordE_1(that, me); };
+        }
+        for (var k in me) {
+            if (!_hasOwnProperty.call(that, k) || !E.equals(me[k], that[k])) {
+                return false;
+            }
+        }
+        return true;
+    };
+}
+exports.isSubrecord = isSubrecord;
+function getEq(E) {
+    var isSubrecordE = isSubrecord(E);
+    return Eq_1.fromEquals(function (x, y) { return isSubrecordE(x)(y) && isSubrecordE(y)(x); });
+}
+exports.getEq = getEq;
+function getMonoid(S) {
+    return {
+        concat: function (x, y) {
+            if (x === exports.empty) {
+                return y;
+            }
+            if (y === exports.empty) {
+                return x;
+            }
+            var keys = Object.keys(y);
+            var len = keys.length;
+            if (len === 0) {
+                return x;
+            }
+            var r = Object.assign({}, x);
+            for (var i = 0; i < len; i++) {
+                var k = keys[i];
+                r[k] = _hasOwnProperty.call(x, k) ? S.concat(x[k], y[k]) : y[k];
+            }
+            return r;
+        },
+        empty: exports.empty
+    };
+}
+exports.getMonoid = getMonoid;
+function lookup(k, r) {
+    if (r === undefined) {
+        return function (r) { return lookup(k, r); };
+    }
+    return _hasOwnProperty.call(r, k) ? Option_1.some(r[k]) : Option_1.none;
+}
+exports.lookup = lookup;
+/**
+ * @since 2.5.0
+ */
+exports.empty = {};
+function mapWithIndex(f) {
+    return function (fa) {
+        var out = {};
+        var keys = Object.keys(fa);
+        for (var _i = 0, keys_1 = keys; _i < keys_1.length; _i++) {
+            var key = keys_1[_i];
+            out[key] = f(key, fa[key]);
+        }
+        return out;
+    };
+}
+exports.mapWithIndex = mapWithIndex;
+function map(f) {
+    return mapWithIndex(function (_, a) { return f(a); });
+}
+exports.map = map;
+function reduceWithIndex(b, f) {
+    return function (fa) {
+        var out = b;
+        var ks = keys(fa);
+        var len = ks.length;
+        for (var i = 0; i < len; i++) {
+            var k = ks[i];
+            out = f(k, out, fa[k]);
+        }
+        return out;
+    };
+}
+exports.reduceWithIndex = reduceWithIndex;
+function foldMapWithIndex(M) {
+    return function (f) { return function (fa) {
+        var out = M.empty;
+        var ks = keys(fa);
+        var len = ks.length;
+        for (var i = 0; i < len; i++) {
+            var k = ks[i];
+            out = M.concat(out, f(k, fa[k]));
+        }
+        return out;
+    }; };
+}
+exports.foldMapWithIndex = foldMapWithIndex;
+function reduceRightWithIndex(b, f) {
+    return function (fa) {
+        var out = b;
+        var ks = keys(fa);
+        var len = ks.length;
+        for (var i = len - 1; i >= 0; i--) {
+            var k = ks[i];
+            out = f(k, fa[k], out);
+        }
+        return out;
+    };
+}
+exports.reduceRightWithIndex = reduceRightWithIndex;
+/**
+ * Create a record with one key/value pair
+ *
+ * @category constructors
+ * @since 2.5.0
+ */
+function singleton(k, a) {
+    var _a;
+    return _a = {}, _a[k] = a, _a;
+}
+exports.singleton = singleton;
+function traverseWithIndex(F) {
+    return function (f) { return function (ta) {
+        var ks = keys(ta);
+        if (ks.length === 0) {
+            return F.of(exports.empty);
+        }
+        var fr = F.of({});
+        var _loop_1 = function (key) {
+            fr = F.ap(F.map(fr, function (r) { return function (b) {
+                r[key] = b;
+                return r;
+            }; }), f(key, ta[key]));
+        };
+        for (var _i = 0, ks_1 = ks; _i < ks_1.length; _i++) {
+            var key = ks_1[_i];
+            _loop_1(key);
+        }
+        return fr;
+    }; };
+}
+exports.traverseWithIndex = traverseWithIndex;
+function traverse(F) {
+    var traverseWithIndexF = traverseWithIndex(F);
+    return function (f) { return traverseWithIndexF(function (_, a) { return f(a); }); };
+}
+exports.traverse = traverse;
+function sequence(F) {
+    return traverseWithIndex(F)(function (_, a) { return a; });
+}
+exports.sequence = sequence;
+/**
+ * @category Witherable
+ * @since 2.6.5
+ */
+var wither = function (F) {
+    var traverseF = traverse(F);
+    return function (f) { return function (fa) { return F.map(function_1.pipe(fa, traverseF(f)), exports.compact); }; };
+};
+exports.wither = wither;
+/**
+ * @category Witherable
+ * @since 2.6.5
+ */
+var wilt = function (F) {
+    var traverseF = traverse(F);
+    return function (f) { return function (fa) { return F.map(function_1.pipe(fa, traverseF(f)), exports.separate); }; };
+};
+exports.wilt = wilt;
+function partitionMapWithIndex(f) {
+    return function (fa) {
+        var left = {};
+        var right = {};
+        var keys = Object.keys(fa);
+        for (var _i = 0, keys_2 = keys; _i < keys_2.length; _i++) {
+            var key = keys_2[_i];
+            var e = f(key, fa[key]);
+            switch (e._tag) {
+                case 'Left':
+                    left[key] = e.left;
+                    break;
+                case 'Right':
+                    right[key] = e.right;
+                    break;
+            }
+        }
+        return {
+            left: left,
+            right: right
+        };
+    };
+}
+exports.partitionMapWithIndex = partitionMapWithIndex;
+function partitionWithIndex(predicateWithIndex) {
+    return function (fa) {
+        var left = {};
+        var right = {};
+        var keys = Object.keys(fa);
+        for (var _i = 0, keys_3 = keys; _i < keys_3.length; _i++) {
+            var key = keys_3[_i];
+            var a = fa[key];
+            if (predicateWithIndex(key, a)) {
+                right[key] = a;
+            }
+            else {
+                left[key] = a;
+            }
+        }
+        return {
+            left: left,
+            right: right
+        };
+    };
+}
+exports.partitionWithIndex = partitionWithIndex;
+function filterMapWithIndex(f) {
+    return function (fa) {
+        var r = {};
+        var keys = Object.keys(fa);
+        for (var _i = 0, keys_4 = keys; _i < keys_4.length; _i++) {
+            var key = keys_4[_i];
+            var optionB = f(key, fa[key]);
+            if (Option_1.isSome(optionB)) {
+                r[key] = optionB.value;
+            }
+        }
+        return r;
+    };
+}
+exports.filterMapWithIndex = filterMapWithIndex;
+function filterWithIndex(predicateWithIndex) {
+    return function (fa) {
+        var out = {};
+        var changed = false;
+        for (var key in fa) {
+            if (_hasOwnProperty.call(fa, key)) {
+                var a = fa[key];
+                if (predicateWithIndex(key, a)) {
+                    out[key] = a;
+                }
+                else {
+                    changed = true;
+                }
+            }
+        }
+        return changed ? out : fa;
+    };
+}
+exports.filterWithIndex = filterWithIndex;
+function fromFoldable(M, F) {
+    var fromFoldableMapM = fromFoldableMap(M, F);
+    return function (fka) { return fromFoldableMapM(fka, function_1.identity); };
+}
+exports.fromFoldable = fromFoldable;
+function fromFoldableMap(M, F) {
+    return function (ta, f) {
+        return F.reduce(ta, {}, function (r, a) {
+            var _a = f(a), k = _a[0], b = _a[1];
+            r[k] = _hasOwnProperty.call(r, k) ? M.concat(r[k], b) : b;
+            return r;
+        });
+    };
+}
+exports.fromFoldableMap = fromFoldableMap;
+/**
+ * @since 2.5.0
+ */
+function every(predicate) {
+    return function (r) {
+        for (var k in r) {
+            if (!predicate(r[k])) {
+                return false;
+            }
+        }
+        return true;
+    };
+}
+exports.every = every;
+/**
+ * @since 2.5.0
+ */
+function some(predicate) {
+    return function (r) {
+        for (var k in r) {
+            if (predicate(r[k])) {
+                return true;
+            }
+        }
+        return false;
+    };
+}
+exports.some = some;
+function elem(E) {
+    return function (a, fa) {
+        if (fa === undefined) {
+            var elemE_1 = elem(E);
+            return function (fa) { return elemE_1(a, fa); };
+        }
+        for (var k in fa) {
+            if (E.equals(fa[k], a)) {
+                return true;
+            }
+        }
+        return false;
+    };
+}
+exports.elem = elem;
+// -------------------------------------------------------------------------------------
+// non-pipeables
+// -------------------------------------------------------------------------------------
+var map_ = function (fa, f) { return function_1.pipe(fa, map(f)); };
+/* istanbul ignore next */
+var mapWithIndex_ = function (fa, f) { return function_1.pipe(fa, mapWithIndex(f)); };
+/* istanbul ignore next */
+var reduce_ = function (fa, b, f) { return function_1.pipe(fa, exports.reduce(b, f)); };
+/* istanbul ignore next */
+var foldMap_ = function (M) {
+    var foldMapM = exports.foldMap(M);
+    return function (fa, f) { return function_1.pipe(fa, foldMapM(f)); };
+};
+/* istanbul ignore next */
+var reduceRight_ = function (fa, b, f) { return function_1.pipe(fa, exports.reduceRight(b, f)); };
+/* istanbul ignore next */
+var traverse_ = function (F) {
+    var traverseF = traverse(F);
+    return function (ta, f) { return function_1.pipe(ta, traverseF(f)); };
+};
+/* istanbul ignore next */
+var filter_ = function (fa, predicate) {
+    return function_1.pipe(fa, exports.filter(predicate));
+};
+/* istanbul ignore next */
+var filterMap_ = function (fa, f) { return function_1.pipe(fa, exports.filterMap(f)); };
+/* istanbul ignore next */
+var partition_ = function (fa, predicate) { return function_1.pipe(fa, exports.partition(predicate)); };
+/* istanbul ignore next */
+var partitionMap_ = function (fa, f) { return function_1.pipe(fa, exports.partitionMap(f)); };
+/* istanbul ignore next */
+var reduceWithIndex_ = function (fa, b, f) {
+    return function_1.pipe(fa, reduceWithIndex(b, f));
+};
+/* istanbul ignore next */
+var foldMapWithIndex_ = function (M) {
+    var foldMapWithIndexM = foldMapWithIndex(M);
+    return function (fa, f) { return function_1.pipe(fa, foldMapWithIndexM(f)); };
+};
+/* istanbul ignore next */
+var reduceRightWithIndex_ = function (fa, b, f) {
+    return function_1.pipe(fa, reduceRightWithIndex(b, f));
+};
+/* istanbul ignore next */
+var partitionMapWithIndex_ = function (fa, f) { return function_1.pipe(fa, partitionMapWithIndex(f)); };
+/* istanbul ignore next */
+var partitionWithIndex_ = function (fa, predicateWithIndex) {
+    return function_1.pipe(fa, partitionWithIndex(predicateWithIndex));
+};
+/* istanbul ignore next */
+var filterMapWithIndex_ = function (fa, f) {
+    return function_1.pipe(fa, filterMapWithIndex(f));
+};
+/* istanbul ignore next */
+var filterWithIndex_ = function (fa, predicateWithIndex) {
+    return function_1.pipe(fa, filterWithIndex(predicateWithIndex));
+};
+/* istanbul ignore next */
+var traverseWithIndex_ = function (F) {
+    var traverseWithIndexF = traverseWithIndex(F);
+    return function (ta, f) { return function_1.pipe(ta, traverseWithIndexF(f)); };
+};
+/* istanbul ignore next */
+var wither_ = function (F) {
+    var witherF = exports.wither(F);
+    return function (fa, f) { return function_1.pipe(fa, witherF(f)); };
+};
+/* istanbul ignore next */
+var wilt_ = function (F) {
+    var wiltF = exports.wilt(F);
+    return function (fa, f) { return function_1.pipe(fa, wiltF(f)); };
+};
+// -------------------------------------------------------------------------------------
+// pipeables
+// -------------------------------------------------------------------------------------
+/**
+ * @category Filterable
+ * @since 2.5.0
+ */
+var filter = function (predicate) {
+    return filterWithIndex(function (_, a) { return predicate(a); });
+};
+exports.filter = filter;
+/**
+ * @category Filterable
+ * @since 2.5.0
+ */
+var filterMap = function (f) { return filterMapWithIndex(function (_, a) { return f(a); }); };
+exports.filterMap = filterMap;
+/**
+ * @category Filterable
+ * @since 2.5.0
+ */
+var partition = function (predicate) {
+    return partitionWithIndex(function (_, a) { return predicate(a); });
+};
+exports.partition = partition;
+/**
+ * @category Filterable
+ * @since 2.5.0
+ */
+var partitionMap = function (f) {
+    return partitionMapWithIndex(function (_, a) { return f(a); });
+};
+exports.partitionMap = partitionMap;
+/**
+ * @category Foldable
+ * @since 2.5.0
+ */
+var reduce = function (b, f) {
+    return reduceWithIndex(b, function (_, b, a) { return f(b, a); });
+};
+exports.reduce = reduce;
+/**
+ * @category Foldable
+ * @since 2.5.0
+ */
+var foldMap = function (M) {
+    var foldMapWithIndexM = foldMapWithIndex(M);
+    return function (f) { return foldMapWithIndexM(function (_, a) { return f(a); }); };
+};
+exports.foldMap = foldMap;
+/**
+ * @category Foldable
+ * @since 2.5.0
+ */
+var reduceRight = function (b, f) {
+    return reduceRightWithIndex(b, function (_, a, b) { return f(a, b); });
+};
+exports.reduceRight = reduceRight;
+/**
+ * @category Compactable
+ * @since 2.5.0
+ */
+var compact = function (fa) {
+    var r = {};
+    var keys = Object.keys(fa);
+    for (var _i = 0, keys_5 = keys; _i < keys_5.length; _i++) {
+        var key = keys_5[_i];
+        var optionA = fa[key];
+        if (Option_1.isSome(optionA)) {
+            r[key] = optionA.value;
+        }
+    }
+    return r;
+};
+exports.compact = compact;
+/**
+ * @category Compactable
+ * @since 2.5.0
+ */
+var separate = function (fa) {
+    var left = {};
+    var right = {};
+    var keys = Object.keys(fa);
+    for (var _i = 0, keys_6 = keys; _i < keys_6.length; _i++) {
+        var key = keys_6[_i];
+        var e = fa[key];
+        switch (e._tag) {
+            case 'Left':
+                left[key] = e.left;
+                break;
+            case 'Right':
+                right[key] = e.right;
+                break;
+        }
+    }
+    return {
+        left: left,
+        right: right
+    };
+};
+exports.separate = separate;
+// -------------------------------------------------------------------------------------
+// instances
+// -------------------------------------------------------------------------------------
+/**
+ * @category instances
+ * @since 2.5.0
+ */
+exports.URI = 'ReadonlyRecord';
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Functor = {
+    URI: exports.URI,
+    map: map_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.FunctorWithIndex = {
+    URI: exports.URI,
+    map: map_,
+    mapWithIndex: mapWithIndex_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Foldable = {
+    URI: exports.URI,
+    reduce: reduce_,
+    foldMap: foldMap_,
+    reduceRight: reduceRight_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.FoldableWithIndex = {
+    URI: exports.URI,
+    reduce: reduce_,
+    foldMap: foldMap_,
+    reduceRight: reduceRight_,
+    reduceWithIndex: reduceWithIndex_,
+    foldMapWithIndex: foldMapWithIndex_,
+    reduceRightWithIndex: reduceRightWithIndex_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Compactable = {
+    URI: exports.URI,
+    compact: exports.compact,
+    separate: exports.separate
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Filterable = {
+    URI: exports.URI,
+    map: map_,
+    compact: exports.compact,
+    separate: exports.separate,
+    filter: filter_,
+    filterMap: filterMap_,
+    partition: partition_,
+    partitionMap: partitionMap_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.FilterableWithIndex = {
+    URI: exports.URI,
+    map: map_,
+    mapWithIndex: mapWithIndex_,
+    compact: exports.compact,
+    separate: exports.separate,
+    filter: filter_,
+    filterMap: filterMap_,
+    partition: partition_,
+    partitionMap: partitionMap_,
+    filterMapWithIndex: filterMapWithIndex_,
+    filterWithIndex: filterWithIndex_,
+    partitionMapWithIndex: partitionMapWithIndex_,
+    partitionWithIndex: partitionWithIndex_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Traversable = {
+    URI: exports.URI,
+    map: map_,
+    reduce: reduce_,
+    foldMap: foldMap_,
+    reduceRight: reduceRight_,
+    traverse: traverse_,
+    sequence: sequence
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.TraversableWithIndex = {
+    URI: exports.URI,
+    map: map_,
+    mapWithIndex: mapWithIndex_,
+    reduce: reduce_,
+    foldMap: foldMap_,
+    reduceRight: reduceRight_,
+    reduceWithIndex: reduceWithIndex_,
+    foldMapWithIndex: foldMapWithIndex_,
+    reduceRightWithIndex: reduceRightWithIndex_,
+    traverse: traverse_,
+    sequence: sequence,
+    traverseWithIndex: traverseWithIndex_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Witherable = {
+    URI: exports.URI,
+    map: map_,
+    reduce: reduce_,
+    foldMap: foldMap_,
+    reduceRight: reduceRight_,
+    traverse: traverse_,
+    sequence: sequence,
+    compact: exports.compact,
+    separate: exports.separate,
+    filter: filter_,
+    filterMap: filterMap_,
+    partition: partition_,
+    partitionMap: partitionMap_,
+    wither: wither_,
+    wilt: wilt_
+};
+// TODO: remove in v3
+/**
+ * @category instances
+ * @since 2.5.0
+ */
+exports.readonlyRecord = {
+    URI: exports.URI,
+    map: map_,
+    reduce: reduce_,
+    foldMap: foldMap_,
+    reduceRight: reduceRight_,
+    traverse: traverse_,
+    sequence: sequence,
+    compact: exports.compact,
+    separate: exports.separate,
+    filter: filter_,
+    filterMap: filterMap_,
+    partition: partition_,
+    partitionMap: partitionMap_,
+    mapWithIndex: mapWithIndex_,
+    reduceWithIndex: reduceWithIndex_,
+    foldMapWithIndex: foldMapWithIndex_,
+    reduceRightWithIndex: reduceRightWithIndex_,
+    filterMapWithIndex: filterMapWithIndex_,
+    filterWithIndex: filterWithIndex_,
+    partitionMapWithIndex: partitionMapWithIndex_,
+    partitionWithIndex: partitionWithIndex_,
+    traverseWithIndex: traverseWithIndex_,
+    wither: wither_,
+    wilt: wilt_
+};
+
+
+/***/ }),
+/* 672 */,
+/* 673 */,
+/* 674 */,
+/* 675 */,
+/* 676 */,
+/* 677 */,
+/* 678 */,
+/* 679 */,
+/* 680 */,
+/* 681 */,
+/* 682 */,
+/* 683 */,
+/* 684 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.traverse_ = exports.toArray = exports.intercalate = exports.reduceM = exports.foldM = exports.getFoldableComposition = void 0;
+var function_1 = __webpack_require__(231);
+function getFoldableComposition(F, G) {
+    return {
+        reduce: function (fga, b, f) { return F.reduce(fga, b, function (b, ga) { return G.reduce(ga, b, f); }); },
+        foldMap: function (M) {
+            var foldMapF = F.foldMap(M);
+            var foldMapG = G.foldMap(M);
+            return function (fa, f) { return foldMapF(fa, function (ga) { return foldMapG(ga, f); }); };
+        },
+        reduceRight: function (fa, b, f) { return F.reduceRight(fa, b, function (ga, b) { return G.reduceRight(ga, b, f); }); }
+    };
+}
+exports.getFoldableComposition = getFoldableComposition;
+function foldM(M, F) {
+    return function (fa, b, f) { return F.reduce(fa, M.of(b), function (mb, a) { return M.chain(mb, function (b) { return f(b, a); }); }); };
+}
+exports.foldM = foldM;
+function reduceM(M, F) {
+    return function (b, f) { return function (fa) { return F.reduce(fa, M.of(b), function (mb, a) { return M.chain(mb, function (b) { return f(b, a); }); }); }; };
+}
+exports.reduceM = reduceM;
+function intercalate(M, F) {
+    return function (sep, fm) {
+        var go = function (_a, x) {
+            var init = _a.init, acc = _a.acc;
+            return init ? { init: false, acc: x } : { init: false, acc: M.concat(M.concat(acc, sep), x) };
+        };
+        return F.reduce(fm, { init: true, acc: M.empty }, go).acc;
+    };
+}
+exports.intercalate = intercalate;
+function toArray(F) {
+    return function (fa) {
+        // tslint:disable-next-line: readonly-array
+        return F.reduce(fa, [], function (acc, a) {
+            acc.push(a);
+            return acc;
+        });
+    };
+}
+exports.toArray = toArray;
+function traverse_(M, F) {
+    var applyFirst = function (mu, mb) { return M.ap(M.map(mu, function_1.constant), mb); };
+    var mu = M.of(undefined);
+    return function (fa, f) { return F.reduce(fa, mu, function (mu, a) { return applyFirst(mu, f(a)); }); };
+}
+exports.traverse_ = traverse_;
+
+
+/***/ }),
+/* 685 */,
+/* 686 */,
+/* 687 */,
+/* 688 */,
+/* 689 */
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
 "use strict";
@@ -11508,8 +26686,9 @@ module.exports = fastqueue
 
 
 /***/ }),
-
-/***/ 692:
+/* 690 */,
+/* 691 */,
+/* 692 */
 /***/ (function(__unusedmodule, exports) {
 
 "use strict";
@@ -11536,8 +26715,1796 @@ exports.Deprecation = Deprecation;
 
 
 /***/ }),
+/* 693 */,
+/* 694 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
 
-/***/ 696:
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.rotate = exports.intersperse = exports.prependToAll = exports.unzip = exports.zip = exports.zipWith = exports.sort = exports.lefts = exports.rights = exports.reverse = exports.modifyAt = exports.deleteAt = exports.updateAt = exports.insertAt = exports.copy = exports.findLastIndex = exports.findLastMap = exports.findLast = exports.findFirstMap = exports.findFirst = exports.findIndex = exports.dropLeftWhile = exports.dropRight = exports.dropLeft = exports.spanLeft = exports.takeLeftWhile = exports.takeRight = exports.takeLeft = exports.init = exports.tail = exports.last = exports.head = exports.snoc = exports.cons = exports.lookup = exports.isOutOfBound = exports.isNonEmpty = exports.isEmpty = exports.scanRight = exports.scanLeft = exports.foldRight = exports.foldLeft = exports.flatten = exports.replicate = exports.range = exports.makeBy = exports.getOrd = exports.getEq = exports.getMonoid = exports.getShow = void 0;
+exports.Applicative = exports.FunctorWithIndex = exports.Functor = exports.URI = exports.zero = exports.unfold = exports.wilt = exports.wither = exports.traverseWithIndex = exports.sequence = exports.traverse = exports.reduceRightWithIndex = exports.reduceRight = exports.reduceWithIndex = exports.reduce = exports.foldMapWithIndex = exports.foldMap = exports.duplicate = exports.extend = exports.filterWithIndex = exports.filterMapWithIndex = exports.alt = exports.altW = exports.partitionMapWithIndex = exports.partitionMap = exports.partitionWithIndex = exports.partition = exports.filterMap = exports.filter = exports.separate = exports.compact = exports.mapWithIndex = exports.chainFirst = exports.chainWithIndex = exports.chain = exports.apSecond = exports.apFirst = exports.ap = exports.map = exports.of = exports.difference = exports.intersection = exports.union = exports.comprehension = exports.chunksOf = exports.splitAt = exports.chop = exports.sortBy = exports.uniq = exports.elem = void 0;
+exports.apS = exports.bind = exports.bindTo = exports.Do = exports.some = exports.every = exports.empty = exports.unsafeDeleteAt = exports.unsafeUpdateAt = exports.unsafeInsertAt = exports.array = exports.Witherable = exports.TraversableWithIndex = exports.Traversable = exports.FoldableWithIndex = exports.Foldable = exports.FilterableWithIndex = exports.Filterable = exports.Compactable = exports.Extend = exports.Alternative = exports.Alt = exports.Unfoldable = exports.Monad = void 0;
+var RA = __importStar(__webpack_require__(717));
+// -------------------------------------------------------------------------------------
+// model
+// -------------------------------------------------------------------------------------
+/* tslint:disable:readonly-array */
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.getShow = RA.getShow;
+/**
+ * Returns a `Monoid` for `Array<A>`
+ *
+ * @example
+ * import { getMonoid } from 'fp-ts/Array'
+ *
+ * const M = getMonoid<number>()
+ * assert.deepStrictEqual(M.concat([1, 2], [3, 4]), [1, 2, 3, 4])
+ *
+ * @category instances
+ * @since 2.0.0
+ */
+exports.getMonoid = RA.getMonoid;
+/**
+ * Derives an `Eq` over the `Array` of a given element type from the `Eq` of that type. The derived `Eq` defines two
+ * arrays as equal if all elements of both arrays are compared equal pairwise with the given `E`. In case of arrays of
+ * different lengths, the result is non equality.
+ *
+ * @example
+ * import { eqString } from 'fp-ts/Eq'
+ * import { getEq } from 'fp-ts/Array'
+ *
+ * const E = getEq(eqString)
+ * assert.strictEqual(E.equals(['a', 'b'], ['a', 'b']), true)
+ * assert.strictEqual(E.equals(['a'], []), false)
+ *
+ * @category instances
+ * @since 2.0.0
+ */
+exports.getEq = RA.getEq;
+/**
+ * Derives an `Ord` over the `Array` of a given element type from the `Ord` of that type. The ordering between two such
+ * arrays is equal to: the first non equal comparison of each arrays elements taken pairwise in increasing order, in
+ * case of equality over all the pairwise elements; the longest array is considered the greatest, if both arrays have
+ * the same length, the result is equality.
+ *
+ * @example
+ * import { getOrd } from 'fp-ts/Array'
+ * import { ordString } from 'fp-ts/Ord'
+ *
+ * const O = getOrd(ordString)
+ * assert.strictEqual(O.compare(['b'], ['a']), 1)
+ * assert.strictEqual(O.compare(['a'], ['a']), 0)
+ * assert.strictEqual(O.compare(['a'], ['b']), -1)
+ *
+ * @category instances
+ * @since 2.0.0
+ */
+exports.getOrd = RA.getOrd;
+// -------------------------------------------------------------------------------------
+// constructors
+// -------------------------------------------------------------------------------------
+/**
+ * Return a list of length `n` with element `i` initialized with `f(i)`
+ *
+ * @example
+ * import { makeBy } from 'fp-ts/Array'
+ *
+ * const double = (n: number): number => n * 2
+ * assert.deepStrictEqual(makeBy(5, double), [0, 2, 4, 6, 8])
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+exports.makeBy = RA.makeBy;
+/**
+ * Create an array containing a range of integers, including both endpoints
+ *
+ * @example
+ * import { range } from 'fp-ts/Array'
+ *
+ * assert.deepStrictEqual(range(1, 5), [1, 2, 3, 4, 5])
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+exports.range = RA.range;
+/**
+ * Create an array containing a value repeated the specified number of times
+ *
+ * @example
+ * import { replicate } from 'fp-ts/Array'
+ *
+ * assert.deepStrictEqual(replicate(3, 'a'), ['a', 'a', 'a'])
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+exports.replicate = RA.replicate;
+/**
+ * Removes one level of nesting.
+ *
+ * Derivable from `Monad`.
+ *
+ * @example
+ * import { flatten } from 'fp-ts/Array'
+ *
+ * assert.deepStrictEqual(flatten([[1], [2], [3]]), [1, 2, 3])
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.flatten = RA.flatten;
+/**
+ * Break an array into its first element and remaining elements
+ *
+ * @example
+ * import { foldLeft } from 'fp-ts/Array'
+ *
+ * const len: <A>(as: Array<A>) => number = foldLeft(() => 0, (_, tail) => 1 + len(tail))
+ * assert.strictEqual(len([1, 2, 3]), 3)
+ *
+ * @category destructors
+ * @since 2.0.0
+ */
+exports.foldLeft = RA.foldLeft;
+/**
+ * Break an array into its initial elements and the last element
+ *
+ * @category destructors
+ * @since 2.0.0
+ */
+exports.foldRight = RA.foldRight;
+/**
+ * Same as `reduce` but it carries over the intermediate steps
+ *
+ * @example
+ * import { scanLeft } from 'fp-ts/Array'
+ *
+ * assert.deepStrictEqual(scanLeft(10, (b, a: number) => b - a)([1, 2, 3]), [10, 9, 7, 4])
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.scanLeft = RA.scanLeft;
+/**
+ * Fold an array from the right, keeping all intermediate results instead of only the final result
+ *
+ * @example
+ * import { scanRight } from 'fp-ts/Array'
+ *
+ * assert.deepStrictEqual(scanRight(10, (a: number, b) => b - a)([1, 2, 3]), [4, 5, 7, 10])
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.scanRight = RA.scanRight;
+/**
+ * Test whether an array is empty
+ *
+ * @example
+ * import { isEmpty } from 'fp-ts/Array'
+ *
+ * assert.strictEqual(isEmpty([]), true)
+ *
+ * @since 2.0.0
+ */
+exports.isEmpty = RA.isEmpty;
+/**
+ * Test whether an array is non empty narrowing down the type to `NonEmptyArray<A>`
+ *
+ * @category guards
+ * @since 2.0.0
+ */
+exports.isNonEmpty = RA.isNonEmpty;
+/**
+ * Test whether an array contains a particular index
+ *
+ * @since 2.0.0
+ */
+exports.isOutOfBound = RA.isOutOfBound;
+// TODO: remove non-curried overloading in v3
+/**
+ * This function provides a safe way to read a value at a particular index from an array
+ *
+ * @example
+ * import { lookup } from 'fp-ts/Array'
+ * import { some, none } from 'fp-ts/Option'
+ * import { pipe } from 'fp-ts/function'
+ *
+ * assert.deepStrictEqual(pipe([1, 2, 3], lookup(1)), some(2))
+ * assert.deepStrictEqual(pipe([1, 2, 3], lookup(3)), none)
+ *
+ * @since 2.0.0
+ */
+exports.lookup = RA.lookup;
+// TODO: remove non-curried overloading in v3
+/**
+ * Attaches an element to the front of an array, creating a new non empty array
+ *
+ * @example
+ * import { cons } from 'fp-ts/Array'
+ * import { pipe } from 'fp-ts/function'
+ *
+ * assert.deepStrictEqual(pipe([1, 2, 3], cons(0)), [0, 1, 2, 3])
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+exports.cons = RA.cons;
+// TODO: curry in v3
+/**
+ * Append an element to the end of an array, creating a new non empty array
+ *
+ * @example
+ * import { snoc } from 'fp-ts/Array'
+ *
+ * assert.deepStrictEqual(snoc([1, 2, 3], 4), [1, 2, 3, 4])
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+exports.snoc = RA.snoc;
+/**
+ * Get the first element in an array, or `None` if the array is empty
+ *
+ * @example
+ * import { head } from 'fp-ts/Array'
+ * import { some, none } from 'fp-ts/Option'
+ *
+ * assert.deepStrictEqual(head([1, 2, 3]), some(1))
+ * assert.deepStrictEqual(head([]), none)
+ *
+ * @category destructors
+ * @since 2.0.0
+ */
+exports.head = RA.head;
+/**
+ * Get the last element in an array, or `None` if the array is empty
+ *
+ * @example
+ * import { last } from 'fp-ts/Array'
+ * import { some, none } from 'fp-ts/Option'
+ *
+ * assert.deepStrictEqual(last([1, 2, 3]), some(3))
+ * assert.deepStrictEqual(last([]), none)
+ *
+ * @category destructors
+ * @since 2.0.0
+ */
+exports.last = RA.last;
+/**
+ * Get all but the first element of an array, creating a new array, or `None` if the array is empty
+ *
+ * @example
+ * import { tail } from 'fp-ts/Array'
+ * import { some, none } from 'fp-ts/Option'
+ *
+ * assert.deepStrictEqual(tail([1, 2, 3]), some([2, 3]))
+ * assert.deepStrictEqual(tail([]), none)
+ *
+ * @category destructors
+ * @since 2.0.0
+ */
+exports.tail = RA.tail;
+/**
+ * Get all but the last element of an array, creating a new array, or `None` if the array is empty
+ *
+ * @example
+ * import { init } from 'fp-ts/Array'
+ * import { some, none } from 'fp-ts/Option'
+ *
+ * assert.deepStrictEqual(init([1, 2, 3]), some([1, 2]))
+ * assert.deepStrictEqual(init([]), none)
+ *
+ * @category destructors
+ * @since 2.0.0
+ */
+exports.init = RA.init;
+/**
+ * Keep only a number of elements from the start of an array, creating a new array.
+ * `n` must be a natural number
+ *
+ * @example
+ * import { takeLeft } from 'fp-ts/Array'
+ *
+ * assert.deepStrictEqual(takeLeft(2)([1, 2, 3]), [1, 2])
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.takeLeft = RA.takeLeft;
+/**
+ * Keep only a number of elements from the end of an array, creating a new array.
+ * `n` must be a natural number
+ *
+ * @example
+ * import { takeRight } from 'fp-ts/Array'
+ *
+ * assert.deepStrictEqual(takeRight(2)([1, 2, 3, 4, 5]), [4, 5])
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.takeRight = RA.takeRight;
+function takeLeftWhile(predicate) {
+    return RA.takeLeftWhile(predicate);
+}
+exports.takeLeftWhile = takeLeftWhile;
+function spanLeft(predicate) {
+    return RA.spanLeft(predicate);
+}
+exports.spanLeft = spanLeft;
+/* tslint:enable:readonly-keyword */
+/**
+ * Drop a number of elements from the start of an array, creating a new array
+ *
+ * @example
+ * import { dropLeft } from 'fp-ts/Array'
+ *
+ * assert.deepStrictEqual(dropLeft(2)([1, 2, 3]), [3])
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.dropLeft = RA.dropLeft;
+/**
+ * Drop a number of elements from the end of an array, creating a new array
+ *
+ * @example
+ * import { dropRight } from 'fp-ts/Array'
+ *
+ * assert.deepStrictEqual(dropRight(2)([1, 2, 3, 4, 5]), [1, 2, 3])
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.dropRight = RA.dropRight;
+/**
+ * Remove the longest initial subarray for which all element satisfy the specified predicate, creating a new array
+ *
+ * @example
+ * import { dropLeftWhile } from 'fp-ts/Array'
+ *
+ * assert.deepStrictEqual(dropLeftWhile((n: number) => n % 2 === 1)([1, 3, 2, 4, 5]), [2, 4, 5])
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.dropLeftWhile = RA.dropLeftWhile;
+/**
+ * Find the first index for which a predicate holds
+ *
+ * @example
+ * import { findIndex } from 'fp-ts/Array'
+ * import { some, none } from 'fp-ts/Option'
+ *
+ * assert.deepStrictEqual(findIndex((n: number) => n === 2)([1, 2, 3]), some(1))
+ * assert.deepStrictEqual(findIndex((n: number) => n === 2)([]), none)
+ *
+ * @since 2.0.0
+ */
+exports.findIndex = RA.findIndex;
+function findFirst(predicate) {
+    return RA.findFirst(predicate);
+}
+exports.findFirst = findFirst;
+/**
+ * Find the first element returned by an option based selector function
+ *
+ * @example
+ * import { findFirstMap } from 'fp-ts/Array'
+ * import { some, none } from 'fp-ts/Option'
+ *
+ * interface Person {
+ *   name: string
+ *   age?: number
+ * }
+ *
+ * const persons: Array<Person> = [{ name: 'John' }, { name: 'Mary', age: 45 }, { name: 'Joey', age: 28 }]
+ *
+ * // returns the name of the first person that has an age
+ * assert.deepStrictEqual(findFirstMap((p: Person) => (p.age === undefined ? none : some(p.name)))(persons), some('Mary'))
+ *
+ * @category destructors
+ * @since 2.0.0
+ */
+exports.findFirstMap = RA.findFirstMap;
+function findLast(predicate) {
+    return RA.findLast(predicate);
+}
+exports.findLast = findLast;
+/**
+ * Find the last element returned by an option based selector function
+ *
+ * @example
+ * import { findLastMap } from 'fp-ts/Array'
+ * import { some, none } from 'fp-ts/Option'
+ *
+ * interface Person {
+ *   name: string
+ *   age?: number
+ * }
+ *
+ * const persons: Array<Person> = [{ name: 'John' }, { name: 'Mary', age: 45 }, { name: 'Joey', age: 28 }]
+ *
+ * // returns the name of the last person that has an age
+ * assert.deepStrictEqual(findLastMap((p: Person) => (p.age === undefined ? none : some(p.name)))(persons), some('Joey'))
+ *
+ * @category destructors
+ * @since 2.0.0
+ */
+exports.findLastMap = RA.findLastMap;
+/**
+ * Returns the index of the last element of the list which matches the predicate
+ *
+ * @example
+ * import { findLastIndex } from 'fp-ts/Array'
+ * import { some, none } from 'fp-ts/Option'
+ *
+ * interface X {
+ *   a: number
+ *   b: number
+ * }
+ * const xs: Array<X> = [{ a: 1, b: 0 }, { a: 1, b: 1 }]
+ * assert.deepStrictEqual(findLastIndex((x: { a: number }) => x.a === 1)(xs), some(1))
+ * assert.deepStrictEqual(findLastIndex((x: { a: number }) => x.a === 4)(xs), none)
+ *
+ *
+ * @since 2.0.0
+ */
+exports.findLastIndex = RA.findLastIndex;
+/**
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.copy = RA.toArray;
+/**
+ * Insert an element at the specified index, creating a new array, or returning `None` if the index is out of bounds
+ *
+ * @example
+ * import { insertAt } from 'fp-ts/Array'
+ * import { some } from 'fp-ts/Option'
+ *
+ * assert.deepStrictEqual(insertAt(2, 5)([1, 2, 3, 4]), some([1, 2, 5, 3, 4]))
+ *
+ * @since 2.0.0
+ */
+exports.insertAt = RA.insertAt;
+/**
+ * Change the element at the specified index, creating a new array, or returning `None` if the index is out of bounds
+ *
+ * @example
+ * import { updateAt } from 'fp-ts/Array'
+ * import { some, none } from 'fp-ts/Option'
+ *
+ * assert.deepStrictEqual(updateAt(1, 1)([1, 2, 3]), some([1, 1, 3]))
+ * assert.deepStrictEqual(updateAt(1, 1)([]), none)
+ *
+ * @since 2.0.0
+ */
+exports.updateAt = RA.updateAt;
+/**
+ * Delete the element at the specified index, creating a new array, or returning `None` if the index is out of bounds
+ *
+ * @example
+ * import { deleteAt } from 'fp-ts/Array'
+ * import { some, none } from 'fp-ts/Option'
+ *
+ * assert.deepStrictEqual(deleteAt(0)([1, 2, 3]), some([2, 3]))
+ * assert.deepStrictEqual(deleteAt(1)([]), none)
+ *
+ * @since 2.0.0
+ */
+exports.deleteAt = RA.deleteAt;
+/**
+ * Apply a function to the element at the specified index, creating a new array, or returning `None` if the index is out
+ * of bounds
+ *
+ * @example
+ * import { modifyAt } from 'fp-ts/Array'
+ * import { some, none } from 'fp-ts/Option'
+ *
+ * const double = (x: number): number => x * 2
+ * assert.deepStrictEqual(modifyAt(1, double)([1, 2, 3]), some([1, 4, 3]))
+ * assert.deepStrictEqual(modifyAt(1, double)([]), none)
+ *
+ * @since 2.0.0
+ */
+exports.modifyAt = RA.modifyAt;
+/**
+ * Reverse an array, creating a new array
+ *
+ * @example
+ * import { reverse } from 'fp-ts/Array'
+ *
+ * assert.deepStrictEqual(reverse([1, 2, 3]), [3, 2, 1])
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.reverse = RA.reverse;
+/**
+ * Extracts from an array of `Either` all the `Right` elements. All the `Right` elements are extracted in order
+ *
+ * @example
+ * import { rights } from 'fp-ts/Array'
+ * import { right, left } from 'fp-ts/Either'
+ *
+ * assert.deepStrictEqual(rights([right(1), left('foo'), right(2)]), [1, 2])
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.rights = RA.rights;
+/**
+ * Extracts from an array of `Either` all the `Left` elements. All the `Left` elements are extracted in order
+ *
+ * @example
+ * import { lefts } from 'fp-ts/Array'
+ * import { left, right } from 'fp-ts/Either'
+ *
+ * assert.deepStrictEqual(lefts([right(1), left('foo'), right(2)]), ['foo'])
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.lefts = RA.lefts;
+/**
+ * Sort the elements of an array in increasing order, creating a new array
+ *
+ * @example
+ * import { sort } from 'fp-ts/Array'
+ * import { ordNumber } from 'fp-ts/Ord'
+ *
+ * assert.deepStrictEqual(sort(ordNumber)([3, 2, 1]), [1, 2, 3])
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.sort = RA.sort;
+/**
+ * Apply a function to pairs of elements at the same index in two arrays, collecting the results in a new array. If one
+ * input array is short, excess elements of the longer array are discarded.
+ *
+ * @example
+ * import { zipWith } from 'fp-ts/Array'
+ *
+ * assert.deepStrictEqual(zipWith([1, 2, 3], ['a', 'b', 'c', 'd'], (n, s) => s + n), ['a1', 'b2', 'c3'])
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.zipWith = RA.zipWith;
+// TODO: remove non-curried overloading in v3
+/**
+ * Takes two arrays and returns an array of corresponding pairs. If one input array is short, excess elements of the
+ * longer array are discarded
+ *
+ * @example
+ * import { zip } from 'fp-ts/Array'
+ * import { pipe } from 'fp-ts/function'
+ *
+ * assert.deepStrictEqual(pipe([1, 2, 3], zip(['a', 'b', 'c', 'd'])), [[1, 'a'], [2, 'b'], [3, 'c']])
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.zip = RA.zip;
+/**
+ * The function is reverse of `zip`. Takes an array of pairs and return two corresponding arrays
+ *
+ * @example
+ * import { unzip } from 'fp-ts/Array'
+ *
+ * assert.deepStrictEqual(unzip([[1, 'a'], [2, 'b'], [3, 'c']]), [[1, 2, 3], ['a', 'b', 'c']])
+ *
+ * @since 2.0.0
+ */
+exports.unzip = RA.unzip;
+/**
+ * Prepend an element to every member of an array
+ *
+ * @example
+ * import { prependToAll } from 'fp-ts/Array'
+ *
+ * assert.deepStrictEqual(prependToAll(9)([1, 2, 3, 4]), [9, 1, 9, 2, 9, 3, 9, 4])
+ *
+ * @category combinators
+ * @since 2.9.0
+ */
+exports.prependToAll = RA.prependToAll;
+/**
+ * Places an element in between members of an array
+ *
+ * @example
+ * import { intersperse } from 'fp-ts/Array'
+ *
+ * assert.deepStrictEqual(intersperse(9)([1, 2, 3, 4]), [1, 9, 2, 9, 3, 9, 4])
+ *
+ * @category combinators
+ * @since 2.9.0
+ */
+exports.intersperse = RA.intersperse;
+/**
+ * Rotate an array to the right by `n` steps
+ *
+ * @example
+ * import { rotate } from 'fp-ts/Array'
+ *
+ * assert.deepStrictEqual(rotate(2)([1, 2, 3, 4, 5]), [4, 5, 1, 2, 3])
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.rotate = RA.rotate;
+// TODO: remove non-curried overloading in v3
+/**
+ * Test if a value is a member of an array. Takes a `Eq<A>` as a single
+ * argument which returns the function to use to search for a value of type `A` in
+ * an array of type `Array<A>`.
+ *
+ * @example
+ * import { elem } from 'fp-ts/Array'
+ * import { eqNumber } from 'fp-ts/Eq'
+ * import { pipe } from 'fp-ts/function'
+ *
+ * assert.strictEqual(pipe([1, 2, 3], elem(eqNumber)(2)), true)
+ * assert.strictEqual(pipe([1, 2, 3], elem(eqNumber)(0)), false)
+ *
+ * @since 2.0.0
+ */
+exports.elem = RA.elem;
+/**
+ * Remove duplicates from an array, keeping the first occurrence of an element.
+ *
+ * @example
+ * import { uniq } from 'fp-ts/Array'
+ * import { eqNumber } from 'fp-ts/Eq'
+ *
+ * assert.deepStrictEqual(uniq(eqNumber)([1, 2, 1]), [1, 2])
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.uniq = RA.uniq;
+/**
+ * Sort the elements of an array in increasing order, where elements are compared using first `ords[0]`, then `ords[1]`,
+ * etc...
+ *
+ * @example
+ * import { sortBy } from 'fp-ts/Array'
+ * import { ord, ordString, ordNumber } from 'fp-ts/Ord'
+ *
+ * interface Person {
+ *   name: string
+ *   age: number
+ * }
+ * const byName = ord.contramap(ordString, (p: Person) => p.name)
+ * const byAge = ord.contramap(ordNumber, (p: Person) => p.age)
+ *
+ * const sortByNameByAge = sortBy([byName, byAge])
+ *
+ * const persons = [{ name: 'a', age: 1 }, { name: 'b', age: 3 }, { name: 'c', age: 2 }, { name: 'b', age: 2 }]
+ * assert.deepStrictEqual(sortByNameByAge(persons), [
+ *   { name: 'a', age: 1 },
+ *   { name: 'b', age: 2 },
+ *   { name: 'b', age: 3 },
+ *   { name: 'c', age: 2 }
+ * ])
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.sortBy = RA.sortBy;
+/**
+ * A useful recursion pattern for processing an array to produce a new array, often used for "chopping" up the input
+ * array. Typically chop is called with some function that will consume an initial prefix of the array and produce a
+ * value and the rest of the array.
+ *
+ * @example
+ * import { Eq, eqNumber } from 'fp-ts/Eq'
+ * import { chop, spanLeft } from 'fp-ts/Array'
+ *
+ * const group = <A>(S: Eq<A>): ((as: Array<A>) => Array<Array<A>>) => {
+ *   return chop(as => {
+ *     const { init, rest } = spanLeft((a: A) => S.equals(a, as[0]))(as)
+ *     return [init, rest]
+ *   })
+ * }
+ * assert.deepStrictEqual(group(eqNumber)([1, 1, 2, 3, 3, 4]), [[1, 1], [2], [3, 3], [4]])
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.chop = RA.chop;
+/**
+ * Splits an array into two pieces, the first piece has `n` elements.
+ *
+ * @example
+ * import { splitAt } from 'fp-ts/Array'
+ *
+ * assert.deepStrictEqual(splitAt(2)([1, 2, 3, 4, 5]), [[1, 2], [3, 4, 5]])
+ *
+ * @since 2.0.0
+ */
+exports.splitAt = RA.splitAt;
+/**
+ * Splits an array into length-`n` pieces. The last piece will be shorter if `n` does not evenly divide the length of
+ * the array. Note that `chunksOf(n)([])` is `[]`, not `[[]]`. This is intentional, and is consistent with a recursive
+ * definition of `chunksOf`; it satisfies the property that
+ *
+ * ```ts
+ * chunksOf(n)(xs).concat(chunksOf(n)(ys)) == chunksOf(n)(xs.concat(ys)))
+ * ```
+ *
+ * whenever `n` evenly divides the length of `xs`.
+ *
+ * @example
+ * import { chunksOf } from 'fp-ts/Array'
+ *
+ * assert.deepStrictEqual(chunksOf(2)([1, 2, 3, 4, 5]), [[1, 2], [3, 4], [5]])
+ *
+ * @since 2.0.0
+ */
+exports.chunksOf = RA.chunksOf;
+function comprehension(input, f, g) {
+    if (g === void 0) { g = function () { return true; }; }
+    return RA.comprehension(input, f, g);
+}
+exports.comprehension = comprehension;
+// TODO: remove non-curried overloading in v3
+/**
+ * Creates an array of unique values, in order, from all given arrays using a `Eq` for equality comparisons
+ *
+ * @example
+ * import { union } from 'fp-ts/Array'
+ * import { eqNumber } from 'fp-ts/Eq'
+ * import { pipe } from 'fp-ts/function'
+ *
+ * assert.deepStrictEqual(pipe([1, 2], union(eqNumber)([2, 3])), [1, 2, 3])
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.union = RA.union;
+// TODO: remove non-curried overloading in v3
+/**
+ * Creates an array of unique values that are included in all given arrays using a `Eq` for equality
+ * comparisons. The order and references of result values are determined by the first array.
+ *
+ * @example
+ * import { intersection } from 'fp-ts/Array'
+ * import { eqNumber } from 'fp-ts/Eq'
+ * import { pipe } from 'fp-ts/function'
+ *
+ * assert.deepStrictEqual(pipe([1, 2], intersection(eqNumber)([2, 3])), [2])
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.intersection = RA.intersection;
+// TODO: remove non-curried overloading in v3
+/**
+ * Creates an array of array values not included in the other given array using a `Eq` for equality
+ * comparisons. The order and references of result values are determined by the first array.
+ *
+ * @example
+ * import { difference } from 'fp-ts/Array'
+ * import { eqNumber } from 'fp-ts/Eq'
+ * import { pipe } from 'fp-ts/function'
+ *
+ * assert.deepStrictEqual(pipe([1, 2], difference(eqNumber)([2, 3])), [1])
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.difference = RA.difference;
+/**
+ * Wrap a value into the type constructor.
+ *
+ * @category Applicative
+ * @since 2.0.0
+ */
+exports.of = RA.of;
+// -------------------------------------------------------------------------------------
+// non-pipeables
+// -------------------------------------------------------------------------------------
+var map_ = RA.Monad.map;
+var ap_ = RA.Monad.ap;
+var chain_ = RA.Monad.chain;
+var mapWithIndex_ = RA.FunctorWithIndex.mapWithIndex;
+var filter_ = RA.Filterable.filter;
+var filterMap_ = RA.Filterable.filterMap;
+var partition_ = RA.Filterable.partition;
+var partitionMap_ = RA.Filterable.partitionMap;
+var filterWithIndex_ = RA.FilterableWithIndex
+    .filterWithIndex;
+var filterMapWithIndex_ = RA.FilterableWithIndex
+    .filterMapWithIndex;
+var partitionWithIndex_ = RA.FilterableWithIndex
+    .partitionWithIndex;
+var partitionMapWithIndex_ = RA.FilterableWithIndex
+    .partitionMapWithIndex;
+var reduce_ = RA.Foldable.reduce;
+var foldMap_ = RA.Foldable.foldMap;
+var reduceRight_ = RA.Foldable.reduceRight;
+var traverse_ = RA.Traversable.traverse;
+var alt_ = RA.Alternative.alt;
+var reduceWithIndex_ = RA.FoldableWithIndex.reduceWithIndex;
+var foldMapWithIndex_ = RA.FoldableWithIndex.foldMapWithIndex;
+var reduceRightWithIndex_ = RA.FoldableWithIndex.reduceRightWithIndex;
+var traverseWithIndex_ = RA.TraversableWithIndex
+    .traverseWithIndex;
+var extend_ = RA.Extend.extend;
+var wither_ = RA.Witherable.wither;
+var wilt_ = RA.Witherable.wilt;
+// -------------------------------------------------------------------------------------
+// pipeables
+// -------------------------------------------------------------------------------------
+/**
+ * `map` can be used to turn functions `(a: A) => B` into functions `(fa: F<A>) => F<B>` whose argument and return types
+ * use the type constructor `F` to represent some computational context.
+ *
+ * @category Functor
+ * @since 2.0.0
+ */
+exports.map = RA.map;
+/**
+ * Apply a function to an argument under a type constructor.
+ *
+ * @category Apply
+ * @since 2.0.0
+ */
+exports.ap = RA.ap;
+/**
+ * Combine two effectful actions, keeping only the result of the first.
+ *
+ * Derivable from `Apply`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.apFirst = RA.apFirst;
+/**
+ * Combine two effectful actions, keeping only the result of the second.
+ *
+ * Derivable from `Apply`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.apSecond = RA.apSecond;
+/**
+ * Composes computations in sequence, using the return value of one computation to determine the next computation.
+ *
+ * @category Monad
+ * @since 2.0.0
+ */
+exports.chain = RA.chain;
+/**
+ * @since 2.7.0
+ */
+exports.chainWithIndex = RA.chainWithIndex;
+/**
+ * Composes computations in sequence, using the return value of one computation to determine the next computation and
+ * keeping only the result of the first.
+ *
+ * Derivable from `Monad`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.chainFirst = RA.chainFirst;
+/**
+ * @category FunctorWithIndex
+ * @since 2.0.0
+ */
+exports.mapWithIndex = RA.mapWithIndex;
+/**
+ * @category Compactable
+ * @since 2.0.0
+ */
+exports.compact = RA.compact;
+/**
+ * @category Compactable
+ * @since 2.0.0
+ */
+exports.separate = RA.separate;
+/**
+ * @category Filterable
+ * @since 2.0.0
+ */
+exports.filter = RA.filter;
+/**
+ * @category Filterable
+ * @since 2.0.0
+ */
+exports.filterMap = RA.filterMap;
+/**
+ * @category Filterable
+ * @since 2.0.0
+ */
+exports.partition = RA.partition;
+/**
+ * @category FilterableWithIndex
+ * @since 2.0.0
+ */
+exports.partitionWithIndex = RA.partitionWithIndex;
+/**
+ * @category Filterable
+ * @since 2.0.0
+ */
+exports.partitionMap = RA.partitionMap;
+/**
+ * @category FilterableWithIndex
+ * @since 2.0.0
+ */
+exports.partitionMapWithIndex = RA.partitionMapWithIndex;
+/**
+ * Less strict version of [`alt`](#alt).
+ *
+ * @category Alt
+ * @since 2.9.0
+ */
+exports.altW = RA.altW;
+/**
+ * Identifies an associative operation on a type constructor. It is similar to `Semigroup`, except that it applies to
+ * types of kind `* -> *`.
+ *
+ * @category Alt
+ * @since 2.0.0
+ */
+exports.alt = RA.alt;
+/**
+ * @category FilterableWithIndex
+ * @since 2.0.0
+ */
+exports.filterMapWithIndex = RA.filterMapWithIndex;
+/**
+ * @category FilterableWithIndex
+ * @since 2.0.0
+ */
+exports.filterWithIndex = RA.filterWithIndex;
+/**
+ * @category Extend
+ * @since 2.0.0
+ */
+exports.extend = RA.extend;
+/**
+ * Derivable from `Extend`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.duplicate = RA.duplicate;
+/**
+ * @category Foldable
+ * @since 2.0.0
+ */
+exports.foldMap = RA.foldMap;
+/**
+ * @category FoldableWithIndex
+ * @since 2.0.0
+ */
+exports.foldMapWithIndex = RA.foldMapWithIndex;
+/**
+ * @category Foldable
+ * @since 2.0.0
+ */
+exports.reduce = RA.reduce;
+/**
+ * @category FoldableWithIndex
+ * @since 2.0.0
+ */
+exports.reduceWithIndex = RA.reduceWithIndex;
+/**
+ * @category Foldable
+ * @since 2.0.0
+ */
+exports.reduceRight = RA.reduceRight;
+/**
+ * @category FoldableWithIndex
+ * @since 2.0.0
+ */
+exports.reduceRightWithIndex = RA.reduceRightWithIndex;
+/**
+ * **for optimized and stack safe version check the data types `traverseArray` function**
+ * @category Traversable
+ * @since 2.6.3
+ */
+exports.traverse = RA.traverse;
+/**
+ * **for optimized and stack safe version check the data types `sequenceArray` function**
+ * @category Traversable
+ * @since 2.6.3
+ */
+exports.sequence = RA.sequence;
+/**
+ * **for optimized and stack safe version check the data types `traverseArrayWithIndex` function**
+ * @category TraversableWithIndex
+ * @since 2.6.3
+ */
+exports.traverseWithIndex = RA.traverseWithIndex;
+/**
+ * @category Witherable
+ * @since 2.6.5
+ */
+exports.wither = RA.wither;
+/**
+ * @category Witherable
+ * @since 2.6.5
+ */
+exports.wilt = RA.wilt;
+/**
+ * @category Unfoldable
+ * @since 2.6.6
+ */
+exports.unfold = RA.unfold;
+/**
+ * @category Alternative
+ * @since 2.7.0
+ */
+exports.zero = RA.Alternative.zero;
+// -------------------------------------------------------------------------------------
+// instances
+// -------------------------------------------------------------------------------------
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.URI = 'Array';
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Functor = {
+    URI: exports.URI,
+    map: map_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.FunctorWithIndex = {
+    URI: exports.URI,
+    map: map_,
+    mapWithIndex: mapWithIndex_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Applicative = {
+    URI: exports.URI,
+    map: map_,
+    ap: ap_,
+    of: exports.of
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Monad = {
+    URI: exports.URI,
+    map: map_,
+    ap: ap_,
+    of: exports.of,
+    chain: chain_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Unfoldable = {
+    URI: exports.URI,
+    unfold: exports.unfold
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Alt = {
+    URI: exports.URI,
+    map: map_,
+    alt: alt_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Alternative = {
+    URI: exports.URI,
+    map: map_,
+    ap: ap_,
+    of: exports.of,
+    alt: alt_,
+    zero: exports.zero
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Extend = {
+    URI: exports.URI,
+    map: map_,
+    extend: extend_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Compactable = {
+    URI: exports.URI,
+    compact: exports.compact,
+    separate: exports.separate
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Filterable = {
+    URI: exports.URI,
+    map: map_,
+    compact: exports.compact,
+    separate: exports.separate,
+    filter: filter_,
+    filterMap: filterMap_,
+    partition: partition_,
+    partitionMap: partitionMap_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.FilterableWithIndex = {
+    URI: exports.URI,
+    map: map_,
+    mapWithIndex: mapWithIndex_,
+    compact: exports.compact,
+    separate: exports.separate,
+    filter: filter_,
+    filterMap: filterMap_,
+    partition: partition_,
+    partitionMap: partitionMap_,
+    partitionMapWithIndex: partitionMapWithIndex_,
+    partitionWithIndex: partitionWithIndex_,
+    filterMapWithIndex: filterMapWithIndex_,
+    filterWithIndex: filterWithIndex_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Foldable = {
+    URI: exports.URI,
+    reduce: reduce_,
+    foldMap: foldMap_,
+    reduceRight: reduceRight_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.FoldableWithIndex = {
+    URI: exports.URI,
+    reduce: reduce_,
+    foldMap: foldMap_,
+    reduceRight: reduceRight_,
+    reduceWithIndex: reduceWithIndex_,
+    foldMapWithIndex: foldMapWithIndex_,
+    reduceRightWithIndex: reduceRightWithIndex_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Traversable = {
+    URI: exports.URI,
+    map: map_,
+    reduce: reduce_,
+    foldMap: foldMap_,
+    reduceRight: reduceRight_,
+    traverse: traverse_,
+    sequence: exports.sequence
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.TraversableWithIndex = {
+    URI: exports.URI,
+    map: map_,
+    mapWithIndex: mapWithIndex_,
+    reduce: reduce_,
+    foldMap: foldMap_,
+    reduceRight: reduceRight_,
+    reduceWithIndex: reduceWithIndex_,
+    foldMapWithIndex: foldMapWithIndex_,
+    reduceRightWithIndex: reduceRightWithIndex_,
+    traverse: traverse_,
+    sequence: exports.sequence,
+    traverseWithIndex: traverseWithIndex_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Witherable = {
+    URI: exports.URI,
+    map: map_,
+    compact: exports.compact,
+    separate: exports.separate,
+    filter: filter_,
+    filterMap: filterMap_,
+    partition: partition_,
+    partitionMap: partitionMap_,
+    reduce: reduce_,
+    foldMap: foldMap_,
+    reduceRight: reduceRight_,
+    traverse: traverse_,
+    sequence: exports.sequence,
+    wither: wither_,
+    wilt: wilt_
+};
+// TODO: remove in v3
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.array = {
+    URI: exports.URI,
+    compact: exports.compact,
+    separate: exports.separate,
+    map: map_,
+    ap: ap_,
+    of: exports.of,
+    chain: chain_,
+    filter: filter_,
+    filterMap: filterMap_,
+    partition: partition_,
+    partitionMap: partitionMap_,
+    mapWithIndex: mapWithIndex_,
+    partitionMapWithIndex: partitionMapWithIndex_,
+    partitionWithIndex: partitionWithIndex_,
+    filterMapWithIndex: filterMapWithIndex_,
+    filterWithIndex: filterWithIndex_,
+    alt: alt_,
+    zero: exports.zero,
+    unfold: exports.unfold,
+    reduce: reduce_,
+    foldMap: foldMap_,
+    reduceRight: reduceRight_,
+    traverse: traverse_,
+    sequence: exports.sequence,
+    reduceWithIndex: reduceWithIndex_,
+    foldMapWithIndex: foldMapWithIndex_,
+    reduceRightWithIndex: reduceRightWithIndex_,
+    traverseWithIndex: traverseWithIndex_,
+    extend: extend_,
+    wither: wither_,
+    wilt: wilt_
+};
+// -------------------------------------------------------------------------------------
+// unsafe
+// -------------------------------------------------------------------------------------
+/**
+ * @category unsafe
+ * @since 2.0.0
+ */
+exports.unsafeInsertAt = RA.unsafeInsertAt;
+/**
+ * @category unsafe
+ * @since 2.0.0
+ */
+exports.unsafeUpdateAt = RA.unsafeUpdateAt;
+/**
+ * @category unsafe
+ * @since 2.0.0
+ */
+exports.unsafeDeleteAt = RA.unsafeDeleteAt;
+// -------------------------------------------------------------------------------------
+// utils
+// -------------------------------------------------------------------------------------
+/**
+ * An empty array
+ *
+ * @since 2.0.0
+ */
+exports.empty = [];
+/**
+ * @since 2.9.0
+ */
+exports.every = RA.every;
+/**
+ * @since 2.9.0
+ */
+exports.some = RA.some;
+// -------------------------------------------------------------------------------------
+// do notation
+// -------------------------------------------------------------------------------------
+/**
+ * @since 2.9.0
+ */
+exports.Do = 
+/*#__PURE__*/
+exports.of({});
+/**
+ * @since 2.8.0
+ */
+exports.bindTo = RA.bindTo;
+/**
+ * @since 2.8.0
+ */
+exports.bind = RA.bind;
+// -------------------------------------------------------------------------------------
+// pipeable sequence S
+// -------------------------------------------------------------------------------------
+/**
+ * @since 2.8.0
+ */
+exports.apS = RA.apS;
+
+
+/***/ }),
+/* 695 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.filterMap = exports.separate = exports.compact = exports.fromArray = exports.remove = exports.insert = exports.singleton = exports.foldMap = exports.reduce = exports.getIntersectionSemigroup = exports.getUnionMonoid = exports.difference = exports.partitionMap = exports.intersection = exports.union = exports.elem = exports.partition = exports.filter = exports.isSubset = exports.chain = exports.every = exports.map = exports.some = exports.getEq = exports.toReadonlyArray = exports.empty = exports.getShow = exports.toSet = exports.fromSet = void 0;
+var Eq_1 = __webpack_require__(725);
+var function_1 = __webpack_require__(231);
+/**
+ * @category constructors
+ * @since 2.5.0
+ */
+function fromSet(s) {
+    return new Set(s);
+}
+exports.fromSet = fromSet;
+/**
+ * @category destructors
+ * @since 2.5.0
+ */
+function toSet(s) {
+    return new Set(s);
+}
+exports.toSet = toSet;
+/**
+ * @category instances
+ * @since 2.5.0
+ */
+function getShow(S) {
+    return {
+        show: function (s) {
+            var elements = '';
+            s.forEach(function (a) {
+                elements += S.show(a) + ', ';
+            });
+            if (elements !== '') {
+                elements = elements.substring(0, elements.length - 2);
+            }
+            return "new Set([" + elements + "])";
+        }
+    };
+}
+exports.getShow = getShow;
+/**
+ * @since 2.5.0
+ */
+exports.empty = new Set();
+/**
+ * @category destructors
+ * @since 2.5.0
+ */
+function toReadonlyArray(O) {
+    return function (x) {
+        // tslint:disable-next-line: readonly-array
+        var r = [];
+        x.forEach(function (e) { return r.push(e); });
+        return r.sort(O.compare);
+    };
+}
+exports.toReadonlyArray = toReadonlyArray;
+/**
+ * @category instances
+ * @since 2.5.0
+ */
+function getEq(E) {
+    var subsetE = isSubset(E);
+    return Eq_1.fromEquals(function (x, y) { return subsetE(x, y) && subsetE(y, x); });
+}
+exports.getEq = getEq;
+/**
+ * @since 2.5.0
+ */
+function some(predicate) {
+    return function (set) {
+        var values = set.values();
+        var e;
+        var found = false;
+        // tslint:disable-next-line: strict-boolean-expressions
+        while (!found && !(e = values.next()).done) {
+            found = predicate(e.value);
+        }
+        return found;
+    };
+}
+exports.some = some;
+/**
+ * Projects a Set through a function
+ *
+ * @category combinators
+ * @since 2.5.0
+ */
+function map(E) {
+    var elemE = elem(E);
+    return function (f) { return function (set) {
+        var r = new Set();
+        set.forEach(function (e) {
+            var v = f(e);
+            if (!elemE(v, r)) {
+                r.add(v);
+            }
+        });
+        return r;
+    }; };
+}
+exports.map = map;
+/**
+ * @since 2.5.0
+ */
+function every(predicate) {
+    return function_1.not(some(function_1.not(predicate)));
+}
+exports.every = every;
+/**
+ * @category combinators
+ * @since 2.5.0
+ */
+function chain(E) {
+    var elemE = elem(E);
+    return function (f) { return function (set) {
+        var r = new Set();
+        set.forEach(function (e) {
+            f(e).forEach(function (e) {
+                if (!elemE(e, r)) {
+                    r.add(e);
+                }
+            });
+        });
+        return r;
+    }; };
+}
+exports.chain = chain;
+function isSubset(E) {
+    var elemE = elem(E);
+    return function (me, that) {
+        if (that === undefined) {
+            var isSubsetE_1 = isSubset(E);
+            return function (that) { return isSubsetE_1(that, me); };
+        }
+        return every(function (a) { return elemE(a, that); })(me);
+    };
+}
+exports.isSubset = isSubset;
+function filter(predicate) {
+    return function (set) {
+        var values = set.values();
+        var e;
+        var r = new Set();
+        // tslint:disable-next-line: strict-boolean-expressions
+        while (!(e = values.next()).done) {
+            var value = e.value;
+            if (predicate(value)) {
+                r.add(value);
+            }
+        }
+        return r;
+    };
+}
+exports.filter = filter;
+function partition(predicate) {
+    return function (set) {
+        var values = set.values();
+        var e;
+        var right = new Set();
+        var left = new Set();
+        // tslint:disable-next-line: strict-boolean-expressions
+        while (!(e = values.next()).done) {
+            var value = e.value;
+            if (predicate(value)) {
+                right.add(value);
+            }
+            else {
+                left.add(value);
+            }
+        }
+        return { left: left, right: right };
+    };
+}
+exports.partition = partition;
+function elem(E) {
+    return function (a, set) {
+        if (set === undefined) {
+            var elemE_1 = elem(E);
+            return function (set) { return elemE_1(a, set); };
+        }
+        var values = set.values();
+        var e;
+        var found = false;
+        // tslint:disable-next-line: strict-boolean-expressions
+        while (!found && !(e = values.next()).done) {
+            found = E.equals(a, e.value);
+        }
+        return found;
+    };
+}
+exports.elem = elem;
+function union(E) {
+    var elemE = elem(E);
+    return function (me, that) {
+        if (that === undefined) {
+            var unionE_1 = union(E);
+            return function (that) { return unionE_1(me, that); };
+        }
+        if (me === exports.empty) {
+            return that;
+        }
+        if (that === exports.empty) {
+            return me;
+        }
+        var r = new Set(me);
+        that.forEach(function (e) {
+            if (!elemE(e, r)) {
+                r.add(e);
+            }
+        });
+        return r;
+    };
+}
+exports.union = union;
+function intersection(E) {
+    var elemE = elem(E);
+    return function (me, that) {
+        if (that === undefined) {
+            var intersectionE_1 = intersection(E);
+            return function (that) { return intersectionE_1(that, me); };
+        }
+        if (me === exports.empty || that === exports.empty) {
+            return exports.empty;
+        }
+        var r = new Set();
+        me.forEach(function (e) {
+            if (elemE(e, that)) {
+                r.add(e);
+            }
+        });
+        return r;
+    };
+}
+exports.intersection = intersection;
+/**
+ * @since 2.5.0
+ */
+function partitionMap(EB, EC) {
+    return function (f) { return function (set) {
+        var values = set.values();
+        var e;
+        var left = new Set();
+        var right = new Set();
+        var hasB = elem(EB);
+        var hasC = elem(EC);
+        // tslint:disable-next-line: strict-boolean-expressions
+        while (!(e = values.next()).done) {
+            var v = f(e.value);
+            switch (v._tag) {
+                case 'Left':
+                    if (!hasB(v.left, left)) {
+                        left.add(v.left);
+                    }
+                    break;
+                case 'Right':
+                    if (!hasC(v.right, right)) {
+                        right.add(v.right);
+                    }
+                    break;
+            }
+        }
+        return { left: left, right: right };
+    }; };
+}
+exports.partitionMap = partitionMap;
+function difference(E) {
+    var elemE = elem(E);
+    return function (me, that) {
+        if (that === undefined) {
+            var differenceE_1 = difference(E);
+            return function (that) { return differenceE_1(that, me); };
+        }
+        return filter(function (a) { return !elemE(a, that); })(me);
+    };
+}
+exports.difference = difference;
+/**
+ * @category instances
+ * @since 2.5.0
+ */
+function getUnionMonoid(E) {
+    return {
+        concat: union(E),
+        empty: exports.empty
+    };
+}
+exports.getUnionMonoid = getUnionMonoid;
+/**
+ * @category instances
+ * @since 2.5.0
+ */
+function getIntersectionSemigroup(E) {
+    return {
+        concat: intersection(E)
+    };
+}
+exports.getIntersectionSemigroup = getIntersectionSemigroup;
+/**
+ * @since 2.5.0
+ */
+function reduce(O) {
+    var toArrayO = toReadonlyArray(O);
+    return function (b, f) { return function (fa) { return toArrayO(fa).reduce(f, b); }; };
+}
+exports.reduce = reduce;
+/**
+ * @since 2.5.0
+ */
+function foldMap(O, M) {
+    var toArrayO = toReadonlyArray(O);
+    return function (f) { return function (fa) { return toArrayO(fa).reduce(function (b, a) { return M.concat(b, f(a)); }, M.empty); }; };
+}
+exports.foldMap = foldMap;
+/**
+ * Create a set with one element
+ *
+ * @category constructors
+ * @since 2.5.0
+ */
+function singleton(a) {
+    return new Set([a]);
+}
+exports.singleton = singleton;
+/**
+ * Insert a value into a set
+ *
+ * @category combinators
+ * @since 2.5.0
+ */
+function insert(E) {
+    var elemE = elem(E);
+    return function (a) { return function (set) {
+        if (!elemE(a)(set)) {
+            var r = new Set(set);
+            r.add(a);
+            return r;
+        }
+        else {
+            return set;
+        }
+    }; };
+}
+exports.insert = insert;
+/**
+ * Delete a value from a set
+ *
+ * @category combinators
+ * @since 2.5.0
+ */
+function remove(E) {
+    return function (a) { return function (set) { return filter(function (ax) { return !E.equals(a, ax); })(set); }; };
+}
+exports.remove = remove;
+/**
+ * Create a set from an array
+ *
+ * @category constructors
+ * @since 2.5.0
+ */
+function fromArray(E) {
+    return function (as) {
+        var len = as.length;
+        var r = new Set();
+        var has = elem(E);
+        for (var i = 0; i < len; i++) {
+            var a = as[i];
+            if (!has(a, r)) {
+                r.add(a);
+            }
+        }
+        return r;
+    };
+}
+exports.fromArray = fromArray;
+/**
+ * @category combinators
+ * @since 2.5.0
+ */
+function compact(E) {
+    return filterMap(E)(function_1.identity);
+}
+exports.compact = compact;
+/**
+ * @since 2.5.0
+ */
+function separate(EE, EA) {
+    return function (fa) {
+        var elemEE = elem(EE);
+        var elemEA = elem(EA);
+        var left = new Set();
+        var right = new Set();
+        fa.forEach(function (e) {
+            switch (e._tag) {
+                case 'Left':
+                    if (!elemEE(e.left, left)) {
+                        left.add(e.left);
+                    }
+                    break;
+                case 'Right':
+                    if (!elemEA(e.right, right)) {
+                        right.add(e.right);
+                    }
+                    break;
+            }
+        });
+        return { left: left, right: right };
+    };
+}
+exports.separate = separate;
+/**
+ * @category combinators
+ * @since 2.5.0
+ */
+function filterMap(E) {
+    var elemE = elem(E);
+    return function (f) { return function (fa) {
+        var r = new Set();
+        fa.forEach(function (a) {
+            var ob = f(a);
+            if (ob._tag === 'Some' && !elemE(ob.value, r)) {
+                r.add(ob.value);
+            }
+        });
+        return r;
+    }; };
+}
+exports.filterMap = filterMap;
+
+
+/***/ }),
+/* 696 */
 /***/ (function(module) {
 
 "use strict";
@@ -11592,8 +28559,7 @@ module.exports = isPlainObject;
 
 
 /***/ }),
-
-/***/ 697:
+/* 697 */
 /***/ (function(module) {
 
 "use strict";
@@ -11615,8 +28581,12 @@ module.exports = (promise, onFinally) => {
 
 
 /***/ }),
-
-/***/ 703:
+/* 698 */,
+/* 699 */,
+/* 700 */,
+/* 701 */,
+/* 702 */,
+/* 703 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
@@ -11679,8 +28649,2663 @@ exports.default = EntryFilter;
 
 
 /***/ }),
+/* 704 */
+/***/ (function(__unusedmodule, exports) {
 
-/***/ 724:
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getWriterM = void 0;
+function getWriterM(M) {
+    var map = function (fa, f) { return function () {
+        return M.map(fa(), function (_a) {
+            var a = _a[0], w = _a[1];
+            return [f(a), w];
+        });
+    }; };
+    return {
+        map: map,
+        evalWriter: function (fa) { return M.map(fa(), function (_a) {
+            var a = _a[0];
+            return a;
+        }); },
+        execWriter: function (fa) { return M.map(fa(), function (_a) {
+            var _ = _a[0], w = _a[1];
+            return w;
+        }); },
+        tell: function (w) { return function () { return M.of([undefined, w]); }; },
+        listen: function (fa) { return function () { return M.map(fa(), function (_a) {
+            var a = _a[0], w = _a[1];
+            return [[a, w], w];
+        }); }; },
+        pass: function (fa) { return function () { return M.map(fa(), function (_a) {
+            var _b = _a[0], a = _b[0], f = _b[1], w = _a[1];
+            return [a, f(w)];
+        }); }; },
+        listens: function (fa, f) { return function () { return M.map(fa(), function (_a) {
+            var a = _a[0], w = _a[1];
+            return [[a, f(w)], w];
+        }); }; },
+        censor: function (fa, f) { return function () { return M.map(fa(), function (_a) {
+            var a = _a[0], w = _a[1];
+            return [a, f(w)];
+        }); }; },
+        getMonad: function (W) {
+            return {
+                _E: undefined,
+                map: map,
+                of: function (a) { return function () { return M.of([a, W.empty]); }; },
+                ap: function (mab, ma) { return function () { return M.chain(mab(), function (_a) {
+                    var f = _a[0], w1 = _a[1];
+                    return M.map(ma(), function (_a) {
+                        var a = _a[0], w2 = _a[1];
+                        return [f(a), W.concat(w1, w2)];
+                    });
+                }); }; },
+                chain: function (ma, f) { return function () { return M.chain(ma(), function (_a) {
+                    var a = _a[0], w1 = _a[1];
+                    return M.map(f(a)(), function (_a) {
+                        var b = _a[0], w2 = _a[1];
+                        return [b, W.concat(w1, w2)];
+                    });
+                }); }; }
+            };
+        }
+    };
+}
+exports.getWriterM = getWriterM;
+
+
+/***/ }),
+/* 705 */,
+/* 706 */,
+/* 707 */,
+/* 708 */,
+/* 709 */,
+/* 710 */,
+/* 711 */,
+/* 712 */,
+/* 713 */,
+/* 714 */,
+/* 715 */,
+/* 716 */,
+/* 717 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.intersperse = exports.prependToAll = exports.unzip = exports.zip = exports.zipWith = exports.sort = exports.lefts = exports.rights = exports.reverse = exports.modifyAt = exports.deleteAt = exports.updateAt = exports.insertAt = exports.findLastIndex = exports.findLastMap = exports.findLast = exports.findFirstMap = exports.findFirst = exports.findIndex = exports.dropLeftWhile = exports.dropRight = exports.dropLeft = exports.spanLeft = exports.takeLeftWhile = exports.takeRight = exports.takeLeft = exports.init = exports.tail = exports.last = exports.head = exports.snoc = exports.cons = exports.lookup = exports.isOutOfBound = exports.isNonEmpty = exports.isEmpty = exports.scanRight = exports.scanLeft = exports.foldRight = exports.foldLeft = exports.flatten = exports.replicate = exports.range = exports.makeBy = exports.getOrd = exports.getEq = exports.getMonoid = exports.getShow = exports.toArray = exports.fromArray = void 0;
+exports.FunctorWithIndex = exports.Functor = exports.URI = exports.unfold = exports.wilt = exports.wither = exports.traverseWithIndex = exports.sequence = exports.traverse = exports.reduceRightWithIndex = exports.reduceRight = exports.reduceWithIndex = exports.foldMap = exports.reduce = exports.foldMapWithIndex = exports.duplicate = exports.extend = exports.filterWithIndex = exports.partitionMapWithIndex = exports.partitionMap = exports.partitionWithIndex = exports.partition = exports.compact = exports.filterMap = exports.filterMapWithIndex = exports.filter = exports.separate = exports.mapWithIndex = exports.map = exports.chainFirst = exports.chainWithIndex = exports.chain = exports.apSecond = exports.apFirst = exports.ap = exports.alt = exports.altW = exports.zero = exports.of = exports.difference = exports.intersection = exports.union = exports.comprehension = exports.chunksOf = exports.splitAt = exports.chop = exports.sortBy = exports.uniq = exports.elem = exports.rotate = void 0;
+exports.apS = exports.bind = exports.bindTo = exports.Do = exports.some = exports.every = exports.empty = exports.unsafeDeleteAt = exports.unsafeUpdateAt = exports.unsafeInsertAt = exports.readonlyArray = exports.Witherable = exports.TraversableWithIndex = exports.Traversable = exports.FoldableWithIndex = exports.Foldable = exports.FilterableWithIndex = exports.Filterable = exports.Compactable = exports.Extend = exports.Alternative = exports.Alt = exports.Unfoldable = exports.Monad = exports.Applicative = void 0;
+var function_1 = __webpack_require__(231);
+var O = __importStar(__webpack_require__(293));
+var Ord_1 = __webpack_require__(56);
+// -------------------------------------------------------------------------------------
+// model
+// -------------------------------------------------------------------------------------
+/**
+ * @category constructors
+ * @since 2.5.0
+ */
+// tslint:disable-next-line: readonly-array
+function fromArray(as) {
+    var l = as.length;
+    if (l === 0) {
+        return exports.empty;
+    }
+    var ras = Array(l);
+    for (var i = 0; i < l; i++) {
+        ras[i] = as[i];
+    }
+    return ras;
+}
+exports.fromArray = fromArray;
+/**
+ * @category destructors
+ * @since 2.5.0
+ */
+// tslint:disable-next-line: readonly-array
+function toArray(ras) {
+    var l = ras.length;
+    var as = Array(l);
+    for (var i = 0; i < l; i++) {
+        as[i] = ras[i];
+    }
+    return as;
+}
+exports.toArray = toArray;
+/**
+ * @category instances
+ * @since 2.5.0
+ */
+function getShow(S) {
+    return {
+        show: function (as) { return "[" + as.map(S.show).join(', ') + "]"; }
+    };
+}
+exports.getShow = getShow;
+var concat = function (x, y) {
+    var lenx = x.length;
+    if (lenx === 0) {
+        return y;
+    }
+    var leny = y.length;
+    if (leny === 0) {
+        return x;
+    }
+    var r = Array(lenx + leny);
+    for (var i = 0; i < lenx; i++) {
+        r[i] = x[i];
+    }
+    for (var i = 0; i < leny; i++) {
+        r[i + lenx] = y[i];
+    }
+    return r;
+};
+/**
+ * Returns a `Monoid` for `ReadonlyArray<A>`
+ *
+ * @example
+ * import { getMonoid } from 'fp-ts/ReadonlyArray'
+ *
+ * const M = getMonoid<number>()
+ * assert.deepStrictEqual(M.concat([1, 2], [3, 4]), [1, 2, 3, 4])
+ *
+ * @category instances
+ * @since 2.5.0
+ */
+function getMonoid() {
+    return {
+        concat: concat,
+        empty: exports.empty
+    };
+}
+exports.getMonoid = getMonoid;
+/**
+ * Derives an `Eq` over the `ReadonlyArray` of a given element type from the `Eq` of that type. The derived `Eq` defines two
+ * arrays as equal if all elements of both arrays are compared equal pairwise with the given `E`. In case of arrays of
+ * different lengths, the result is non equality.
+ *
+ * @example
+ * import { eqString } from 'fp-ts/Eq'
+ * import { getEq } from 'fp-ts/ReadonlyArray'
+ *
+ * const E = getEq(eqString)
+ * assert.strictEqual(E.equals(['a', 'b'], ['a', 'b']), true)
+ * assert.strictEqual(E.equals(['a'], []), false)
+ *
+ * @category instances
+ * @since 2.5.0
+ */
+function getEq(E) {
+    return {
+        equals: function (xs, ys) { return xs === ys || (xs.length === ys.length && xs.every(function (x, i) { return E.equals(x, ys[i]); })); }
+    };
+}
+exports.getEq = getEq;
+/**
+ * Derives an `Ord` over the `ReadonlyArray` of a given element type from the `Ord` of that type. The ordering between two such
+ * arrays is equal to: the first non equal comparison of each arrays elements taken pairwise in increasing order, in
+ * case of equality over all the pairwise elements; the longest array is considered the greatest, if both arrays have
+ * the same length, the result is equality.
+ *
+ * @example
+ * import { getOrd } from 'fp-ts/ReadonlyArray'
+ * import { ordString } from 'fp-ts/Ord'
+ *
+ * const O = getOrd(ordString)
+ * assert.strictEqual(O.compare(['b'], ['a']), 1)
+ * assert.strictEqual(O.compare(['a'], ['a']), 0)
+ * assert.strictEqual(O.compare(['a'], ['b']), -1)
+ *
+ *
+ * @category instances
+ * @since 2.5.0
+ */
+function getOrd(O) {
+    return Ord_1.fromCompare(function (a, b) {
+        var aLen = a.length;
+        var bLen = b.length;
+        var len = Math.min(aLen, bLen);
+        for (var i = 0; i < len; i++) {
+            var ordering = O.compare(a[i], b[i]);
+            if (ordering !== 0) {
+                return ordering;
+            }
+        }
+        return Ord_1.ordNumber.compare(aLen, bLen);
+    });
+}
+exports.getOrd = getOrd;
+/**
+ * Return a list of length `n` with element `i` initialized with `f(i)`
+ *
+ * @example
+ * import { makeBy } from 'fp-ts/ReadonlyArray'
+ *
+ * const double = (n: number): number => n * 2
+ * assert.deepStrictEqual(makeBy(5, double), [0, 2, 4, 6, 8])
+ *
+ * @category constructors
+ * @since 2.5.0
+ */
+function makeBy(n, f) {
+    // tslint:disable-next-line: readonly-array
+    var r = [];
+    for (var i = 0; i < n; i++) {
+        r.push(f(i));
+    }
+    return r;
+}
+exports.makeBy = makeBy;
+/**
+ * Create an array containing a range of integers, including both endpoints
+ *
+ * @example
+ * import { range } from 'fp-ts/ReadonlyArray'
+ *
+ * assert.deepStrictEqual(range(1, 5), [1, 2, 3, 4, 5])
+ *
+ * @category constructors
+ * @since 2.5.0
+ */
+function range(start, end) {
+    return makeBy(end - start + 1, function (i) { return start + i; });
+}
+exports.range = range;
+/**
+ * Create an array containing a value repeated the specified number of times
+ *
+ * @example
+ * import { replicate } from 'fp-ts/ReadonlyArray'
+ *
+ * assert.deepStrictEqual(replicate(3, 'a'), ['a', 'a', 'a'])
+ *
+ * @category constructors
+ * @since 2.5.0
+ */
+function replicate(n, a) {
+    return makeBy(n, function () { return a; });
+}
+exports.replicate = replicate;
+/**
+ * Removes one level of nesting
+ *
+ * Derivable from `Monad`.
+ *
+ * @example
+ * import { flatten } from 'fp-ts/ReadonlyArray'
+ *
+ * assert.deepStrictEqual(flatten([[1], [2], [3]]), [1, 2, 3])
+ *
+ * @category combinators
+ * @since 2.5.0
+ */
+function flatten(mma) {
+    var rLen = 0;
+    var len = mma.length;
+    for (var i = 0; i < len; i++) {
+        rLen += mma[i].length;
+    }
+    var r = Array(rLen);
+    var start = 0;
+    for (var i = 0; i < len; i++) {
+        var arr = mma[i];
+        var l = arr.length;
+        for (var j = 0; j < l; j++) {
+            r[j + start] = arr[j];
+        }
+        start += l;
+    }
+    return r;
+}
+exports.flatten = flatten;
+/**
+ * Break an array into its first element and remaining elements
+ *
+ * @example
+ * import { foldLeft } from 'fp-ts/ReadonlyArray'
+ *
+ * const len: <A>(as: ReadonlyArray<A>) => number = foldLeft(() => 0, (_, tail) => 1 + len(tail))
+ * assert.strictEqual(len([1, 2, 3]), 3)
+ *
+ * @category destructors
+ * @since 2.5.0
+ */
+function foldLeft(onEmpty, onCons) {
+    return function (as) { return (isEmpty(as) ? onEmpty() : onCons(as[0], as.slice(1))); };
+}
+exports.foldLeft = foldLeft;
+/**
+ * Break an array into its initial elements and the last element
+ *
+ * @category destructors
+ * @since 2.5.0
+ */
+function foldRight(onEmpty, onCons) {
+    return function (as) { return (isEmpty(as) ? onEmpty() : onCons(as.slice(0, as.length - 1), as[as.length - 1])); };
+}
+exports.foldRight = foldRight;
+/**
+ * Same as `reduce` but it carries over the intermediate steps
+ *
+ * @example
+ * import { scanLeft } from 'fp-ts/ReadonlyArray'
+ *
+ * assert.deepStrictEqual(scanLeft(10, (b, a: number) => b - a)([1, 2, 3]), [10, 9, 7, 4])
+ *
+ * @category combinators
+ * @since 2.5.0
+ */
+function scanLeft(b, f) {
+    return function (as) {
+        var l = as.length;
+        var r = new Array(l + 1);
+        r[0] = b;
+        for (var i = 0; i < l; i++) {
+            r[i + 1] = f(r[i], as[i]);
+        }
+        return r;
+    };
+}
+exports.scanLeft = scanLeft;
+/**
+ * Fold an array from the right, keeping all intermediate results instead of only the final result
+ *
+ * @example
+ * import { scanRight } from 'fp-ts/ReadonlyArray'
+ *
+ * assert.deepStrictEqual(scanRight(10, (a: number, b) => b - a)([1, 2, 3]), [4, 5, 7, 10])
+ *
+ * @category combinators
+ * @since 2.5.0
+ */
+function scanRight(b, f) {
+    return function (as) {
+        var l = as.length;
+        var r = new Array(l + 1);
+        r[l] = b;
+        for (var i = l - 1; i >= 0; i--) {
+            r[i] = f(as[i], r[i + 1]);
+        }
+        return r;
+    };
+}
+exports.scanRight = scanRight;
+/**
+ * Test whether an array is empty
+ *
+ * @example
+ * import { isEmpty } from 'fp-ts/ReadonlyArray'
+ *
+ * assert.strictEqual(isEmpty([]), true)
+ *
+ * @since 2.5.0
+ */
+function isEmpty(as) {
+    return as.length === 0;
+}
+exports.isEmpty = isEmpty;
+/**
+ * Test whether an array is non empty narrowing down the type to `NonEmptyReadonlyArray<A>`
+ *
+ * @category guards
+ * @since 2.5.0
+ */
+function isNonEmpty(as) {
+    return as.length > 0;
+}
+exports.isNonEmpty = isNonEmpty;
+/**
+ * Test whether an array contains a particular index
+ *
+ * @since 2.5.0
+ */
+function isOutOfBound(i, as) {
+    return i < 0 || i >= as.length;
+}
+exports.isOutOfBound = isOutOfBound;
+function lookup(i, as) {
+    return as === undefined ? function (as) { return lookup(i, as); } : isOutOfBound(i, as) ? O.none : O.some(as[i]);
+}
+exports.lookup = lookup;
+function cons(head, tail) {
+    if (tail === undefined) {
+        return function (tail) { return cons(head, tail); };
+    }
+    var len = tail.length;
+    var r = Array(len + 1);
+    for (var i = 0; i < len; i++) {
+        r[i + 1] = tail[i];
+    }
+    r[0] = head;
+    return r;
+}
+exports.cons = cons;
+// TODO: curry and make data-last in v3
+/**
+ * Append an element to the end of an array, creating a new non empty array
+ *
+ * @example
+ * import { snoc } from 'fp-ts/ReadonlyArray'
+ *
+ * assert.deepStrictEqual(snoc([1, 2, 3], 4), [1, 2, 3, 4])
+ *
+ * @category constructors
+ * @since 2.5.0
+ */
+function snoc(init, end) {
+    var len = init.length;
+    var r = Array(len + 1);
+    for (var i = 0; i < len; i++) {
+        r[i] = init[i];
+    }
+    r[len] = end;
+    return r;
+}
+exports.snoc = snoc;
+/**
+ * Get the first element in an array, or `None` if the array is empty
+ *
+ * @example
+ * import { head } from 'fp-ts/ReadonlyArray'
+ * import { some, none } from 'fp-ts/Option'
+ *
+ * assert.deepStrictEqual(head([1, 2, 3]), some(1))
+ * assert.deepStrictEqual(head([]), none)
+ *
+ * @since 2.5.0
+ */
+function head(as) {
+    return isEmpty(as) ? O.none : O.some(as[0]);
+}
+exports.head = head;
+/**
+ * Get the last element in an array, or `None` if the array is empty
+ *
+ * @example
+ * import { last } from 'fp-ts/ReadonlyArray'
+ * import { some, none } from 'fp-ts/Option'
+ *
+ * assert.deepStrictEqual(last([1, 2, 3]), some(3))
+ * assert.deepStrictEqual(last([]), none)
+ *
+ * @since 2.5.0
+ */
+function last(as) {
+    return lookup(as.length - 1, as);
+}
+exports.last = last;
+/**
+ * Get all but the first element of an array, creating a new array, or `None` if the array is empty
+ *
+ * @example
+ * import { tail } from 'fp-ts/ReadonlyArray'
+ * import { some, none } from 'fp-ts/Option'
+ *
+ * assert.deepStrictEqual(tail([1, 2, 3]), some([2, 3]))
+ * assert.deepStrictEqual(tail([]), none)
+ *
+ * @since 2.5.0
+ */
+function tail(as) {
+    return isEmpty(as) ? O.none : O.some(as.slice(1));
+}
+exports.tail = tail;
+/**
+ * Get all but the last element of an array, creating a new array, or `None` if the array is empty
+ *
+ * @example
+ * import { init } from 'fp-ts/ReadonlyArray'
+ * import { some, none } from 'fp-ts/Option'
+ *
+ * assert.deepStrictEqual(init([1, 2, 3]), some([1, 2]))
+ * assert.deepStrictEqual(init([]), none)
+ *
+ * @since 2.5.0
+ */
+function init(as) {
+    var len = as.length;
+    return len === 0 ? O.none : O.some(as.slice(0, len - 1));
+}
+exports.init = init;
+/**
+ * Keep only a number of elements from the start of an array, creating a new array.
+ * `n` must be a natural number
+ *
+ * @example
+ * import { takeLeft } from 'fp-ts/ReadonlyArray'
+ *
+ * assert.deepStrictEqual(takeLeft(2)([1, 2, 3]), [1, 2])
+ *
+ * @category combinators
+ * @since 2.5.0
+ */
+function takeLeft(n) {
+    return function (as) { return as.slice(0, n); };
+}
+exports.takeLeft = takeLeft;
+/**
+ * Keep only a number of elements from the end of an array, creating a new array.
+ * `n` must be a natural number
+ *
+ * @example
+ * import { takeRight } from 'fp-ts/ReadonlyArray'
+ *
+ * assert.deepStrictEqual(takeRight(2)([1, 2, 3, 4, 5]), [4, 5])
+ *
+ * @since 2.5.0
+ */
+function takeRight(n) {
+    return function (as) { return (n === 0 ? exports.empty : as.slice(-n)); };
+}
+exports.takeRight = takeRight;
+function takeLeftWhile(predicate) {
+    return function (as) {
+        var i = spanIndexUncurry(as, predicate);
+        var init = Array(i);
+        for (var j = 0; j < i; j++) {
+            init[j] = as[j];
+        }
+        return init;
+    };
+}
+exports.takeLeftWhile = takeLeftWhile;
+var spanIndexUncurry = function (as, predicate) {
+    var l = as.length;
+    var i = 0;
+    for (; i < l; i++) {
+        if (!predicate(as[i])) {
+            break;
+        }
+    }
+    return i;
+};
+function spanLeft(predicate) {
+    return function (as) {
+        var i = spanIndexUncurry(as, predicate);
+        var init = Array(i);
+        for (var j = 0; j < i; j++) {
+            init[j] = as[j];
+        }
+        var l = as.length;
+        var rest = Array(l - i);
+        for (var j = i; j < l; j++) {
+            rest[j - i] = as[j];
+        }
+        return { init: init, rest: rest };
+    };
+}
+exports.spanLeft = spanLeft;
+/**
+ * Drop a number of elements from the start of an array, creating a new array
+ *
+ * @example
+ * import { dropLeft } from 'fp-ts/ReadonlyArray'
+ *
+ * assert.deepStrictEqual(dropLeft(2)([1, 2, 3]), [3])
+ *
+ * @category combinators
+ * @since 2.5.0
+ */
+function dropLeft(n) {
+    return function (as) { return as.slice(n, as.length); };
+}
+exports.dropLeft = dropLeft;
+/**
+ * Drop a number of elements from the end of an array, creating a new array
+ *
+ * @example
+ * import { dropRight } from 'fp-ts/ReadonlyArray'
+ *
+ * assert.deepStrictEqual(dropRight(2)([1, 2, 3, 4, 5]), [1, 2, 3])
+ *
+ * @category combinators
+ * @since 2.5.0
+ */
+function dropRight(n) {
+    return function (as) { return as.slice(0, as.length - n); };
+}
+exports.dropRight = dropRight;
+/**
+ * Remove the longest initial subarray for which all element satisfy the specified predicate, creating a new array
+ *
+ * @example
+ * import { dropLeftWhile } from 'fp-ts/ReadonlyArray'
+ *
+ * assert.deepStrictEqual(dropLeftWhile((n: number) => n % 2 === 1)([1, 3, 2, 4, 5]), [2, 4, 5])
+ *
+ * @category combinators
+ * @since 2.5.0
+ */
+function dropLeftWhile(predicate) {
+    return function (as) {
+        var i = spanIndexUncurry(as, predicate);
+        var l = as.length;
+        var rest = Array(l - i);
+        for (var j = i; j < l; j++) {
+            rest[j - i] = as[j];
+        }
+        return rest;
+    };
+}
+exports.dropLeftWhile = dropLeftWhile;
+/**
+ * Find the first index for which a predicate holds
+ *
+ * @example
+ * import { findIndex } from 'fp-ts/ReadonlyArray'
+ * import { some, none } from 'fp-ts/Option'
+ *
+ * assert.deepStrictEqual(findIndex((n: number) => n === 2)([1, 2, 3]), some(1))
+ * assert.deepStrictEqual(findIndex((n: number) => n === 2)([]), none)
+ *
+ * @since 2.5.0
+ */
+function findIndex(predicate) {
+    return function (as) {
+        var len = as.length;
+        for (var i = 0; i < len; i++) {
+            if (predicate(as[i])) {
+                return O.some(i);
+            }
+        }
+        return O.none;
+    };
+}
+exports.findIndex = findIndex;
+function findFirst(predicate) {
+    return function (as) {
+        var len = as.length;
+        for (var i = 0; i < len; i++) {
+            if (predicate(as[i])) {
+                return O.some(as[i]);
+            }
+        }
+        return O.none;
+    };
+}
+exports.findFirst = findFirst;
+/**
+ * Find the first element returned by an option based selector function
+ *
+ * @example
+ * import { findFirstMap } from 'fp-ts/ReadonlyArray'
+ * import { some, none } from 'fp-ts/Option'
+ *
+ * interface Person {
+ *   name: string
+ *   age?: number
+ * }
+ *
+ * const persons: ReadonlyArray<Person> = [{ name: 'John' }, { name: 'Mary', age: 45 }, { name: 'Joey', age: 28 }]
+ *
+ * // returns the name of the first person that has an age
+ * assert.deepStrictEqual(findFirstMap((p: Person) => (p.age === undefined ? none : some(p.name)))(persons), some('Mary'))
+ *
+ * @since 2.5.0
+ */
+function findFirstMap(f) {
+    return function (as) {
+        var len = as.length;
+        for (var i = 0; i < len; i++) {
+            var v = f(as[i]);
+            if (O.isSome(v)) {
+                return v;
+            }
+        }
+        return O.none;
+    };
+}
+exports.findFirstMap = findFirstMap;
+function findLast(predicate) {
+    return function (as) {
+        var len = as.length;
+        for (var i = len - 1; i >= 0; i--) {
+            if (predicate(as[i])) {
+                return O.some(as[i]);
+            }
+        }
+        return O.none;
+    };
+}
+exports.findLast = findLast;
+/**
+ * Find the last element returned by an option based selector function
+ *
+ * @example
+ * import { findLastMap } from 'fp-ts/ReadonlyArray'
+ * import { some, none } from 'fp-ts/Option'
+ *
+ * interface Person {
+ *   name: string
+ *   age?: number
+ * }
+ *
+ * const persons: ReadonlyArray<Person> = [{ name: 'John' }, { name: 'Mary', age: 45 }, { name: 'Joey', age: 28 }]
+ *
+ * // returns the name of the last person that has an age
+ * assert.deepStrictEqual(findLastMap((p: Person) => (p.age === undefined ? none : some(p.name)))(persons), some('Joey'))
+ *
+ * @since 2.5.0
+ */
+function findLastMap(f) {
+    return function (as) {
+        var len = as.length;
+        for (var i = len - 1; i >= 0; i--) {
+            var v = f(as[i]);
+            if (O.isSome(v)) {
+                return v;
+            }
+        }
+        return O.none;
+    };
+}
+exports.findLastMap = findLastMap;
+/**
+ * Returns the index of the last element of the list which matches the predicate
+ *
+ * @example
+ * import { findLastIndex } from 'fp-ts/ReadonlyArray'
+ * import { some, none } from 'fp-ts/Option'
+ *
+ * interface X {
+ *   a: number
+ *   b: number
+ * }
+ * const xs: ReadonlyArray<X> = [{ a: 1, b: 0 }, { a: 1, b: 1 }]
+ * assert.deepStrictEqual(findLastIndex((x: { a: number }) => x.a === 1)(xs), some(1))
+ * assert.deepStrictEqual(findLastIndex((x: { a: number }) => x.a === 4)(xs), none)
+ *
+ *
+ * @since 2.5.0
+ */
+function findLastIndex(predicate) {
+    return function (as) {
+        var len = as.length;
+        for (var i = len - 1; i >= 0; i--) {
+            if (predicate(as[i])) {
+                return O.some(i);
+            }
+        }
+        return O.none;
+    };
+}
+exports.findLastIndex = findLastIndex;
+/**
+ * Insert an element at the specified index, creating a new array, or returning `None` if the index is out of bounds
+ *
+ * @example
+ * import { insertAt } from 'fp-ts/ReadonlyArray'
+ * import { some } from 'fp-ts/Option'
+ *
+ * assert.deepStrictEqual(insertAt(2, 5)([1, 2, 3, 4]), some([1, 2, 5, 3, 4]))
+ *
+ * @since 2.5.0
+ */
+function insertAt(i, a) {
+    return function (as) { return (i < 0 || i > as.length ? O.none : O.some(unsafeInsertAt(i, a, as))); };
+}
+exports.insertAt = insertAt;
+/**
+ * Change the element at the specified index, creating a new array, or returning `None` if the index is out of bounds
+ *
+ * @example
+ * import { updateAt } from 'fp-ts/ReadonlyArray'
+ * import { some, none } from 'fp-ts/Option'
+ *
+ * assert.deepStrictEqual(updateAt(1, 1)([1, 2, 3]), some([1, 1, 3]))
+ * assert.deepStrictEqual(updateAt(1, 1)([]), none)
+ *
+ * @since 2.5.0
+ */
+function updateAt(i, a) {
+    return function (as) { return (isOutOfBound(i, as) ? O.none : O.some(unsafeUpdateAt(i, a, as))); };
+}
+exports.updateAt = updateAt;
+/**
+ * Delete the element at the specified index, creating a new array, or returning `None` if the index is out of bounds
+ *
+ * @example
+ * import { deleteAt } from 'fp-ts/ReadonlyArray'
+ * import { some, none } from 'fp-ts/Option'
+ *
+ * assert.deepStrictEqual(deleteAt(0)([1, 2, 3]), some([2, 3]))
+ * assert.deepStrictEqual(deleteAt(1)([]), none)
+ *
+ * @since 2.5.0
+ */
+function deleteAt(i) {
+    return function (as) { return (isOutOfBound(i, as) ? O.none : O.some(unsafeDeleteAt(i, as))); };
+}
+exports.deleteAt = deleteAt;
+/**
+ * Apply a function to the element at the specified index, creating a new array, or returning `None` if the index is out
+ * of bounds
+ *
+ * @example
+ * import { modifyAt } from 'fp-ts/ReadonlyArray'
+ * import { some, none } from 'fp-ts/Option'
+ *
+ * const double = (x: number): number => x * 2
+ * assert.deepStrictEqual(modifyAt(1, double)([1, 2, 3]), some([1, 4, 3]))
+ * assert.deepStrictEqual(modifyAt(1, double)([]), none)
+ *
+ * @since 2.5.0
+ */
+function modifyAt(i, f) {
+    return function (as) { return (isOutOfBound(i, as) ? O.none : O.some(unsafeUpdateAt(i, f(as[i]), as))); };
+}
+exports.modifyAt = modifyAt;
+/**
+ * Reverse an array, creating a new array
+ *
+ * @example
+ * import { reverse } from 'fp-ts/ReadonlyArray'
+ *
+ * assert.deepStrictEqual(reverse([1, 2, 3]), [3, 2, 1])
+ *
+ * @category combinators
+ * @since 2.5.0
+ */
+function reverse(as) {
+    if (isEmpty(as)) {
+        return as;
+    }
+    return as.slice().reverse();
+}
+exports.reverse = reverse;
+/**
+ * Extracts from an array of `Either` all the `Right` elements. All the `Right` elements are extracted in order
+ *
+ * @example
+ * import { rights } from 'fp-ts/ReadonlyArray'
+ * import { right, left } from 'fp-ts/Either'
+ *
+ * assert.deepStrictEqual(rights([right(1), left('foo'), right(2)]), [1, 2])
+ *
+ * @category combinators
+ * @since 2.5.0
+ */
+function rights(as) {
+    // tslint:disable-next-line: readonly-array
+    var r = [];
+    var len = as.length;
+    for (var i = 0; i < len; i++) {
+        var a = as[i];
+        if (a._tag === 'Right') {
+            r.push(a.right);
+        }
+    }
+    return r;
+}
+exports.rights = rights;
+/**
+ * Extracts from an array of `Either` all the `Left` elements. All the `Left` elements are extracted in order
+ *
+ * @example
+ * import { lefts } from 'fp-ts/ReadonlyArray'
+ * import { left, right } from 'fp-ts/Either'
+ *
+ * assert.deepStrictEqual(lefts([right(1), left('foo'), right(2)]), ['foo'])
+ *
+ * @since 2.5.0
+ */
+function lefts(as) {
+    // tslint:disable-next-line: readonly-array
+    var r = [];
+    var len = as.length;
+    for (var i = 0; i < len; i++) {
+        var a = as[i];
+        if (a._tag === 'Left') {
+            r.push(a.left);
+        }
+    }
+    return r;
+}
+exports.lefts = lefts;
+/**
+ * Sort the elements of an array in increasing order, creating a new array
+ *
+ * @example
+ * import { sort } from 'fp-ts/ReadonlyArray'
+ * import { ordNumber } from 'fp-ts/Ord'
+ *
+ * assert.deepStrictEqual(sort(ordNumber)([3, 2, 1]), [1, 2, 3])
+ *
+ * @category combinators
+ * @since 2.5.0
+ */
+var sort = function (O) { return function (as) {
+    return as.length <= 1 ? as : as.slice().sort(O.compare);
+}; };
+exports.sort = sort;
+// TODO: curry and make data-last in v3
+/**
+ * Apply a function to pairs of elements at the same index in two arrays, collecting the results in a new array. If one
+ * input array is short, excess elements of the longer array are discarded.
+ *
+ * @example
+ * import { zipWith } from 'fp-ts/ReadonlyArray'
+ *
+ * assert.deepStrictEqual(zipWith([1, 2, 3], ['a', 'b', 'c', 'd'], (n, s) => s + n), ['a1', 'b2', 'c3'])
+ *
+ * @category combinators
+ * @since 2.5.0
+ */
+function zipWith(fa, fb, f) {
+    // tslint:disable-next-line: readonly-array
+    var fc = [];
+    var len = Math.min(fa.length, fb.length);
+    for (var i = 0; i < len; i++) {
+        fc[i] = f(fa[i], fb[i]);
+    }
+    return fc;
+}
+exports.zipWith = zipWith;
+function zip(as, bs) {
+    if (bs === undefined) {
+        return function (bs) { return zip(bs, as); };
+    }
+    return zipWith(as, bs, function (a, b) { return [a, b]; });
+}
+exports.zip = zip;
+/**
+ * The function is reverse of `zip`. Takes an array of pairs and return two corresponding arrays
+ *
+ * @example
+ * import { unzip } from 'fp-ts/ReadonlyArray'
+ *
+ * assert.deepStrictEqual(unzip([[1, 'a'], [2, 'b'], [3, 'c']]), [[1, 2, 3], ['a', 'b', 'c']])
+ *
+ * @since 2.5.0
+ */
+function unzip(as) {
+    // tslint:disable-next-line: readonly-array
+    var fa = [];
+    // tslint:disable-next-line: readonly-array
+    var fb = [];
+    for (var i = 0; i < as.length; i++) {
+        fa[i] = as[i][0];
+        fb[i] = as[i][1];
+    }
+    return [fa, fb];
+}
+exports.unzip = unzip;
+/**
+ * Prepend an element to every member of an array
+ *
+ * @example
+ * import { prependToAll } from 'fp-ts/ReadonlyArray'
+ *
+ * assert.deepStrictEqual(prependToAll(9)([1, 2, 3, 4]), [9, 1, 9, 2, 9, 3, 9, 4])
+ *
+ * @category combinators
+ * @since 2.9.0
+ */
+var prependToAll = function (e) { return function (xs) {
+    // tslint:disable-next-line: readonly-array
+    var ys = [];
+    for (var _i = 0, xs_1 = xs; _i < xs_1.length; _i++) {
+        var x = xs_1[_i];
+        ys.push(e, x);
+    }
+    return ys;
+}; };
+exports.prependToAll = prependToAll;
+/**
+ * Places an element in between members of an array
+ *
+ * @example
+ * import { intersperse } from 'fp-ts/ReadonlyArray'
+ *
+ * assert.deepStrictEqual(intersperse(9)([1, 2, 3, 4]), [1, 9, 2, 9, 3, 9, 4])
+ *
+ * @category combinators
+ * @since 2.9.0
+ */
+function intersperse(e) {
+    return function (as) {
+        var length = as.length;
+        if (length === 0) {
+            return as;
+        }
+        return cons(as[0], exports.prependToAll(e)(as.slice(1, as.length)));
+    };
+}
+exports.intersperse = intersperse;
+/**
+ * Rotate an array to the right by `n` steps
+ *
+ * @example
+ * import { rotate } from 'fp-ts/ReadonlyArray'
+ *
+ * assert.deepStrictEqual(rotate(2)([1, 2, 3, 4, 5]), [4, 5, 1, 2, 3])
+ *
+ * @category combinators
+ * @since 2.5.0
+ */
+function rotate(n) {
+    return function (as) {
+        var len = as.length;
+        if (n === 0 || len <= 1 || len === Math.abs(n)) {
+            return as;
+        }
+        else if (n < 0) {
+            return rotate(len + n)(as);
+        }
+        else {
+            return as.slice(-n).concat(as.slice(0, len - n));
+        }
+    };
+}
+exports.rotate = rotate;
+function elem(E) {
+    return function (a, as) {
+        if (as === undefined) {
+            var elemE_1 = elem(E);
+            return function (as) { return elemE_1(a, as); };
+        }
+        var predicate = function (element) { return E.equals(element, a); };
+        var i = 0;
+        var len = as.length;
+        for (; i < len; i++) {
+            if (predicate(as[i])) {
+                return true;
+            }
+        }
+        return false;
+    };
+}
+exports.elem = elem;
+/**
+ * Remove duplicates from an array, keeping the first occurrence of an element.
+ *
+ * @example
+ * import { uniq } from 'fp-ts/ReadonlyArray'
+ * import { eqNumber } from 'fp-ts/Eq'
+ *
+ * assert.deepStrictEqual(uniq(eqNumber)([1, 2, 1]), [1, 2])
+ *
+ * @category combinators
+ * @since 2.5.0
+ */
+function uniq(E) {
+    var elemS = elem(E);
+    return function (as) {
+        var len = as.length;
+        if (len <= 1) {
+            return as;
+        }
+        // tslint:disable-next-line: readonly-array
+        var r = [];
+        var i = 0;
+        for (; i < len; i++) {
+            var a = as[i];
+            if (!elemS(a, r)) {
+                r.push(a);
+            }
+        }
+        return len === r.length ? as : r;
+    };
+}
+exports.uniq = uniq;
+/**
+ * Sort the elements of an array in increasing order, where elements are compared using first `ords[0]`, then `ords[1]`,
+ * etc...
+ *
+ * @example
+ * import { sortBy } from 'fp-ts/ReadonlyArray'
+ * import { ord, ordString, ordNumber } from 'fp-ts/Ord'
+ *
+ * interface Person {
+ *   name: string
+ *   age: number
+ * }
+ * const byName = ord.contramap(ordString, (p: Person) => p.name)
+ * const byAge = ord.contramap(ordNumber, (p: Person) => p.age)
+ *
+ * const sortByNameByAge = sortBy([byName, byAge])
+ *
+ * const persons = [{ name: 'a', age: 1 }, { name: 'b', age: 3 }, { name: 'c', age: 2 }, { name: 'b', age: 2 }]
+ * assert.deepStrictEqual(sortByNameByAge(persons), [
+ *   { name: 'a', age: 1 },
+ *   { name: 'b', age: 2 },
+ *   { name: 'b', age: 3 },
+ *   { name: 'c', age: 2 }
+ * ])
+ *
+ * @category combinators
+ * @since 2.5.0
+ */
+function sortBy(ords) {
+    var M = Ord_1.getMonoid();
+    return exports.sort(ords.reduce(M.concat, M.empty));
+}
+exports.sortBy = sortBy;
+/**
+ * A useful recursion pattern for processing an array to produce a new array, often used for "chopping" up the input
+ * array. Typically chop is called with some function that will consume an initial prefix of the array and produce a
+ * value and the rest of the array.
+ *
+ * @example
+ * import { Eq, eqNumber } from 'fp-ts/Eq'
+ * import { chop, spanLeft } from 'fp-ts/ReadonlyArray'
+ *
+ * const group = <A>(S: Eq<A>): ((as: ReadonlyArray<A>) => ReadonlyArray<ReadonlyArray<A>>) => {
+ *   return chop(as => {
+ *     const { init, rest } = spanLeft((a: A) => S.equals(a, as[0]))(as)
+ *     return [init, rest]
+ *   })
+ * }
+ * assert.deepStrictEqual(group(eqNumber)([1, 1, 2, 3, 3, 4]), [[1, 1], [2], [3, 3], [4]])
+ *
+ * @category combinators
+ * @since 2.5.0
+ */
+var chop = function (f) { return function (as) {
+    // tslint:disable-next-line: readonly-array
+    var result = [];
+    var cs = as;
+    while (isNonEmpty(cs)) {
+        var _a = f(cs), b = _a[0], c = _a[1];
+        result.push(b);
+        cs = c;
+    }
+    return result;
+}; };
+exports.chop = chop;
+/**
+ * Splits an array into two pieces, the first piece has `n` elements.
+ *
+ * @example
+ * import { splitAt } from 'fp-ts/ReadonlyArray'
+ *
+ * assert.deepStrictEqual(splitAt(2)([1, 2, 3, 4, 5]), [[1, 2], [3, 4, 5]])
+ *
+ * @since 2.5.0
+ */
+function splitAt(n) {
+    return function (as) { return [as.slice(0, n), as.slice(n)]; };
+}
+exports.splitAt = splitAt;
+/**
+ * Splits an array into length-`n` pieces. The last piece will be shorter if `n` does not evenly divide the length of
+ * the array. Note that `chunksOf(n)([])` is `[]`, not `[[]]`. This is intentional, and is consistent with a recursive
+ * definition of `chunksOf`; it satisfies the property that
+ *
+ * ```ts
+ * chunksOf(n)(xs).concat(chunksOf(n)(ys)) == chunksOf(n)(xs.concat(ys)))
+ * ```
+ *
+ * whenever `n` evenly divides the length of `xs`.
+ *
+ * @example
+ * import { chunksOf } from 'fp-ts/ReadonlyArray'
+ *
+ * assert.deepStrictEqual(chunksOf(2)([1, 2, 3, 4, 5]), [[1, 2], [3, 4], [5]])
+ *
+ *
+ * @since 2.5.0
+ */
+function chunksOf(n) {
+    var f = exports.chop(splitAt(n));
+    return function (as) { return (as.length === 0 ? exports.empty : isOutOfBound(n - 1, as) ? [as] : f(as)); };
+}
+exports.chunksOf = chunksOf;
+function comprehension(input, f, g) {
+    if (g === void 0) { g = function () { return true; }; }
+    var go = function (scope, input) {
+        if (input.length === 0) {
+            return g.apply(void 0, scope) ? [f.apply(void 0, scope)] : exports.empty;
+        }
+        else {
+            return chain_(input[0], function (x) { return go(snoc(scope, x), input.slice(1)); });
+        }
+    };
+    return go(exports.empty, input);
+}
+exports.comprehension = comprehension;
+function union(E) {
+    var elemE = elem(E);
+    return function (xs, ys) {
+        if (ys === undefined) {
+            var unionE_1 = union(E);
+            return function (ys) { return unionE_1(ys, xs); };
+        }
+        return concat(xs, ys.filter(function (a) { return !elemE(a, xs); }));
+    };
+}
+exports.union = union;
+function intersection(E) {
+    var elemE = elem(E);
+    return function (xs, ys) {
+        if (ys === undefined) {
+            var intersectionE_1 = intersection(E);
+            return function (ys) { return intersectionE_1(ys, xs); };
+        }
+        return xs.filter(function (a) { return elemE(a, ys); });
+    };
+}
+exports.intersection = intersection;
+function difference(E) {
+    var elemE = elem(E);
+    return function (xs, ys) {
+        if (ys === undefined) {
+            var differenceE_1 = difference(E);
+            return function (ys) { return differenceE_1(ys, xs); };
+        }
+        return xs.filter(function (a) { return !elemE(a, ys); });
+    };
+}
+exports.difference = difference;
+/**
+ * Wrap a value into the type constructor.
+ *
+ * @category Applicative
+ * @since 2.5.0
+ */
+var of = function (a) { return [a]; };
+exports.of = of;
+/**
+ * @category Alternative
+ * @since 2.7.0
+ */
+var zero = function () { return exports.empty; };
+exports.zero = zero;
+// -------------------------------------------------------------------------------------
+// non-pipeables
+// -------------------------------------------------------------------------------------
+var map_ = function (fa, f) { return function_1.pipe(fa, exports.map(f)); };
+var mapWithIndex_ = function (fa, f) { return function_1.pipe(fa, exports.mapWithIndex(f)); };
+var ap_ = function (fab, fa) { return function_1.pipe(fab, exports.ap(fa)); };
+var chain_ = function (ma, f) {
+    return function_1.pipe(ma, exports.chain(f));
+};
+var filter_ = function (fa, predicate) { return function_1.pipe(fa, exports.filter(predicate)); };
+var filterMap_ = function (fa, f) { return function_1.pipe(fa, exports.filterMap(f)); };
+var partitionWithIndex_ = function (fa, predicateWithIndex) { return function_1.pipe(fa, exports.partitionWithIndex(predicateWithIndex)); };
+var partition_ = function (fa, predicate) { return function_1.pipe(fa, exports.partition(predicate)); };
+var partitionMap_ = function (fa, f) { return function_1.pipe(fa, exports.partitionMap(f)); };
+var partitionMapWithIndex_ = function (fa, f) { return function_1.pipe(fa, exports.partitionMapWithIndex(f)); };
+var alt_ = function (fa, that) { return function_1.pipe(fa, exports.alt(that)); };
+var reduce_ = function (fa, b, f) { return function_1.pipe(fa, exports.reduce(b, f)); };
+var foldMap_ = function (M) {
+    var foldMapM = exports.foldMap(M);
+    return function (fa, f) { return function_1.pipe(fa, foldMapM(f)); };
+};
+var reduceRight_ = function (fa, b, f) { return function_1.pipe(fa, exports.reduceRight(b, f)); };
+var reduceWithIndex_ = function (fa, b, f) {
+    var l = fa.length;
+    var r = b;
+    for (var i = 0; i < l; i++) {
+        r = f(i, r, fa[i]);
+    }
+    return r;
+};
+var foldMapWithIndex_ = function (M) { return function (fa, f) {
+    return fa.reduce(function (b, a, i) { return M.concat(b, f(i, a)); }, M.empty);
+}; };
+var reduceRightWithIndex_ = function (fa, b, f) {
+    return function_1.pipe(fa, exports.reduceRightWithIndex(b, f));
+};
+var filterMapWithIndex_ = function (fa, f) {
+    return function_1.pipe(fa, exports.filterMapWithIndex(f));
+};
+var filterWithIndex_ = function (fa, predicateWithIndex) { return function_1.pipe(fa, exports.filterWithIndex(predicateWithIndex)); };
+var extend_ = function (fa, f) { return function_1.pipe(fa, exports.extend(f)); };
+var traverse_ = function (F) {
+    var traverseF = exports.traverse(F);
+    return function (ta, f) { return function_1.pipe(ta, traverseF(f)); };
+};
+/* istanbul ignore next */
+var traverseWithIndex_ = function (F) {
+    var traverseWithIndexF = exports.traverseWithIndex(F);
+    return function (ta, f) { return function_1.pipe(ta, traverseWithIndexF(f)); };
+};
+/* istanbul ignore next */
+var wither_ = function (F) {
+    var witherF = exports.wither(F);
+    return function (fa, f) { return function_1.pipe(fa, witherF(f)); };
+};
+/* istanbul ignore next */
+var wilt_ = function (F) {
+    var wiltF = exports.wilt(F);
+    return function (fa, f) { return function_1.pipe(fa, wiltF(f)); };
+};
+// -------------------------------------------------------------------------------------
+// pipeables
+// -------------------------------------------------------------------------------------
+/**
+ * Less strict version of [`alt`](#alt).
+ *
+ * @category Alt
+ * @since 2.9.0
+ */
+var altW = function (that) { return function (fa) { return concat(fa, that()); }; };
+exports.altW = altW;
+/**
+ * Identifies an associative operation on a type constructor. It is similar to `Semigroup`, except that it applies to
+ * types of kind `* -> *`.
+ *
+ * @category Alt
+ * @since 2.5.0
+ */
+exports.alt = exports.altW;
+/**
+ * Apply a function to an argument under a type constructor.
+ *
+ * @category Apply
+ * @since 2.5.0
+ */
+var ap = function (fa) {
+    return exports.chain(function (f) { return function_1.pipe(fa, exports.map(f)); });
+};
+exports.ap = ap;
+/**
+ * Combine two effectful actions, keeping only the result of the first.
+ *
+ * Derivable from `Apply`.
+ *
+ * @category combinators
+ * @since 2.5.0
+ */
+var apFirst = function (fb) {
+    return function_1.flow(exports.map(function (a) { return function () { return a; }; }), exports.ap(fb));
+};
+exports.apFirst = apFirst;
+/**
+ * Combine two effectful actions, keeping only the result of the second.
+ *
+ * Derivable from `Apply`.
+ *
+ * @category combinators
+ * @since 2.5.0
+ */
+var apSecond = function (fb) {
+    return function_1.flow(exports.map(function () { return function (b) { return b; }; }), exports.ap(fb));
+};
+exports.apSecond = apSecond;
+/**
+ * Composes computations in sequence, using the return value of one computation to determine the next computation.
+ *
+ * @category Monad
+ * @since 2.5.0
+ */
+var chain = function (f) { return function (ma) {
+    return function_1.pipe(ma, exports.chainWithIndex(function (_, a) { return f(a); }));
+}; };
+exports.chain = chain;
+/**
+ * @since 2.7.0
+ */
+var chainWithIndex = function (f) { return function (ma) {
+    var outLen = 0;
+    var l = ma.length;
+    var temp = new Array(l);
+    for (var i = 0; i < l; i++) {
+        var e = ma[i];
+        var arr = f(i, e);
+        outLen += arr.length;
+        temp[i] = arr;
+    }
+    var out = Array(outLen);
+    var start = 0;
+    for (var i = 0; i < l; i++) {
+        var arr = temp[i];
+        var l_1 = arr.length;
+        for (var j = 0; j < l_1; j++) {
+            out[j + start] = arr[j];
+        }
+        start += l_1;
+    }
+    return out;
+}; };
+exports.chainWithIndex = chainWithIndex;
+/**
+ * Composes computations in sequence, using the return value of one computation to determine the next computation and
+ * keeping only the result of the first.
+ *
+ * Derivable from `Monad`.
+ *
+ * @category combinators
+ * @since 2.5.0
+ */
+var chainFirst = function (f) {
+    return exports.chain(function (a) {
+        return function_1.pipe(f(a), exports.map(function () { return a; }));
+    });
+};
+exports.chainFirst = chainFirst;
+/**
+ * `map` can be used to turn functions `(a: A) => B` into functions `(fa: F<A>) => F<B>` whose argument and return types
+ * use the type constructor `F` to represent some computational context.
+ *
+ * @category Functor
+ * @since 2.5.0
+ */
+var map = function (f) { return function (fa) {
+    return fa.map(function (a) { return f(a); });
+}; };
+exports.map = map;
+/**
+ * @category FunctorWithIndex
+ * @since 2.5.0
+ */
+var mapWithIndex = function (f) { return function (fa) { return fa.map(function (a, i) { return f(i, a); }); }; };
+exports.mapWithIndex = mapWithIndex;
+/**
+ * @category Compactable
+ * @since 2.5.0
+ */
+var separate = function (fa) {
+    // tslint:disable-next-line: readonly-array
+    var left = [];
+    // tslint:disable-next-line: readonly-array
+    var right = [];
+    for (var _i = 0, fa_1 = fa; _i < fa_1.length; _i++) {
+        var e = fa_1[_i];
+        if (e._tag === 'Left') {
+            left.push(e.left);
+        }
+        else {
+            right.push(e.right);
+        }
+    }
+    return {
+        left: left,
+        right: right
+    };
+};
+exports.separate = separate;
+/**
+ * @category Filterable
+ * @since 2.5.0
+ */
+var filter = function (predicate) { return function (fa) { return fa.filter(predicate); }; };
+exports.filter = filter;
+/**
+ * @category FilterableWithIndex
+ * @since 2.5.0
+ */
+var filterMapWithIndex = function (f) { return function (fa) {
+    // tslint:disable-next-line: readonly-array
+    var result = [];
+    for (var i = 0; i < fa.length; i++) {
+        var optionB = f(i, fa[i]);
+        if (O.isSome(optionB)) {
+            result.push(optionB.value);
+        }
+    }
+    return result;
+}; };
+exports.filterMapWithIndex = filterMapWithIndex;
+/**
+ * @category Filterable
+ * @since 2.5.0
+ */
+var filterMap = function (f) {
+    return exports.filterMapWithIndex(function (_, a) { return f(a); });
+};
+exports.filterMap = filterMap;
+/**
+ * @category Compactable
+ * @since 2.5.0
+ */
+exports.compact = 
+/*#__PURE__*/
+exports.filterMap(function_1.identity);
+/**
+ * @category Filterable
+ * @since 2.5.0
+ */
+var partition = function (predicate) {
+    return exports.partitionWithIndex(function (_, a) { return predicate(a); });
+};
+exports.partition = partition;
+/**
+ * @category FilterableWithIndex
+ * @since 2.5.0
+ */
+var partitionWithIndex = function (predicateWithIndex) { return function (fa) {
+    // tslint:disable-next-line: readonly-array
+    var left = [];
+    // tslint:disable-next-line: readonly-array
+    var right = [];
+    for (var i = 0; i < fa.length; i++) {
+        var a = fa[i];
+        if (predicateWithIndex(i, a)) {
+            right.push(a);
+        }
+        else {
+            left.push(a);
+        }
+    }
+    return {
+        left: left,
+        right: right
+    };
+}; };
+exports.partitionWithIndex = partitionWithIndex;
+/**
+ * @category Filterable
+ * @since 2.5.0
+ */
+var partitionMap = function (f) {
+    return exports.partitionMapWithIndex(function (_, a) { return f(a); });
+};
+exports.partitionMap = partitionMap;
+/**
+ * @category FilterableWithIndex
+ * @since 2.5.0
+ */
+var partitionMapWithIndex = function (f) { return function (fa) {
+    // tslint:disable-next-line: readonly-array
+    var left = [];
+    // tslint:disable-next-line: readonly-array
+    var right = [];
+    for (var i = 0; i < fa.length; i++) {
+        var e = f(i, fa[i]);
+        if (e._tag === 'Left') {
+            left.push(e.left);
+        }
+        else {
+            right.push(e.right);
+        }
+    }
+    return {
+        left: left,
+        right: right
+    };
+}; };
+exports.partitionMapWithIndex = partitionMapWithIndex;
+/**
+ * @category FilterableWithIndex
+ * @since 2.5.0
+ */
+var filterWithIndex = function (predicateWithIndex) { return function (fa) {
+    return fa.filter(function (a, i) { return predicateWithIndex(i, a); });
+}; };
+exports.filterWithIndex = filterWithIndex;
+/**
+ * @category Extend
+ * @since 2.5.0
+ */
+var extend = function (f) { return function (wa) { return wa.map(function (_, i, as) { return f(as.slice(i)); }); }; };
+exports.extend = extend;
+/**
+ * Derivable from `Extend`.
+ *
+ * @category combinators
+ * @since 2.5.0
+ */
+exports.duplicate = 
+/*#__PURE__*/
+exports.extend(function_1.identity);
+/**
+ * @category FoldableWithIndex
+ * @since 2.5.0
+ */
+var foldMapWithIndex = function (M) {
+    var foldMapWithIndexM = foldMapWithIndex_(M);
+    return function (f) { return function (fa) { return foldMapWithIndexM(fa, f); }; };
+};
+exports.foldMapWithIndex = foldMapWithIndex;
+/**
+ * @category Foldable
+ * @since 2.5.0
+ */
+var reduce = function (b, f) {
+    return exports.reduceWithIndex(b, function (_, b, a) { return f(b, a); });
+};
+exports.reduce = reduce;
+/**
+ * @category Foldable
+ * @since 2.5.0
+ */
+var foldMap = function (M) {
+    var foldMapWithIndexM = exports.foldMapWithIndex(M);
+    return function (f) { return foldMapWithIndexM(function (_, a) { return f(a); }); };
+};
+exports.foldMap = foldMap;
+/**
+ * @category FoldableWithIndex
+ * @since 2.5.0
+ */
+var reduceWithIndex = function (b, f) { return function (fa) { return reduceWithIndex_(fa, b, f); }; };
+exports.reduceWithIndex = reduceWithIndex;
+/**
+ * @category Foldable
+ * @since 2.5.0
+ */
+var reduceRight = function (b, f) {
+    return exports.reduceRightWithIndex(b, function (_, a, b) { return f(a, b); });
+};
+exports.reduceRight = reduceRight;
+/**
+ * @category FoldableWithIndex
+ * @since 2.5.0
+ */
+var reduceRightWithIndex = function (b, f) { return function (fa) { return fa.reduceRight(function (b, a, i) { return f(i, a, b); }, b); }; };
+exports.reduceRightWithIndex = reduceRightWithIndex;
+/**
+ * **for optimized and stack safe version check the data types `traverseArray` function**
+ * @category Traversable
+ * @since 2.6.3
+ */
+var traverse = function (F) {
+    var traverseWithIndexF = exports.traverseWithIndex(F);
+    return function (f) { return traverseWithIndexF(function (_, a) { return f(a); }); };
+};
+exports.traverse = traverse;
+/**
+ * **for optimized and stack safe version check the data types `sequenceArray` function**
+ * @category Traversable
+ * @since 2.6.3
+ */
+var sequence = function (F) { return function (ta) {
+    return reduce_(ta, F.of(exports.zero()), function (fas, fa) {
+        return F.ap(F.map(fas, function (as) { return function (a) { return snoc(as, a); }; }), fa);
+    });
+}; };
+exports.sequence = sequence;
+/**
+ * **for optimized and stack safe version check the data types `traverseArrayWithIndex` function**
+ * @category TraversableWithIndex
+ * @since 2.6.3
+ */
+var traverseWithIndex = function (F) { return function (f) {
+    return exports.reduceWithIndex(F.of(exports.zero()), function (i, fbs, a) {
+        return F.ap(F.map(fbs, function (bs) { return function (b) { return snoc(bs, b); }; }), f(i, a));
+    });
+}; };
+exports.traverseWithIndex = traverseWithIndex;
+/**
+ * @category Witherable
+ * @since 2.6.5
+ */
+var wither = function (F) {
+    var traverseF = exports.traverse(F);
+    return function (f) { return function (fa) { return F.map(function_1.pipe(fa, traverseF(f)), exports.compact); }; };
+};
+exports.wither = wither;
+/**
+ * @category Witherable
+ * @since 2.6.5
+ */
+var wilt = function (F) {
+    var traverseF = exports.traverse(F);
+    return function (f) { return function (fa) { return F.map(function_1.pipe(fa, traverseF(f)), exports.separate); }; };
+};
+exports.wilt = wilt;
+/**
+ * @category Unfoldable
+ * @since 2.6.6
+ */
+var unfold = function (b, f) {
+    // tslint:disable-next-line: readonly-array
+    var ret = [];
+    var bb = b;
+    while (true) {
+        var mt = f(bb);
+        if (O.isSome(mt)) {
+            var _a = mt.value, a = _a[0], b_1 = _a[1];
+            ret.push(a);
+            bb = b_1;
+        }
+        else {
+            break;
+        }
+    }
+    return ret;
+};
+exports.unfold = unfold;
+// -------------------------------------------------------------------------------------
+// instances
+// -------------------------------------------------------------------------------------
+/**
+ * @category instances
+ * @since 2.5.0
+ */
+exports.URI = 'ReadonlyArray';
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Functor = {
+    URI: exports.URI,
+    map: map_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.FunctorWithIndex = {
+    URI: exports.URI,
+    map: map_,
+    mapWithIndex: mapWithIndex_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Applicative = {
+    URI: exports.URI,
+    map: map_,
+    ap: ap_,
+    of: exports.of
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Monad = {
+    URI: exports.URI,
+    map: map_,
+    ap: ap_,
+    of: exports.of,
+    chain: chain_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Unfoldable = {
+    URI: exports.URI,
+    unfold: exports.unfold
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Alt = {
+    URI: exports.URI,
+    map: map_,
+    alt: alt_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Alternative = {
+    URI: exports.URI,
+    map: map_,
+    ap: ap_,
+    of: exports.of,
+    alt: alt_,
+    zero: exports.zero
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Extend = {
+    URI: exports.URI,
+    map: map_,
+    extend: extend_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Compactable = {
+    URI: exports.URI,
+    compact: exports.compact,
+    separate: exports.separate
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Filterable = {
+    URI: exports.URI,
+    map: map_,
+    compact: exports.compact,
+    separate: exports.separate,
+    filter: filter_,
+    filterMap: filterMap_,
+    partition: partition_,
+    partitionMap: partitionMap_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.FilterableWithIndex = {
+    URI: exports.URI,
+    map: map_,
+    mapWithIndex: mapWithIndex_,
+    compact: exports.compact,
+    separate: exports.separate,
+    filter: filter_,
+    filterMap: filterMap_,
+    partition: partition_,
+    partitionMap: partitionMap_,
+    partitionMapWithIndex: partitionMapWithIndex_,
+    partitionWithIndex: partitionWithIndex_,
+    filterMapWithIndex: filterMapWithIndex_,
+    filterWithIndex: filterWithIndex_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Foldable = {
+    URI: exports.URI,
+    reduce: reduce_,
+    foldMap: foldMap_,
+    reduceRight: reduceRight_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.FoldableWithIndex = {
+    URI: exports.URI,
+    reduce: reduce_,
+    foldMap: foldMap_,
+    reduceRight: reduceRight_,
+    reduceWithIndex: reduceWithIndex_,
+    foldMapWithIndex: foldMapWithIndex_,
+    reduceRightWithIndex: reduceRightWithIndex_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Traversable = {
+    URI: exports.URI,
+    map: map_,
+    reduce: reduce_,
+    foldMap: foldMap_,
+    reduceRight: reduceRight_,
+    traverse: traverse_,
+    sequence: exports.sequence
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.TraversableWithIndex = {
+    URI: exports.URI,
+    map: map_,
+    mapWithIndex: mapWithIndex_,
+    reduce: reduce_,
+    foldMap: foldMap_,
+    reduceRight: reduceRight_,
+    reduceWithIndex: reduceWithIndex_,
+    foldMapWithIndex: foldMapWithIndex_,
+    reduceRightWithIndex: reduceRightWithIndex_,
+    traverse: traverse_,
+    sequence: exports.sequence,
+    traverseWithIndex: traverseWithIndex_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Witherable = {
+    URI: exports.URI,
+    map: map_,
+    compact: exports.compact,
+    separate: exports.separate,
+    filter: filter_,
+    filterMap: filterMap_,
+    partition: partition_,
+    partitionMap: partitionMap_,
+    reduce: reduce_,
+    foldMap: foldMap_,
+    reduceRight: reduceRight_,
+    traverse: traverse_,
+    sequence: exports.sequence,
+    wither: wither_,
+    wilt: wilt_
+};
+// TODO: remove in v3
+/**
+ * @category instances
+ * @since 2.5.0
+ */
+exports.readonlyArray = {
+    URI: exports.URI,
+    compact: exports.compact,
+    separate: exports.separate,
+    map: map_,
+    ap: ap_,
+    of: exports.of,
+    chain: chain_,
+    filter: filter_,
+    filterMap: filterMap_,
+    partition: partition_,
+    partitionMap: partitionMap_,
+    mapWithIndex: mapWithIndex_,
+    partitionMapWithIndex: partitionMapWithIndex_,
+    partitionWithIndex: partitionWithIndex_,
+    filterMapWithIndex: filterMapWithIndex_,
+    filterWithIndex: filterWithIndex_,
+    alt: alt_,
+    zero: exports.zero,
+    unfold: exports.unfold,
+    reduce: reduce_,
+    foldMap: foldMap_,
+    reduceRight: reduceRight_,
+    traverse: traverse_,
+    sequence: exports.sequence,
+    reduceWithIndex: reduceWithIndex_,
+    foldMapWithIndex: foldMapWithIndex_,
+    reduceRightWithIndex: reduceRightWithIndex_,
+    traverseWithIndex: traverseWithIndex_,
+    extend: extend_,
+    wither: wither_,
+    wilt: wilt_
+};
+// -------------------------------------------------------------------------------------
+// unsafe
+// -------------------------------------------------------------------------------------
+/**
+ * @category unsafe
+ * @since 2.5.0
+ */
+function unsafeInsertAt(i, a, as) {
+    var xs = as.slice();
+    xs.splice(i, 0, a);
+    return xs;
+}
+exports.unsafeInsertAt = unsafeInsertAt;
+/**
+ * @category unsafe
+ * @since 2.5.0
+ */
+function unsafeUpdateAt(i, a, as) {
+    if (as[i] === a) {
+        return as;
+    }
+    else {
+        var xs = as.slice();
+        xs[i] = a;
+        return xs;
+    }
+}
+exports.unsafeUpdateAt = unsafeUpdateAt;
+/**
+ * @category unsafe
+ * @since 2.5.0
+ */
+function unsafeDeleteAt(i, as) {
+    var xs = as.slice();
+    xs.splice(i, 1);
+    return xs;
+}
+exports.unsafeDeleteAt = unsafeDeleteAt;
+// -------------------------------------------------------------------------------------
+// utils
+// -------------------------------------------------------------------------------------
+/**
+ * An empty array
+ *
+ * @since 2.5.0
+ */
+exports.empty = [];
+/**
+ * Check if a predicate holds true for every array member.
+ *
+ * @example
+ * import { every } from 'fp-ts/ReadonlyArray'
+ * import { pipe } from 'fp-ts/function'
+ *
+ * const isPositive = (n: number): boolean => n > 0
+ *
+ * assert.deepStrictEqual(pipe([1, 2, 3], every(isPositive)), true)
+ * assert.deepStrictEqual(pipe([1, 2, -3], every(isPositive)), false)
+ *
+ * @since 2.9.0
+ */
+var every = function (predicate) { return function (as) { return as.every(predicate); }; };
+exports.every = every;
+/**
+ * Check if a predicate holds true for any array member.
+ *
+ * @example
+ * import { some } from 'fp-ts/ReadonlyArray'
+ * import { pipe } from 'fp-ts/function'
+ *
+ * const isPositive = (n: number): boolean => n > 0
+ *
+ * assert.deepStrictEqual(pipe([-1, -2, 3], some(isPositive)), true)
+ * assert.deepStrictEqual(pipe([-1, -2, -3], some(isPositive)), false)
+ *
+ * @since 2.9.0
+ */
+var some = function (predicate) { return function (as) { return as.some(predicate); }; };
+exports.some = some;
+// -------------------------------------------------------------------------------------
+// do notation
+// -------------------------------------------------------------------------------------
+/**
+ * @since 2.9.0
+ */
+exports.Do = 
+/*#__PURE__*/
+exports.of({});
+/**
+ * @since 2.8.0
+ */
+var bindTo = function (name) {
+    return exports.map(function_1.bindTo_(name));
+};
+exports.bindTo = bindTo;
+/**
+ * @since 2.8.0
+ */
+var bind = function (name, f) {
+    return exports.chain(function (a) {
+        return function_1.pipe(f(a), exports.map(function (b) { return function_1.bind_(a, name, b); }));
+    });
+};
+exports.bind = bind;
+// -------------------------------------------------------------------------------------
+// pipeable sequence S
+// -------------------------------------------------------------------------------------
+/**
+ * @since 2.8.0
+ */
+var apS = function (name, fb) {
+    return function_1.flow(exports.map(function (a) { return function (b) { return function_1.bind_(a, name, b); }; }), exports.ap(fb));
+};
+exports.apS = apS;
+
+
+/***/ }),
+/* 718 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getFilterableComposition = void 0;
+/**
+ * `Filterable` represents data structures which can be _partitioned_/_filtered_.
+ *
+ * Adapted from https://github.com/LiamGoodacre/purescript-filterable/blob/master/src/Data/Filterable.purs
+ *
+ * @since 2.0.0
+ */
+var Compactable_1 = __webpack_require__(256);
+var Option_1 = __webpack_require__(293);
+function getFilterableComposition(F, G) {
+    var CC = Compactable_1.getCompactableComposition(F, G);
+    var FC = {
+        map: CC.map,
+        compact: CC.compact,
+        separate: CC.separate,
+        partitionMap: function (fga, f) {
+            var left = FC.filterMap(fga, function (a) { return Option_1.getLeft(f(a)); });
+            var right = FC.filterMap(fga, function (a) { return Option_1.getRight(f(a)); });
+            return { left: left, right: right };
+        },
+        partition: function (fga, p) {
+            var left = FC.filter(fga, function (a) { return !p(a); });
+            var right = FC.filter(fga, p);
+            return { left: left, right: right };
+        },
+        filterMap: function (fga, f) { return F.map(fga, function (ga) { return G.filterMap(ga, f); }); },
+        filter: function (fga, f) { return F.map(fga, function (ga) { return G.filter(ga, f); }); }
+    };
+    return FC;
+}
+exports.getFilterableComposition = getFilterableComposition;
+
+
+/***/ }),
+/* 719 */,
+/* 720 */,
+/* 721 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.sequenceSeqArray = exports.traverseSeqArray = exports.traverseSeqArrayWithIndex = exports.sequenceArray = exports.traverseArray = exports.traverseArrayWithIndex = exports.apS = exports.bind = exports.bindTo = exports.Do = exports.never = exports.taskSeq = exports.task = exports.Monad = exports.ApplicativeSeq = exports.ApplicativePar = exports.Functor = exports.getRaceMonoid = exports.getMonoid = exports.getSemigroup = exports.URI = exports.fromTask = exports.flatten = exports.chainFirst = exports.chain = exports.of = exports.apSecond = exports.apFirst = exports.ap = exports.map = exports.chainIOK = exports.fromIOK = exports.delay = exports.fromIO = void 0;
+var function_1 = __webpack_require__(231);
+// -------------------------------------------------------------------------------------
+// constructors
+// -------------------------------------------------------------------------------------
+/**
+ * @category constructors
+ * @since 2.0.0
+ */
+var fromIO = function (ma) { return function () { return Promise.resolve(ma()); }; };
+exports.fromIO = fromIO;
+// -------------------------------------------------------------------------------------
+// combinators
+// -------------------------------------------------------------------------------------
+/**
+ * Creates a task that will complete after a time delay
+ *
+ * @example
+ * import { sequenceT } from 'fp-ts/Apply'
+ * import * as T from 'fp-ts/Task'
+ *
+ * async function test() {
+ *   const log: Array<string> = []
+ *   const append = (message: string): T.Task<void> =>
+ *     T.fromIO(() => {
+ *       log.push(message)
+ *     })
+ *   const fa = append('a')
+ *   const fb = append('b')
+ *   const fc = T.delay(10)(append('c'))
+ *   const fd = append('d')
+ *   await sequenceT(T.task)(fa, fb, fc, fd)()
+ *   assert.deepStrictEqual(log, ['a', 'b', 'd', 'c'])
+ * }
+ *
+ * test()
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+function delay(millis) {
+    return function (ma) { return function () {
+        return new Promise(function (resolve) {
+            setTimeout(function () {
+                // tslint:disable-next-line: no-floating-promises
+                ma().then(resolve);
+            }, millis);
+        });
+    }; };
+}
+exports.delay = delay;
+/**
+ * @category combinators
+ * @since 2.4.0
+ */
+function fromIOK(f) {
+    return function () {
+        var a = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            a[_i] = arguments[_i];
+        }
+        return exports.fromIO(f.apply(void 0, a));
+    };
+}
+exports.fromIOK = fromIOK;
+/**
+ * @category combinators
+ * @since 2.4.0
+ */
+function chainIOK(f) {
+    return exports.chain(fromIOK(f));
+}
+exports.chainIOK = chainIOK;
+// -------------------------------------------------------------------------------------
+// non-pipeables
+// -------------------------------------------------------------------------------------
+var map_ = function (fa, f) { return function_1.pipe(fa, exports.map(f)); };
+var apPar_ = function (fab, fa) { return function_1.pipe(fab, exports.ap(fa)); };
+var apSeq_ = function (fab, fa) {
+    return function_1.pipe(fab, exports.chain(function (f) { return function_1.pipe(fa, exports.map(f)); }));
+};
+var chain_ = function (ma, f) { return function_1.pipe(ma, exports.chain(f)); };
+// -------------------------------------------------------------------------------------
+// pipeables
+// -------------------------------------------------------------------------------------
+/**
+ * `map` can be used to turn functions `(a: A) => B` into functions `(fa: F<A>) => F<B>` whose argument and return types
+ * use the type constructor `F` to represent some computational context.
+ *
+ * @category Functor
+ * @since 2.0.0
+ */
+var map = function (f) { return function (fa) { return function () { return fa().then(f); }; }; };
+exports.map = map;
+/**
+ * Apply a function to an argument under a type constructor.
+ *
+ * @category Apply
+ * @since 2.0.0
+ */
+var ap = function (fa) { return function (fab) { return function () {
+    return Promise.all([fab(), fa()]).then(function (_a) {
+        var f = _a[0], a = _a[1];
+        return f(a);
+    });
+}; }; };
+exports.ap = ap;
+/**
+ * Combine two effectful actions, keeping only the result of the first.
+ *
+ * Derivable from `Apply`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+var apFirst = function (fb) {
+    return function_1.flow(exports.map(function (a) { return function () { return a; }; }), exports.ap(fb));
+};
+exports.apFirst = apFirst;
+/**
+ * Combine two effectful actions, keeping only the result of the second.
+ *
+ * Derivable from `Apply`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+var apSecond = function (fb) {
+    return function_1.flow(exports.map(function () { return function (b) { return b; }; }), exports.ap(fb));
+};
+exports.apSecond = apSecond;
+/**
+ * Wrap a value into the type constructor.
+ *
+ * @category Applicative
+ * @since 2.0.0
+ */
+var of = function (a) { return function () { return Promise.resolve(a); }; };
+exports.of = of;
+/**
+ * Composes computations in sequence, using the return value of one computation to determine the next computation.
+ *
+ * @category Monad
+ * @since 2.0.0
+ */
+var chain = function (f) { return function (ma) { return function () {
+    return ma().then(function (a) { return f(a)(); });
+}; }; };
+exports.chain = chain;
+/**
+ * Composes computations in sequence, using the return value of one computation to determine the next computation and
+ * keeping only the result of the first.
+ *
+ * Derivable from `Monad`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+var chainFirst = function (f) {
+    return exports.chain(function (a) {
+        return function_1.pipe(f(a), exports.map(function () { return a; }));
+    });
+};
+exports.chainFirst = chainFirst;
+/**
+ * Derivable from `Monad`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.flatten = 
+/*#__PURE__*/
+exports.chain(function_1.identity);
+/**
+ * @category MonadTask
+ * @since 2.7.0
+ */
+exports.fromTask = function_1.identity;
+// -------------------------------------------------------------------------------------
+// instances
+// -------------------------------------------------------------------------------------
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.URI = 'Task';
+/**
+ * Lift a semigroup into 'Task', the inner values are concatenated using the provided `Semigroup`.
+ *
+ * @example
+ * import * as T from 'fp-ts/Task'
+ * import { semigroupString } from 'fp-ts/Semigroup'
+ *
+ * async function test() {
+ *   const S = T.getSemigroup(semigroupString)
+ *   const fa = T.of('a')
+ *   const fb = T.of('b')
+ *   assert.deepStrictEqual(await S.concat(fa, fb)(), 'ab')
+ * }
+ *
+ * test()
+ *
+ * @category instances
+ * @since 2.0.0
+ */
+function getSemigroup(S) {
+    return {
+        concat: function (x, y) { return function () { return x().then(function (rx) { return y().then(function (ry) { return S.concat(rx, ry); }); }); }; }
+    };
+}
+exports.getSemigroup = getSemigroup;
+/**
+ * Lift a monoid into 'Task', the inner values are concatenated using the provided `Monoid`.
+ *
+ * @category instances
+ * @since 2.0.0
+ */
+function getMonoid(M) {
+    return {
+        concat: getSemigroup(M).concat,
+        empty: exports.of(M.empty)
+    };
+}
+exports.getMonoid = getMonoid;
+/**
+ * Monoid returning the first completed task.
+ *
+ * Note: uses `Promise.race` internally.
+ *
+ * @example
+ * import * as T from 'fp-ts/Task'
+ *
+ * async function test() {
+ *   const S = T.getRaceMonoid<string>()
+ *   const fa = T.delay(20)(T.of('a'))
+ *   const fb = T.delay(10)(T.of('b'))
+ *   assert.deepStrictEqual(await S.concat(fa, fb)(), 'b')
+ * }
+ *
+ * test()
+ *
+ * @category instances
+ * @since 2.0.0
+ */
+function getRaceMonoid() {
+    return {
+        concat: function (x, y) { return function () { return Promise.race([x(), y()]); }; },
+        empty: exports.never
+    };
+}
+exports.getRaceMonoid = getRaceMonoid;
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Functor = {
+    URI: exports.URI,
+    map: map_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.ApplicativePar = {
+    URI: exports.URI,
+    map: map_,
+    ap: apPar_,
+    of: exports.of
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.ApplicativeSeq = {
+    URI: exports.URI,
+    map: map_,
+    ap: apSeq_,
+    of: exports.of
+};
+/**
+ * Used in TaskEither.getTaskValidation
+ *
+ * @internal
+ */
+exports.Monad = {
+    URI: exports.URI,
+    map: map_,
+    of: exports.of,
+    ap: apPar_,
+    chain: chain_
+};
+// TODO: remove in v3
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.task = {
+    URI: exports.URI,
+    map: map_,
+    of: exports.of,
+    ap: apPar_,
+    chain: chain_,
+    fromIO: exports.fromIO,
+    fromTask: exports.fromTask
+};
+// TODO: remove in v3
+/**
+ * Like `task` but `ap` is sequential
+ *
+ * @category instances
+ * @since 2.0.0
+ */
+exports.taskSeq = {
+    URI: exports.URI,
+    map: map_,
+    of: exports.of,
+    ap: apSeq_,
+    chain: chain_,
+    fromIO: exports.fromIO,
+    fromTask: exports.fromTask
+};
+// -------------------------------------------------------------------------------------
+// utils
+// -------------------------------------------------------------------------------------
+/**
+ * A `Task` that never completes.
+ *
+ * @since 2.0.0
+ */
+var never = function () { return new Promise(function (_) { return undefined; }); };
+exports.never = never;
+// -------------------------------------------------------------------------------------
+// do notation
+// -------------------------------------------------------------------------------------
+/**
+ * @since 2.9.0
+ */
+exports.Do = 
+/*#__PURE__*/
+exports.of({});
+/**
+ * @since 2.8.0
+ */
+var bindTo = function (name) { return exports.map(function_1.bindTo_(name)); };
+exports.bindTo = bindTo;
+/**
+ * @since 2.8.0
+ */
+var bind = function (name, f) {
+    return exports.chain(function (a) {
+        return function_1.pipe(f(a), exports.map(function (b) { return function_1.bind_(a, name, b); }));
+    });
+};
+exports.bind = bind;
+// -------------------------------------------------------------------------------------
+// pipeable sequence S
+// -------------------------------------------------------------------------------------
+/**
+ * @since 2.8.0
+ */
+var apS = function (name, fb) {
+    return function_1.flow(exports.map(function (a) { return function (b) { return function_1.bind_(a, name, b); }; }), exports.ap(fb));
+};
+exports.apS = apS;
+// -------------------------------------------------------------------------------------
+// array utils
+// -------------------------------------------------------------------------------------
+/**
+ * @since 2.9.0
+ */
+var traverseArrayWithIndex = function (f) { return function (arr) { return function () { return Promise.all(arr.map(function (x, i) { return f(i, x)(); })); }; }; };
+exports.traverseArrayWithIndex = traverseArrayWithIndex;
+/**
+ * this function map array to task using provided function and transform it to a task of array.
+ *
+ * this function has the same behavior of `A.traverse(T.task)` but it's stack safe.
+ *
+ * > **This function run all task in parallel for sequential use `traverseSeqArray` **
+ *
+ * @example
+ * import { range } from 'fp-ts/ReadonlyArray'
+ * import { pipe } from 'fp-ts/function'
+ * import { of, traverseArray } from 'fp-ts/Task'
+ * async function test() {
+ *   const arr = range(0, 10)
+ *   assert.deepStrictEqual(await pipe(arr, traverseArray(of))(), arr)
+ * }
+ *
+ * test()
+ *
+ * @since 2.9.0
+ */
+var traverseArray = function (f) {
+    return exports.traverseArrayWithIndex(function (_, a) { return f(a); });
+};
+exports.traverseArray = traverseArray;
+/**
+ * this function works like `Promise.all` it will get an array of tasks and return a task of array.
+ *
+ * this function has the same behavior of `A.sequence(T.task)` but it's stack safe.
+ *
+ * > **This function run all task in parallel for sequential use `sequenceSeqArray` **
+ *
+ * @example
+ * import * as RA from 'fp-ts/ReadonlyArray'
+ * import { pipe } from 'fp-ts/function'
+ * import { of, sequenceArray } from 'fp-ts/Task'
+ *
+ * async function test() {
+ *   const arr = RA.range(1, 10)
+ *   assert.deepStrictEqual(await pipe(arr, RA.map(of), sequenceArray)(), arr)
+ * }
+ *
+ * test()
+ *
+ * @since 2.9.0
+ */
+var sequenceArray = function (arr) { return function () {
+    return Promise.all(arr.map(function (x) { return x(); }));
+}; };
+exports.sequenceArray = sequenceArray;
+/**
+ * @since 2.9.0
+ */
+var traverseSeqArrayWithIndex = function (f) { return function (arr) { return function () { return __awaiter(void 0, void 0, void 0, function () {
+    var result, i, r;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                result = [];
+                i = 0;
+                _a.label = 1;
+            case 1:
+                if (!(i < arr.length)) return [3 /*break*/, 4];
+                return [4 /*yield*/, f(i, arr[i])()];
+            case 2:
+                r = _a.sent();
+                result.push(r);
+                _a.label = 3;
+            case 3:
+                i++;
+                return [3 /*break*/, 1];
+            case 4: return [2 /*return*/, result];
+        }
+    });
+}); }; }; };
+exports.traverseSeqArrayWithIndex = traverseSeqArrayWithIndex;
+/**
+ * runs an action for every element in array then run task sequential, and accumulates the results in the array.
+ *
+ * this function has the same behavior of `A.traverse(T.taskSeq)` but it's stack safe.
+ *
+ * > **This function run all task sequentially for parallel use `traverseArray` **
+ *
+ *
+ * @since 2.9.0
+ */
+var traverseSeqArray = function (f) { return exports.traverseSeqArrayWithIndex(function (_, a) { return f(a); }); };
+exports.traverseSeqArray = traverseSeqArray;
+/**
+ * run tasks in array sequential and give a task of array
+ *
+ * this function has the same behavior of `A.sequence(T.taskSeq)` but it's stack safe.
+ *
+ * > **This function run all task sequentially for parallel use `sequenceArray` **
+ *
+ * @since 2.9.0
+ */
+exports.sequenceSeqArray = 
+/*#__PURE__*/
+exports.traverseSeqArray(function_1.identity);
+
+
+/***/ }),
+/* 722 */
+/***/ (function(__unusedmodule, exports) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+
+
+/***/ }),
+/* 723 */,
+/* 724 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
@@ -11819,48 +31444,503 @@ exports.matchAny = matchAny;
 
 
 /***/ }),
-
-/***/ 728:
-/***/ (function(__unusedmodule, exports) {
+/* 725 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.read = void 0;
-function read(path, settings, callback) {
-    settings.fs.lstat(path, (lstatError, lstat) => {
-        if (lstatError !== null) {
-            return callFailureCallback(callback, lstatError);
-        }
-        if (!lstat.isSymbolicLink() || !settings.followSymbolicLink) {
-            return callSuccessCallback(callback, lstat);
-        }
-        settings.fs.stat(path, (statError, stat) => {
-            if (statError !== null) {
-                if (settings.throwErrorOnBrokenSymbolicLink) {
-                    return callFailureCallback(callback, statError);
-                }
-                return callSuccessCallback(callback, lstat);
+exports.eq = exports.Contravariant = exports.getMonoid = exports.eqDate = exports.getTupleEq = exports.getStructEq = exports.eqBoolean = exports.eqNumber = exports.eqString = exports.strictEqual = exports.eqStrict = exports.URI = exports.contramap = exports.fromEquals = void 0;
+var function_1 = __webpack_require__(231);
+// -------------------------------------------------------------------------------------
+// constructors
+// -------------------------------------------------------------------------------------
+/**
+ * @category constructors
+ * @since 2.0.0
+ */
+function fromEquals(equals) {
+    return {
+        equals: function (x, y) { return x === y || equals(x, y); }
+    };
+}
+exports.fromEquals = fromEquals;
+// -------------------------------------------------------------------------------------
+// non-pipeables
+// -------------------------------------------------------------------------------------
+/* istanbul ignore next */
+var contramap_ = function (fa, f) { return function_1.pipe(fa, exports.contramap(f)); };
+// -------------------------------------------------------------------------------------
+// pipeables
+// -------------------------------------------------------------------------------------
+/**
+ * @category Contravariant
+ * @since 2.0.0
+ */
+var contramap = function (f) { return function (fa) {
+    return fromEquals(function (x, y) { return fa.equals(f(x), f(y)); });
+}; };
+exports.contramap = contramap;
+// -------------------------------------------------------------------------------------
+// instances
+// -------------------------------------------------------------------------------------
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.URI = 'Eq';
+/**
+ * @category instances
+ * @since 2.5.0
+ */
+exports.eqStrict = {
+    // tslint:disable-next-line: deprecation
+    equals: strictEqual
+};
+/**
+ * Use `eqStrict` instead
+ *
+ * @since 2.0.0
+ * @deprecated
+ */
+function strictEqual(a, b) {
+    return a === b;
+}
+exports.strictEqual = strictEqual;
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.eqString = exports.eqStrict;
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.eqNumber = exports.eqStrict;
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.eqBoolean = exports.eqStrict;
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+function getStructEq(eqs) {
+    return fromEquals(function (x, y) {
+        for (var k in eqs) {
+            if (!eqs[k].equals(x[k], y[k])) {
+                return false;
             }
-            if (settings.markSymbolicLink) {
-                stat.isSymbolicLink = () => true;
-            }
-            callSuccessCallback(callback, stat);
-        });
+        }
+        return true;
     });
 }
-exports.read = read;
-function callFailureCallback(callback, error) {
-    callback(error);
+exports.getStructEq = getStructEq;
+/**
+ * Given a tuple of `Eq`s returns a `Eq` for the tuple
+ *
+ * @example
+ * import { getTupleEq, eqString, eqNumber, eqBoolean } from 'fp-ts/Eq'
+ *
+ * const E = getTupleEq(eqString, eqNumber, eqBoolean)
+ * assert.strictEqual(E.equals(['a', 1, true], ['a', 1, true]), true)
+ * assert.strictEqual(E.equals(['a', 1, true], ['b', 1, true]), false)
+ * assert.strictEqual(E.equals(['a', 1, true], ['a', 2, true]), false)
+ * assert.strictEqual(E.equals(['a', 1, true], ['a', 1, false]), false)
+ *
+ * @category instances
+ * @since 2.0.0
+ */
+function getTupleEq() {
+    var eqs = [];
+    for (var _i = 0; _i < arguments.length; _i++) {
+        eqs[_i] = arguments[_i];
+    }
+    return fromEquals(function (x, y) { return eqs.every(function (E, i) { return E.equals(x[i], y[i]); }); });
 }
-function callSuccessCallback(callback, result) {
-    callback(null, result);
+exports.getTupleEq = getTupleEq;
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.eqDate = {
+    equals: function (x, y) { return x.valueOf() === y.valueOf(); }
+};
+var empty = {
+    equals: function () { return true; }
+};
+/**
+ * @category instances
+ * @since 2.6.0
+ */
+function getMonoid() {
+    return {
+        concat: function (x, y) { return fromEquals(function (a, b) { return x.equals(a, b) && y.equals(a, b); }); },
+        empty: empty
+    };
 }
+exports.getMonoid = getMonoid;
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Contravariant = {
+    URI: exports.URI,
+    contramap: contramap_
+};
+// TODO: remove in v3
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.eq = exports.Contravariant;
 
 
 /***/ }),
+/* 726 */,
+/* 727 */,
+/* 728 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
 
-/***/ 730:
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.apS = exports.bind = exports.bindTo = exports.Do = exports.identity = exports.ChainRec = exports.Comonad = exports.Alt = exports.Traversable = exports.Foldable = exports.Monad = exports.Applicative = exports.Functor = exports.getEq = exports.getShow = exports.URI = exports.alt = exports.altW = exports.sequence = exports.traverse = exports.reduceRight = exports.foldMap = exports.reduce = exports.flatten = exports.duplicate = exports.extract = exports.extend = exports.chainFirst = exports.chain = exports.of = exports.apSecond = exports.apFirst = exports.ap = exports.map = void 0;
+var ChainRec_1 = __webpack_require__(99);
+var function_1 = __webpack_require__(231);
+// -------------------------------------------------------------------------------------
+// non-pipeables
+// -------------------------------------------------------------------------------------
+var map_ = function (fa, f) { return function_1.pipe(fa, exports.map(f)); };
+var ap_ = function (fab, fa) { return function_1.pipe(fab, exports.ap(fa)); };
+var chain_ = function (ma, f) { return function_1.pipe(ma, exports.chain(f)); };
+/* istanbul ignore next */
+var reduce_ = function (fa, b, f) { return function_1.pipe(fa, exports.reduce(b, f)); };
+/* istanbul ignore next */
+var foldMap_ = function (M) { return function (fa, f) { return function_1.pipe(fa, exports.foldMap(M)(f)); }; };
+/* istanbul ignore next */
+var reduceRight_ = function (fa, b, f) { return function_1.pipe(fa, exports.reduceRight(b, f)); };
+/* istanbul ignore next */
+var alt_ = function (fa, that) { return function_1.pipe(fa, exports.alt(that)); };
+/* istanbul ignore next */
+var extend_ = function (wa, f) { return function_1.pipe(wa, exports.extend(f)); };
+/* istanbul ignore next */
+var traverse_ = function (F) {
+    var traverseF = exports.traverse(F);
+    return function (ta, f) { return function_1.pipe(ta, traverseF(f)); };
+};
+var chainRec_ = ChainRec_1.tailRec;
+// -------------------------------------------------------------------------------------
+// pipeables
+// -------------------------------------------------------------------------------------
+/**
+ * `map` can be used to turn functions `(a: A) => B` into functions `(fa: F<A>) => F<B>` whose argument and return types
+ * use the type constructor `F` to represent some computational context.
+ *
+ * @category Functor
+ * @since 2.0.0
+ */
+var map = function (f) { return function (fa) { return f(fa); }; };
+exports.map = map;
+/**
+ * Apply a function to an argument under a type constructor.
+ *
+ * @category Apply
+ * @since 2.0.0
+ */
+var ap = function (fa) { return function (fab) { return fab(fa); }; };
+exports.ap = ap;
+/**
+ * Combine two effectful actions, keeping only the result of the first.
+ *
+ * Derivable from `Apply`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+var apFirst = function (fb) {
+    return function_1.flow(exports.map(function (a) { return function () { return a; }; }), exports.ap(fb));
+};
+exports.apFirst = apFirst;
+/**
+ * Combine two effectful actions, keeping only the result of the second.
+ *
+ * Derivable from `Apply`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+var apSecond = function (fb) {
+    return function_1.flow(exports.map(function () { return function (b) { return b; }; }), exports.ap(fb));
+};
+exports.apSecond = apSecond;
+/**
+ * Wrap a value into the type constructor.
+ *
+ * @category Applicative
+ * @since 2.0.0
+ */
+exports.of = function_1.identity;
+/**
+ * Composes computations in sequence, using the return value of one computation to determine the next computation.
+ *
+ * @category Monad
+ * @since 2.0.0
+ */
+var chain = function (f) { return function (ma) { return f(ma); }; };
+exports.chain = chain;
+/**
+ * Composes computations in sequence, using the return value of one computation to determine the next computation and
+ * keeping only the result of the first.
+ *
+ * Derivable from `Monad`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+var chainFirst = function (f) {
+    return exports.chain(function (a) {
+        return function_1.pipe(f(a), exports.map(function () { return a; }));
+    });
+};
+exports.chainFirst = chainFirst;
+/**
+ * @category Extend
+ * @since 2.0.0
+ */
+var extend = function (f) { return function (wa) { return f(wa); }; };
+exports.extend = extend;
+/**
+ * @category Extract
+ * @since 2.6.2
+ */
+exports.extract = function_1.identity;
+/**
+ * Derivable from `Extend`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.duplicate = 
+/*#__PURE__*/
+exports.extend(function_1.identity);
+/**
+ * Derivable from `Monad`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.flatten = 
+/*#__PURE__*/
+exports.chain(function_1.identity);
+/**
+ * @category Foldable
+ * @since 2.0.0
+ */
+var reduce = function (b, f) { return function (fa) { return f(b, fa); }; };
+exports.reduce = reduce;
+/**
+ * @category Foldable
+ * @since 2.0.0
+ */
+var foldMap = function () { return function (f) { return function (fa) { return f(fa); }; }; };
+exports.foldMap = foldMap;
+/**
+ * @category Foldable
+ * @since 2.0.0
+ */
+var reduceRight = function (b, f) { return function (fa) { return f(fa, b); }; };
+exports.reduceRight = reduceRight;
+/**
+ * @since 2.6.3
+ */
+var traverse = function (F) { return function (f) { return function (ta) { return F.map(f(ta), function_1.identity); }; }; };
+exports.traverse = traverse;
+/**
+ * @since 2.6.3
+ */
+var sequence = function (F) { return function (ta) {
+    return F.map(ta, function_1.identity);
+}; };
+exports.sequence = sequence;
+/**
+ * Less strict version of [`alt`](#alt).
+ *
+ * @category Alt
+ * @since 2.9.0
+ */
+var altW = function () { return function_1.identity; };
+exports.altW = altW;
+/**
+ * Identifies an associative operation on a type constructor. It is similar to `Semigroup`, except that it applies to
+ * types of kind `* -> *`.
+ *
+ * @category Alt
+ * @since 2.0.0
+ */
+exports.alt = exports.altW;
+// -------------------------------------------------------------------------------------
+// instances
+// -------------------------------------------------------------------------------------
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.URI = 'Identity';
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.getShow = function_1.identity;
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.getEq = function_1.identity;
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Functor = {
+    URI: exports.URI,
+    map: map_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Applicative = {
+    URI: exports.URI,
+    map: map_,
+    ap: ap_,
+    of: exports.of
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Monad = {
+    URI: exports.URI,
+    map: map_,
+    ap: ap_,
+    of: exports.of,
+    chain: chain_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Foldable = {
+    URI: exports.URI,
+    reduce: reduce_,
+    foldMap: foldMap_,
+    reduceRight: reduceRight_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Traversable = {
+    URI: exports.URI,
+    map: map_,
+    reduce: reduce_,
+    foldMap: foldMap_,
+    reduceRight: reduceRight_,
+    traverse: traverse_,
+    sequence: exports.sequence
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Alt = {
+    URI: exports.URI,
+    map: map_,
+    alt: alt_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Comonad = {
+    URI: exports.URI,
+    map: map_,
+    extend: extend_,
+    extract: exports.extract
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.ChainRec = {
+    URI: exports.URI,
+    map: map_,
+    ap: ap_,
+    chain: chain_,
+    chainRec: chainRec_
+};
+// TODO: remove in v3
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.identity = {
+    URI: exports.URI,
+    map: map_,
+    ap: ap_,
+    of: exports.of,
+    chain: chain_,
+    reduce: reduce_,
+    foldMap: foldMap_,
+    reduceRight: reduceRight_,
+    traverse: traverse_,
+    sequence: exports.sequence,
+    alt: alt_,
+    extract: exports.extract,
+    extend: extend_,
+    chainRec: chainRec_
+};
+// -------------------------------------------------------------------------------------
+// do notation
+// -------------------------------------------------------------------------------------
+/**
+ * @since 2.9.0
+ */
+exports.Do = 
+/*#__PURE__*/
+exports.of({});
+/**
+ * @since 2.8.0
+ */
+var bindTo = function (name) {
+    return exports.map(function_1.bindTo_(name));
+};
+exports.bindTo = bindTo;
+/**
+ * @since 2.8.0
+ */
+var bind = function (name, f) {
+    return exports.chain(function (a) {
+        return function_1.pipe(f(a), exports.map(function (b) { return function_1.bind_(a, name, b); }));
+    });
+};
+exports.bind = bind;
+// -------------------------------------------------------------------------------------
+// pipeable sequence S
+// -------------------------------------------------------------------------------------
+/**
+ * @since 2.8.0
+ */
+var apS = function (name, fb) {
+    return function_1.flow(exports.map(function (a) { return function (b) { return function_1.bind_(a, name, b); }; }), exports.ap(fb));
+};
+exports.apS = apS;
+
+
+/***/ }),
+/* 729 */,
+/* 730 */
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
 "use strict";
@@ -12116,8 +32196,57 @@ module.exports = fill;
 
 
 /***/ }),
+/* 731 */,
+/* 732 */,
+/* 733 */,
+/* 734 */,
+/* 735 */,
+/* 736 */,
+/* 737 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
 
-/***/ 739:
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getFoldableWithIndexComposition = void 0;
+/**
+ * A `Foldable` with an additional index.
+ * A `FoldableWithIndex` instance must be compatible with its `Foldable` instance
+ *
+ * ```ts
+ * reduce(fa, b, f) = reduceWithIndex(fa, b, (_, b, a) => f(b, a))
+ * foldMap(M)(fa, f) = foldMapWithIndex(M)(fa, (_, a) => f(a))
+ * reduceRight(fa, b, f) = reduceRightWithIndex(fa, b, (_, a, b) => f(a, b))
+ * ```
+ *
+ * @since 2.0.0
+ */
+var Foldable_1 = __webpack_require__(684);
+function getFoldableWithIndexComposition(F, G) {
+    var FC = Foldable_1.getFoldableComposition(F, G);
+    return {
+        reduce: FC.reduce,
+        foldMap: FC.foldMap,
+        reduceRight: FC.reduceRight,
+        reduceWithIndex: function (fga, b, f) {
+            return F.reduceWithIndex(fga, b, function (fi, b, ga) { return G.reduceWithIndex(ga, b, function (gi, b, a) { return f([fi, gi], b, a); }); });
+        },
+        foldMapWithIndex: function (M) {
+            var foldMapWithIndexF = F.foldMapWithIndex(M);
+            var foldMapWithIndexG = G.foldMapWithIndex(M);
+            return function (fga, f) { return foldMapWithIndexF(fga, function (fi, ga) { return foldMapWithIndexG(ga, function (gi, a) { return f([fi, gi], a); }); }); };
+        },
+        reduceRightWithIndex: function (fga, b, f) {
+            return F.reduceRightWithIndex(fga, b, function (fi, ga, b) { return G.reduceRightWithIndex(ga, b, function (gi, a, b) { return f([fi, gi], a, b); }); });
+        }
+    };
+}
+exports.getFoldableWithIndexComposition = getFoldableWithIndexComposition;
+
+
+/***/ }),
+/* 738 */,
+/* 739 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
@@ -12200,8 +32329,26 @@ exports.combine = combine;
 
 
 /***/ }),
+/* 740 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
 
-/***/ 742:
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getFunctorWithIndexComposition = void 0;
+var Functor_1 = __webpack_require__(943);
+function getFunctorWithIndexComposition(F, G) {
+    return {
+        map: Functor_1.getFunctorComposition(F, G).map,
+        mapWithIndex: function (fga, f) { return F.mapWithIndex(fga, function (fi, ga) { return G.mapWithIndex(ga, function (gi, a) { return f([fi, gi], a); }); }); }
+    };
+}
+exports.getFunctorWithIndexComposition = getFunctorWithIndexComposition;
+
+
+/***/ }),
+/* 741 */,
+/* 742 */
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
 var fs = __webpack_require__(747)
@@ -12264,15 +32411,22 @@ function sync (path, options) {
 
 
 /***/ }),
-
-/***/ 747:
+/* 743 */,
+/* 744 */,
+/* 745 */,
+/* 746 */,
+/* 747 */
 /***/ (function(module) {
 
 module.exports = require("fs");
 
 /***/ }),
-
-/***/ 753:
+/* 748 */,
+/* 749 */,
+/* 750 */,
+/* 751 */,
+/* 752 */,
+/* 753 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
@@ -12427,15 +32581,66 @@ exports.request = request;
 
 
 /***/ }),
+/* 754 */
+/***/ (function(__unusedmodule, exports) {
 
-/***/ 761:
+"use strict";
+
+/**
+ * The `Semiring` class is for types that support an addition and multiplication operation.
+ *
+ * Instances must satisfy the following laws:
+ *
+ * - Commutative monoid under addition:
+ *   - Associativity: `(a + b) + c <-> a + (b + c)`
+ *   - Identity: `zero + a = a + zero <-> a`
+ *   - Commutative: `a + b <-> b + a`
+ * - Monoid under multiplication:
+ *   - Associativity: `(a * b) * c <-> a * (b * c)`
+ *   - Identity: `one * a <-> a * one <-> a`
+ * - Multiplication distributes over addition:
+ *   - Left distributivity: `a * (b + c) <-> (a * b) + (a * c)`
+ *   - Right distributivity: `(a + b) * c <-> (a * c) + (b * c)`
+ * - Annihilation: `zero * a <-> a * zero <-> zero`
+ *
+ * **Note:** The `number` type is not fully law abiding members of this class hierarchy due to the potential
+ * for arithmetic overflows, and the presence of `NaN` and `Infinity` values. The behaviour is
+ * unspecified in these cases.
+ *
+ * @since 2.0.0
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getFunctionSemiring = void 0;
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+function getFunctionSemiring(S) {
+    return {
+        add: function (f, g) { return function (x) { return S.add(f(x), g(x)); }; },
+        zero: function () { return S.zero; },
+        mul: function (f, g) { return function (x) { return S.mul(f(x), g(x)); }; },
+        one: function () { return S.one; }
+    };
+}
+exports.getFunctionSemiring = getFunctionSemiring;
+
+
+/***/ }),
+/* 755 */,
+/* 756 */,
+/* 757 */,
+/* 758 */,
+/* 759 */,
+/* 760 */,
+/* 761 */
 /***/ (function(module) {
 
 module.exports = require("zlib");
 
 /***/ }),
-
-/***/ 763:
+/* 762 */,
+/* 763 */
 /***/ (function(module) {
 
 module.exports = removeHook
@@ -12458,8 +32663,539 @@ function removeHook (state, name, method) {
 
 
 /***/ }),
+/* 764 */,
+/* 765 */,
+/* 766 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
 
-/***/ 768:
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.these = exports.Traversable = exports.Foldable = exports.Bifunctor = exports.Functor = exports.URI = exports.sequence = exports.traverse = exports.reduceRight = exports.foldMap = exports.reduce = exports.map = exports.mapLeft = exports.bimap = exports.fromOptions = exports.getRightOnly = exports.getLeftOnly = exports.rightOrBoth = exports.leftOrBoth = exports.isBoth = exports.isRight = exports.isLeft = exports.getRight = exports.getLeft = exports.toTuple = exports.getMonad = exports.getApplicative = exports.getSemigroup = exports.getEq = exports.getShow = exports.swap = exports.fold = exports.both = exports.right = exports.left = void 0;
+var Eq_1 = __webpack_require__(725);
+var Option_1 = __webpack_require__(293);
+var function_1 = __webpack_require__(231);
+/**
+ * @category constructors
+ * @since 2.0.0
+ */
+function left(left) {
+    return { _tag: 'Left', left: left };
+}
+exports.left = left;
+/**
+ * @category constructors
+ * @since 2.0.0
+ */
+function right(right) {
+    return { _tag: 'Right', right: right };
+}
+exports.right = right;
+/**
+ * @category constructors
+ * @since 2.0.0
+ */
+function both(left, right) {
+    return { _tag: 'Both', left: left, right: right };
+}
+exports.both = both;
+/**
+ * @category destructors
+ * @since 2.0.0
+ */
+function fold(onLeft, onRight, onBoth) {
+    return function (fa) {
+        switch (fa._tag) {
+            case 'Left':
+                return onLeft(fa.left);
+            case 'Right':
+                return onRight(fa.right);
+            case 'Both':
+                return onBoth(fa.left, fa.right);
+        }
+    };
+}
+exports.fold = fold;
+/**
+ * @category combinators
+ * @since 2.4.0
+ */
+exports.swap = fold(right, left, function (e, a) { return both(a, e); });
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+function getShow(SE, SA) {
+    return {
+        show: fold(function (l) { return "left(" + SE.show(l) + ")"; }, function (a) { return "right(" + SA.show(a) + ")"; }, function (l, a) { return "both(" + SE.show(l) + ", " + SA.show(a) + ")"; })
+    };
+}
+exports.getShow = getShow;
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+function getEq(EE, EA) {
+    return Eq_1.fromEquals(function (x, y) {
+        return isLeft(x)
+            ? isLeft(y) && EE.equals(x.left, y.left)
+            : isRight(x)
+                ? isRight(y) && EA.equals(x.right, y.right)
+                : isBoth(y) && EE.equals(x.left, y.left) && EA.equals(x.right, y.right);
+    });
+}
+exports.getEq = getEq;
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+function getSemigroup(SE, SA) {
+    return {
+        concat: function (x, y) {
+            return isLeft(x)
+                ? isLeft(y)
+                    ? left(SE.concat(x.left, y.left))
+                    : isRight(y)
+                        ? both(x.left, y.right)
+                        : both(SE.concat(x.left, y.left), y.right)
+                : isRight(x)
+                    ? isLeft(y)
+                        ? both(y.left, x.right)
+                        : isRight(y)
+                            ? right(SA.concat(x.right, y.right))
+                            : both(y.left, SA.concat(x.right, y.right))
+                    : isLeft(y)
+                        ? both(SE.concat(x.left, y.left), x.right)
+                        : isRight(y)
+                            ? both(x.left, SA.concat(x.right, y.right))
+                            : both(SE.concat(x.left, y.left), SA.concat(x.right, y.right));
+        }
+    };
+}
+exports.getSemigroup = getSemigroup;
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+function getApplicative(SE) {
+    return {
+        URI: exports.URI,
+        _E: undefined,
+        map: map_,
+        of: right,
+        ap: function (fab, fa) {
+            return isLeft(fab)
+                ? isLeft(fa)
+                    ? left(SE.concat(fab.left, fa.left))
+                    : isRight(fa)
+                        ? left(fab.left)
+                        : left(SE.concat(fab.left, fa.left))
+                : isRight(fab)
+                    ? isLeft(fa)
+                        ? left(fa.left)
+                        : isRight(fa)
+                            ? right(fab.right(fa.right))
+                            : both(fa.left, fab.right(fa.right))
+                    : isLeft(fa)
+                        ? left(SE.concat(fab.left, fa.left))
+                        : isRight(fa)
+                            ? both(fab.left, fab.right(fa.right))
+                            : both(SE.concat(fab.left, fa.left), fab.right(fa.right));
+        }
+    };
+}
+exports.getApplicative = getApplicative;
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+function getMonad(SE) {
+    var chain = function (ma, f) {
+        if (isLeft(ma)) {
+            return ma;
+        }
+        if (isRight(ma)) {
+            return f(ma.right);
+        }
+        var fb = f(ma.right);
+        return isLeft(fb)
+            ? left(SE.concat(ma.left, fb.left))
+            : isRight(fb)
+                ? both(ma.left, fb.right)
+                : both(SE.concat(ma.left, fb.left), fb.right);
+    };
+    var applicative = getApplicative(SE);
+    return {
+        URI: exports.URI,
+        _E: undefined,
+        map: map_,
+        of: right,
+        ap: applicative.ap,
+        chain: chain,
+        throwError: left
+    };
+}
+exports.getMonad = getMonad;
+// TODO: make lazy in v3
+/* tslint:disable:readonly-array */
+/**
+ * @example
+ * import { toTuple, left, right, both } from 'fp-ts/These'
+ *
+ * assert.deepStrictEqual(toTuple('a', 1)(left('b')), ['b', 1])
+ * assert.deepStrictEqual(toTuple('a', 1)(right(2)), ['a', 2])
+ * assert.deepStrictEqual(toTuple('a', 1)(both('b', 2)), ['b', 2])
+ *
+ * @category destructors
+ * @since 2.0.0
+ */
+function toTuple(e, a) {
+    return function (fa) { return (isLeft(fa) ? [fa.left, a] : isRight(fa) ? [e, fa.right] : [fa.left, fa.right]); };
+}
+exports.toTuple = toTuple;
+/* tslint:enable:readonly-array */
+/**
+ * Returns an `E` value if possible
+ *
+ * @example
+ * import { getLeft, left, right, both } from 'fp-ts/These'
+ * import { none, some } from 'fp-ts/Option'
+ *
+ * assert.deepStrictEqual(getLeft(left('a')), some('a'))
+ * assert.deepStrictEqual(getLeft(right(1)), none)
+ * assert.deepStrictEqual(getLeft(both('a', 1)), some('a'))
+ *
+ * @category destructors
+ * @since 2.0.0
+ */
+function getLeft(fa) {
+    return isLeft(fa) ? Option_1.some(fa.left) : isRight(fa) ? Option_1.none : Option_1.some(fa.left);
+}
+exports.getLeft = getLeft;
+/**
+ * Returns an `A` value if possible
+ *
+ * @example
+ * import { getRight, left, right, both } from 'fp-ts/These'
+ * import { none, some } from 'fp-ts/Option'
+ *
+ * assert.deepStrictEqual(getRight(left('a')), none)
+ * assert.deepStrictEqual(getRight(right(1)), some(1))
+ * assert.deepStrictEqual(getRight(both('a', 1)), some(1))
+ *
+ * @category destructors
+ * @since 2.0.0
+ */
+function getRight(fa) {
+    return isLeft(fa) ? Option_1.none : isRight(fa) ? Option_1.some(fa.right) : Option_1.some(fa.right);
+}
+exports.getRight = getRight;
+/**
+ * Returns `true` if the these is an instance of `Left`, `false` otherwise
+ *
+ * @category guards
+ * @since 2.0.0
+ */
+function isLeft(fa) {
+    return fa._tag === 'Left';
+}
+exports.isLeft = isLeft;
+/**
+ * Returns `true` if the these is an instance of `Right`, `false` otherwise
+ *
+ * @category guards
+ * @since 2.0.0
+ */
+function isRight(fa) {
+    return fa._tag === 'Right';
+}
+exports.isRight = isRight;
+/**
+ * Returns `true` if the these is an instance of `Both`, `false` otherwise
+ *
+ * @category guards
+ * @since 2.0.0
+ */
+function isBoth(fa) {
+    return fa._tag === 'Both';
+}
+exports.isBoth = isBoth;
+// TODO: make lazy in v3
+/**
+ * @example
+ * import { leftOrBoth, left, both } from 'fp-ts/These'
+ * import { none, some } from 'fp-ts/Option'
+ *
+ * assert.deepStrictEqual(leftOrBoth('a')(none), left('a'))
+ * assert.deepStrictEqual(leftOrBoth('a')(some(1)), both('a', 1))
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+function leftOrBoth(e) {
+    return function (ma) { return (Option_1.isNone(ma) ? left(e) : both(e, ma.value)); };
+}
+exports.leftOrBoth = leftOrBoth;
+// TODO: make lazy in v3
+/**
+ * @example
+ * import { rightOrBoth, right, both } from 'fp-ts/These'
+ * import { none, some } from 'fp-ts/Option'
+ *
+ * assert.deepStrictEqual(rightOrBoth(1)(none), right(1))
+ * assert.deepStrictEqual(rightOrBoth(1)(some('a')), both('a', 1))
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+function rightOrBoth(a) {
+    return function (me) { return (Option_1.isNone(me) ? right(a) : both(me.value, a)); };
+}
+exports.rightOrBoth = rightOrBoth;
+/**
+ * Returns the `E` value if and only if the value is constructed with `Left`
+ *
+ * @example
+ * import { getLeftOnly, left, right, both } from 'fp-ts/These'
+ * import { none, some } from 'fp-ts/Option'
+ *
+ * assert.deepStrictEqual(getLeftOnly(left('a')), some('a'))
+ * assert.deepStrictEqual(getLeftOnly(right(1)), none)
+ * assert.deepStrictEqual(getLeftOnly(both('a', 1)), none)
+ *
+ * @category destructors
+ * @since 2.0.0
+ */
+function getLeftOnly(fa) {
+    return isLeft(fa) ? Option_1.some(fa.left) : Option_1.none;
+}
+exports.getLeftOnly = getLeftOnly;
+/**
+ * Returns the `A` value if and only if the value is constructed with `Right`
+ *
+ * @example
+ * import { getRightOnly, left, right, both } from 'fp-ts/These'
+ * import { none, some } from 'fp-ts/Option'
+ *
+ * assert.deepStrictEqual(getRightOnly(left('a')), none)
+ * assert.deepStrictEqual(getRightOnly(right(1)), some(1))
+ * assert.deepStrictEqual(getRightOnly(both('a', 1)), none)
+ *
+ * @category destructors
+ * @since 2.0.0
+ */
+function getRightOnly(fa) {
+    return isRight(fa) ? Option_1.some(fa.right) : Option_1.none;
+}
+exports.getRightOnly = getRightOnly;
+/**
+ * Takes a pair of `Option`s and attempts to create a `These` from them
+ *
+ * @example
+ * import { fromOptions, left, right, both } from 'fp-ts/These'
+ * import { none, some } from 'fp-ts/Option'
+ *
+ * assert.deepStrictEqual(fromOptions(none, none), none)
+ * assert.deepStrictEqual(fromOptions(some('a'), none), some(left('a')))
+ * assert.deepStrictEqual(fromOptions(none, some(1)), some(right(1)))
+ * assert.deepStrictEqual(fromOptions(some('a'), some(1)), some(both('a', 1)))
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+function fromOptions(fe, fa) {
+    return Option_1.isNone(fe)
+        ? Option_1.isNone(fa)
+            ? Option_1.none
+            : Option_1.some(right(fa.value))
+        : Option_1.isNone(fa)
+            ? Option_1.some(left(fe.value))
+            : Option_1.some(both(fe.value, fa.value));
+}
+exports.fromOptions = fromOptions;
+// -------------------------------------------------------------------------------------
+// non-pipeables
+// -------------------------------------------------------------------------------------
+var map_ = function (fa, f) { return function_1.pipe(fa, exports.map(f)); };
+/* istanbul ignore next */
+var bimap_ = function (fa, f, g) { return function_1.pipe(fa, exports.bimap(f, g)); };
+/* istanbul ignore next */
+var mapLeft_ = function (fa, f) { return function_1.pipe(fa, exports.mapLeft(f)); };
+/* istanbul ignore next */
+var reduce_ = function (fa, b, f) { return function_1.pipe(fa, exports.reduce(b, f)); };
+/* istanbul ignore next */
+var foldMap_ = function (M) {
+    var foldMapM = exports.foldMap(M);
+    return function (fa, f) { return function_1.pipe(fa, foldMapM(f)); };
+};
+/* istanbul ignore next */
+var reduceRight_ = function (fa, b, f) { return function_1.pipe(fa, exports.reduceRight(b, f)); };
+/* istanbul ignore next */
+var traverse_ = function (F) {
+    var traverseF = exports.traverse(F);
+    return function (ta, f) { return function_1.pipe(ta, traverseF(f)); };
+};
+// -------------------------------------------------------------------------------------
+// pipeables
+// -------------------------------------------------------------------------------------
+/**
+ * Map a pair of functions over the two type arguments of the bifunctor.
+ *
+ * @category Bifunctor
+ * @since 2.0.0
+ */
+var bimap = function (f, g) { return function (fa) {
+    return isLeft(fa) ? left(f(fa.left)) : isRight(fa) ? right(g(fa.right)) : both(f(fa.left), g(fa.right));
+}; };
+exports.bimap = bimap;
+/**
+ * Map a function over the first type argument of a bifunctor.
+ *
+ * @category Bifunctor
+ * @since 2.0.0
+ */
+var mapLeft = function (f) { return function (fa) {
+    return isLeft(fa) ? left(f(fa.left)) : isBoth(fa) ? both(f(fa.left), fa.right) : fa;
+}; };
+exports.mapLeft = mapLeft;
+/**
+ * `map` can be used to turn functions `(a: A) => B` into functions `(fa: F<A>) => F<B>` whose argument and return types
+ * use the type constructor `F` to represent some computational context.
+ *
+ * @category Functor
+ * @since 2.0.0
+ */
+var map = function (f) { return function (fa) {
+    return isLeft(fa) ? fa : isRight(fa) ? right(f(fa.right)) : both(fa.left, f(fa.right));
+}; };
+exports.map = map;
+/**
+ * @category Foldable
+ * @since 2.0.0
+ */
+var reduce = function (b, f) { return function (fa) {
+    return isLeft(fa) ? b : isRight(fa) ? f(b, fa.right) : f(b, fa.right);
+}; };
+exports.reduce = reduce;
+/**
+ * @category Foldable
+ * @since 2.0.0
+ */
+var foldMap = function (M) { return function (f) { return function (fa) {
+    return isLeft(fa) ? M.empty : isRight(fa) ? f(fa.right) : f(fa.right);
+}; }; };
+exports.foldMap = foldMap;
+/**
+ * @category Foldable
+ * @since 2.0.0
+ */
+var reduceRight = function (b, f) { return function (fa) {
+    return isLeft(fa) ? b : isRight(fa) ? f(fa.right, b) : f(fa.right, b);
+}; };
+exports.reduceRight = reduceRight;
+/**
+ * @since 2.6.3
+ */
+var traverse = function (F) { return function (f) { return function (ta) {
+    return isLeft(ta) ? F.of(ta) : isRight(ta) ? F.map(f(ta.right), right) : F.map(f(ta.right), function (b) { return both(ta.left, b); });
+}; }; };
+exports.traverse = traverse;
+/**
+ * @since 2.6.3
+ */
+var sequence = function (F) { return function (ta) {
+    return isLeft(ta) ? F.of(ta) : isRight(ta) ? F.map(ta.right, right) : F.map(ta.right, function (b) { return both(ta.left, b); });
+}; };
+exports.sequence = sequence;
+// -------------------------------------------------------------------------------------
+// instances
+// -------------------------------------------------------------------------------------
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.URI = 'These';
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Functor = {
+    URI: exports.URI,
+    map: map_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Bifunctor = {
+    URI: exports.URI,
+    bimap: bimap_,
+    mapLeft: mapLeft_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Foldable = {
+    URI: exports.URI,
+    reduce: reduce_,
+    foldMap: foldMap_,
+    reduceRight: reduceRight_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Traversable = {
+    URI: exports.URI,
+    map: map_,
+    reduce: reduce_,
+    foldMap: foldMap_,
+    reduceRight: reduceRight_,
+    traverse: traverse_,
+    sequence: exports.sequence
+};
+// TODO: remove in v3
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.these = {
+    URI: exports.URI,
+    map: map_,
+    bimap: bimap_,
+    mapLeft: mapLeft_,
+    reduce: reduce_,
+    foldMap: foldMap_,
+    reduceRight: reduceRight_,
+    traverse: traverse_,
+    sequence: exports.sequence
+};
+
+
+/***/ }),
+/* 767 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getApplicativeComposition = void 0;
+var Functor_1 = __webpack_require__(943);
+function getApplicativeComposition(F, G) {
+    return {
+        map: Functor_1.getFunctorComposition(F, G).map,
+        of: function (a) { return F.of(G.of(a)); },
+        ap: function (fgab, fga) {
+            return F.ap(F.map(fgab, function (h) { return function (ga) { return G.ap(h, ga); }; }), fga);
+        }
+    };
+}
+exports.getApplicativeComposition = getApplicativeComposition;
+
+
+/***/ }),
+/* 768 */
 /***/ (function(module) {
 
 "use strict";
@@ -12481,8 +33217,13 @@ module.exports = function (x) {
 
 
 /***/ }),
-
-/***/ 775:
+/* 769 */,
+/* 770 */,
+/* 771 */,
+/* 772 */,
+/* 773 */,
+/* 774 */,
+/* 775 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
@@ -12490,7 +33231,7 @@ module.exports = function (x) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const stream_1 = __webpack_require__(794);
 const stream_2 = __webpack_require__(608);
-const provider_1 = __webpack_require__(589);
+const provider_1 = __webpack_require__(620);
 class ProviderStream extends provider_1.default {
     constructor() {
         super(...arguments);
@@ -12520,8 +33261,14 @@ exports.default = ProviderStream;
 
 
 /***/ }),
-
-/***/ 783:
+/* 776 */,
+/* 777 */,
+/* 778 */,
+/* 779 */,
+/* 780 */,
+/* 781 */,
+/* 782 */,
+/* 783 */
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
 "use strict";
@@ -12698,8 +33445,49 @@ module.exports = braces;
 
 
 /***/ }),
+/* 784 */,
+/* 785 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
 
-/***/ 789:
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.boundedNumber = void 0;
+/**
+ * The `Bounded` type class represents totally ordered types that have an upper and lower boundary.
+ *
+ * Instances should satisfy the following law in addition to the `Ord` laws:
+ *
+ * - Bounded: `bottom <= a <= top`
+ *
+ * @since 2.0.0
+ */
+var Ord_1 = __webpack_require__(56);
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.boundedNumber = {
+    equals: Ord_1.ordNumber.equals,
+    compare: Ord_1.ordNumber.compare,
+    top: Infinity,
+    bottom: -Infinity
+};
+
+
+/***/ }),
+/* 786 */
+/***/ (function(__unusedmodule, exports) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+
+
+/***/ }),
+/* 787 */,
+/* 788 */,
+/* 789 */
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
 "use strict";
@@ -12712,7 +33500,7 @@ module.exports = braces;
 
 
 
-const isNumber = __webpack_require__(914);
+const isNumber = __webpack_require__(583);
 
 const toRegexRange = (min, max, options) => {
   if (isNumber(min) === false) {
@@ -12994,15 +33782,207 @@ module.exports = toRegexRange;
 
 
 /***/ }),
-
-/***/ 794:
+/* 790 */,
+/* 791 */,
+/* 792 */,
+/* 793 */,
+/* 794 */
 /***/ (function(module) {
 
 module.exports = require("stream");
 
 /***/ }),
+/* 795 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
 
-/***/ 796:
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.const_ = exports.Bifunctor = exports.Contravariant = exports.Functor = exports.URI = exports.mapLeft = exports.bimap = exports.map = exports.contramap = exports.getApplicative = exports.getApply = exports.getBooleanAlgebra = exports.getHeytingAlgebra = exports.getRing = exports.getSemiring = exports.getMonoid = exports.getSemigroup = exports.getBounded = exports.getOrd = exports.getEq = exports.getShow = exports.make = void 0;
+var function_1 = __webpack_require__(231);
+/**
+ * @category constructors
+ * @since 2.0.0
+ */
+exports.make = function_1.unsafeCoerce;
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+function getShow(S) {
+    return {
+        show: function (c) { return "make(" + S.show(c) + ")"; }
+    };
+}
+exports.getShow = getShow;
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.getEq = function_1.identity;
+/**
+ * @category instances
+ * @since 2.6.0
+ */
+exports.getOrd = function_1.identity;
+/**
+ * @category instances
+ * @since 2.6.0
+ */
+exports.getBounded = function_1.identity;
+/**
+ * @category instances
+ * @since 2.6.0
+ */
+exports.getSemigroup = function_1.identity;
+/**
+ * @category instances
+ * @since 2.6.0
+ */
+exports.getMonoid = function_1.identity;
+/**
+ * @category instances
+ * @since 2.6.0
+ */
+exports.getSemiring = function_1.identity;
+/**
+ * @category instances
+ * @since 2.6.0
+ */
+exports.getRing = function_1.identity;
+/**
+ * @category instances
+ * @since 2.6.0
+ */
+exports.getHeytingAlgebra = function_1.identity;
+/**
+ * @category instances
+ * @since 2.6.0
+ */
+exports.getBooleanAlgebra = function_1.identity;
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+function getApply(S) {
+    return {
+        URI: exports.URI,
+        _E: undefined,
+        map: map_,
+        ap: function (fab, fa) { return exports.make(S.concat(fab, fa)); }
+    };
+}
+exports.getApply = getApply;
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+function getApplicative(M) {
+    var A = getApply(M);
+    return {
+        URI: exports.URI,
+        _E: undefined,
+        map: A.map,
+        ap: A.ap,
+        of: function () { return exports.make(M.empty); }
+    };
+}
+exports.getApplicative = getApplicative;
+// -------------------------------------------------------------------------------------
+// non-pipeables
+// -------------------------------------------------------------------------------------
+var contramap_ = function (fa, f) { return function_1.pipe(fa, exports.contramap(f)); };
+/* istanbul ignore next */
+var map_ = function (fa, f) { return function_1.pipe(fa, exports.map(f)); };
+/* istanbul ignore next */
+var bimap_ = function (fa, f, g) { return function_1.pipe(fa, exports.bimap(f, g)); };
+/* istanbul ignore next */
+var mapLeft_ = function (fa, f) { return function_1.pipe(fa, exports.mapLeft(f)); };
+// -------------------------------------------------------------------------------------
+// pipeables
+// -------------------------------------------------------------------------------------
+/**
+ * @category Contravariant
+ * @since 2.0.0
+ */
+var contramap = function () { return function_1.unsafeCoerce; };
+exports.contramap = contramap;
+/**
+ * `map` can be used to turn functions `(a: A) => B` into functions `(fa: F<A>) => F<B>` whose argument and return types
+ * use the type constructor `F` to represent some computational context.
+ *
+ * @category Functor
+ * @since 2.0.0
+ */
+var map = function () { return function_1.unsafeCoerce; };
+exports.map = map;
+/**
+ * Map a pair of functions over the two type arguments of the bifunctor.
+ *
+ * @category Bifunctor
+ * @since 2.6.2
+ */
+var bimap = function (f) { return function (fa) {
+    return exports.make(f(fa));
+}; };
+exports.bimap = bimap;
+/**
+ * Map a function over the first type argument of a bifunctor.
+ *
+ * @category Bifunctor
+ * @since 2.6.2
+ */
+var mapLeft = function (f) { return function (fa) { return exports.make(f(fa)); }; };
+exports.mapLeft = mapLeft;
+// -------------------------------------------------------------------------------------
+// instances
+// -------------------------------------------------------------------------------------
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.URI = 'Const';
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Functor = {
+    URI: exports.URI,
+    map: map_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Contravariant = {
+    URI: exports.URI,
+    contramap: contramap_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Bifunctor = {
+    URI: exports.URI,
+    bimap: bimap_,
+    mapLeft: mapLeft_
+};
+// TODO: remove in v3
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.const_ = {
+    URI: exports.URI,
+    map: map_,
+    contramap: contramap_,
+    bimap: bimap_,
+    mapLeft: mapLeft_
+};
+
+
+/***/ }),
+/* 796 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
@@ -13031,8 +34011,8 @@ exports.getUserAgent = getUserAgent;
 
 
 /***/ }),
-
-/***/ 798:
+/* 797 */,
+/* 798 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
@@ -13073,1094 +34053,23 @@ exports.default = StreamProvider;
 
 
 /***/ }),
-
-/***/ 806:
-/***/ (function(module, __unusedexports, __webpack_require__) {
+/* 799 */,
+/* 800 */,
+/* 801 */,
+/* 802 */,
+/* 803 */,
+/* 804 */,
+/* 805 */,
+/* 806 */
+/***/ (function(__unusedmodule, exports) {
 
 "use strict";
 
-
-const constants = __webpack_require__(199);
-const utils = __webpack_require__(265);
-
-/**
- * Constants
- */
-
-const {
-  MAX_LENGTH,
-  POSIX_REGEX_SOURCE,
-  REGEX_NON_SPECIAL_CHARS,
-  REGEX_SPECIAL_CHARS_BACKREF,
-  REPLACEMENTS
-} = constants;
-
-/**
- * Helpers
- */
-
-const expandRange = (args, options) => {
-  if (typeof options.expandRange === 'function') {
-    return options.expandRange(...args, options);
-  }
-
-  args.sort();
-  const value = `[${args.join('-')}]`;
-
-  try {
-    /* eslint-disable-next-line no-new */
-    new RegExp(value);
-  } catch (ex) {
-    return args.map(v => utils.escapeRegex(v)).join('..');
-  }
-
-  return value;
-};
-
-/**
- * Create the message for a syntax error
- */
-
-const syntaxError = (type, char) => {
-  return `Missing ${type}: "${char}" - use "\\\\${char}" to match literal characters`;
-};
-
-/**
- * Parse the given input string.
- * @param {String} input
- * @param {Object} options
- * @return {Object}
- */
-
-const parse = (input, options) => {
-  if (typeof input !== 'string') {
-    throw new TypeError('Expected a string');
-  }
-
-  input = REPLACEMENTS[input] || input;
-
-  const opts = { ...options };
-  const max = typeof opts.maxLength === 'number' ? Math.min(MAX_LENGTH, opts.maxLength) : MAX_LENGTH;
-
-  let len = input.length;
-  if (len > max) {
-    throw new SyntaxError(`Input length: ${len}, exceeds maximum allowed length: ${max}`);
-  }
-
-  const bos = { type: 'bos', value: '', output: opts.prepend || '' };
-  const tokens = [bos];
-
-  const capture = opts.capture ? '' : '?:';
-  const win32 = utils.isWindows(options);
-
-  // create constants based on platform, for windows or posix
-  const PLATFORM_CHARS = constants.globChars(win32);
-  const EXTGLOB_CHARS = constants.extglobChars(PLATFORM_CHARS);
-
-  const {
-    DOT_LITERAL,
-    PLUS_LITERAL,
-    SLASH_LITERAL,
-    ONE_CHAR,
-    DOTS_SLASH,
-    NO_DOT,
-    NO_DOT_SLASH,
-    NO_DOTS_SLASH,
-    QMARK,
-    QMARK_NO_DOT,
-    STAR,
-    START_ANCHOR
-  } = PLATFORM_CHARS;
-
-  const globstar = (opts) => {
-    return `(${capture}(?:(?!${START_ANCHOR}${opts.dot ? DOTS_SLASH : DOT_LITERAL}).)*?)`;
-  };
-
-  const nodot = opts.dot ? '' : NO_DOT;
-  const qmarkNoDot = opts.dot ? QMARK : QMARK_NO_DOT;
-  let star = opts.bash === true ? globstar(opts) : STAR;
-
-  if (opts.capture) {
-    star = `(${star})`;
-  }
-
-  // minimatch options support
-  if (typeof opts.noext === 'boolean') {
-    opts.noextglob = opts.noext;
-  }
-
-  const state = {
-    input,
-    index: -1,
-    start: 0,
-    dot: opts.dot === true,
-    consumed: '',
-    output: '',
-    prefix: '',
-    backtrack: false,
-    negated: false,
-    brackets: 0,
-    braces: 0,
-    parens: 0,
-    quotes: 0,
-    globstar: false,
-    tokens
-  };
-
-  input = utils.removePrefix(input, state);
-  len = input.length;
-
-  const extglobs = [];
-  const braces = [];
-  const stack = [];
-  let prev = bos;
-  let value;
-
-  /**
-   * Tokenizing helpers
-   */
-
-  const eos = () => state.index === len - 1;
-  const peek = state.peek = (n = 1) => input[state.index + n];
-  const advance = state.advance = () => input[++state.index];
-  const remaining = () => input.slice(state.index + 1);
-  const consume = (value = '', num = 0) => {
-    state.consumed += value;
-    state.index += num;
-  };
-  const append = token => {
-    state.output += token.output != null ? token.output : token.value;
-    consume(token.value);
-  };
-
-  const negate = () => {
-    let count = 1;
-
-    while (peek() === '!' && (peek(2) !== '(' || peek(3) === '?')) {
-      advance();
-      state.start++;
-      count++;
-    }
-
-    if (count % 2 === 0) {
-      return false;
-    }
-
-    state.negated = true;
-    state.start++;
-    return true;
-  };
-
-  const increment = type => {
-    state[type]++;
-    stack.push(type);
-  };
-
-  const decrement = type => {
-    state[type]--;
-    stack.pop();
-  };
-
-  /**
-   * Push tokens onto the tokens array. This helper speeds up
-   * tokenizing by 1) helping us avoid backtracking as much as possible,
-   * and 2) helping us avoid creating extra tokens when consecutive
-   * characters are plain text. This improves performance and simplifies
-   * lookbehinds.
-   */
-
-  const push = tok => {
-    if (prev.type === 'globstar') {
-      const isBrace = state.braces > 0 && (tok.type === 'comma' || tok.type === 'brace');
-      const isExtglob = tok.extglob === true || (extglobs.length && (tok.type === 'pipe' || tok.type === 'paren'));
-
-      if (tok.type !== 'slash' && tok.type !== 'paren' && !isBrace && !isExtglob) {
-        state.output = state.output.slice(0, -prev.output.length);
-        prev.type = 'star';
-        prev.value = '*';
-        prev.output = star;
-        state.output += prev.output;
-      }
-    }
-
-    if (extglobs.length && tok.type !== 'paren' && !EXTGLOB_CHARS[tok.value]) {
-      extglobs[extglobs.length - 1].inner += tok.value;
-    }
-
-    if (tok.value || tok.output) append(tok);
-    if (prev && prev.type === 'text' && tok.type === 'text') {
-      prev.value += tok.value;
-      prev.output = (prev.output || '') + tok.value;
-      return;
-    }
-
-    tok.prev = prev;
-    tokens.push(tok);
-    prev = tok;
-  };
-
-  const extglobOpen = (type, value) => {
-    const token = { ...EXTGLOB_CHARS[value], conditions: 1, inner: '' };
-
-    token.prev = prev;
-    token.parens = state.parens;
-    token.output = state.output;
-    const output = (opts.capture ? '(' : '') + token.open;
-
-    increment('parens');
-    push({ type, value, output: state.output ? '' : ONE_CHAR });
-    push({ type: 'paren', extglob: true, value: advance(), output });
-    extglobs.push(token);
-  };
-
-  const extglobClose = token => {
-    let output = token.close + (opts.capture ? ')' : '');
-
-    if (token.type === 'negate') {
-      let extglobStar = star;
-
-      if (token.inner && token.inner.length > 1 && token.inner.includes('/')) {
-        extglobStar = globstar(opts);
-      }
-
-      if (extglobStar !== star || eos() || /^\)+$/.test(remaining())) {
-        output = token.close = `)$))${extglobStar}`;
-      }
-
-      if (token.prev.type === 'bos' && eos()) {
-        state.negatedExtglob = true;
-      }
-    }
-
-    push({ type: 'paren', extglob: true, value, output });
-    decrement('parens');
-  };
-
-  /**
-   * Fast paths
-   */
-
-  if (opts.fastpaths !== false && !/(^[*!]|[/()[\]{}"])/.test(input)) {
-    let backslashes = false;
-
-    let output = input.replace(REGEX_SPECIAL_CHARS_BACKREF, (m, esc, chars, first, rest, index) => {
-      if (first === '\\') {
-        backslashes = true;
-        return m;
-      }
-
-      if (first === '?') {
-        if (esc) {
-          return esc + first + (rest ? QMARK.repeat(rest.length) : '');
-        }
-        if (index === 0) {
-          return qmarkNoDot + (rest ? QMARK.repeat(rest.length) : '');
-        }
-        return QMARK.repeat(chars.length);
-      }
-
-      if (first === '.') {
-        return DOT_LITERAL.repeat(chars.length);
-      }
-
-      if (first === '*') {
-        if (esc) {
-          return esc + first + (rest ? star : '');
-        }
-        return star;
-      }
-      return esc ? m : `\\${m}`;
-    });
-
-    if (backslashes === true) {
-      if (opts.unescape === true) {
-        output = output.replace(/\\/g, '');
-      } else {
-        output = output.replace(/\\+/g, m => {
-          return m.length % 2 === 0 ? '\\\\' : (m ? '\\' : '');
-        });
-      }
-    }
-
-    if (output === input && opts.contains === true) {
-      state.output = input;
-      return state;
-    }
-
-    state.output = utils.wrapOutput(output, state, options);
-    return state;
-  }
-
-  /**
-   * Tokenize input until we reach end-of-string
-   */
-
-  while (!eos()) {
-    value = advance();
-
-    if (value === '\u0000') {
-      continue;
-    }
-
-    /**
-     * Escaped characters
-     */
-
-    if (value === '\\') {
-      const next = peek();
-
-      if (next === '/' && opts.bash !== true) {
-        continue;
-      }
-
-      if (next === '.' || next === ';') {
-        continue;
-      }
-
-      if (!next) {
-        value += '\\';
-        push({ type: 'text', value });
-        continue;
-      }
-
-      // collapse slashes to reduce potential for exploits
-      const match = /^\\+/.exec(remaining());
-      let slashes = 0;
-
-      if (match && match[0].length > 2) {
-        slashes = match[0].length;
-        state.index += slashes;
-        if (slashes % 2 !== 0) {
-          value += '\\';
-        }
-      }
-
-      if (opts.unescape === true) {
-        value = advance() || '';
-      } else {
-        value += advance() || '';
-      }
-
-      if (state.brackets === 0) {
-        push({ type: 'text', value });
-        continue;
-      }
-    }
-
-    /**
-     * If we're inside a regex character class, continue
-     * until we reach the closing bracket.
-     */
-
-    if (state.brackets > 0 && (value !== ']' || prev.value === '[' || prev.value === '[^')) {
-      if (opts.posix !== false && value === ':') {
-        const inner = prev.value.slice(1);
-        if (inner.includes('[')) {
-          prev.posix = true;
-
-          if (inner.includes(':')) {
-            const idx = prev.value.lastIndexOf('[');
-            const pre = prev.value.slice(0, idx);
-            const rest = prev.value.slice(idx + 2);
-            const posix = POSIX_REGEX_SOURCE[rest];
-            if (posix) {
-              prev.value = pre + posix;
-              state.backtrack = true;
-              advance();
-
-              if (!bos.output && tokens.indexOf(prev) === 1) {
-                bos.output = ONE_CHAR;
-              }
-              continue;
-            }
-          }
-        }
-      }
-
-      if ((value === '[' && peek() !== ':') || (value === '-' && peek() === ']')) {
-        value = `\\${value}`;
-      }
-
-      if (value === ']' && (prev.value === '[' || prev.value === '[^')) {
-        value = `\\${value}`;
-      }
-
-      if (opts.posix === true && value === '!' && prev.value === '[') {
-        value = '^';
-      }
-
-      prev.value += value;
-      append({ value });
-      continue;
-    }
-
-    /**
-     * If we're inside a quoted string, continue
-     * until we reach the closing double quote.
-     */
-
-    if (state.quotes === 1 && value !== '"') {
-      value = utils.escapeRegex(value);
-      prev.value += value;
-      append({ value });
-      continue;
-    }
-
-    /**
-     * Double quotes
-     */
-
-    if (value === '"') {
-      state.quotes = state.quotes === 1 ? 0 : 1;
-      if (opts.keepQuotes === true) {
-        push({ type: 'text', value });
-      }
-      continue;
-    }
-
-    /**
-     * Parentheses
-     */
-
-    if (value === '(') {
-      increment('parens');
-      push({ type: 'paren', value });
-      continue;
-    }
-
-    if (value === ')') {
-      if (state.parens === 0 && opts.strictBrackets === true) {
-        throw new SyntaxError(syntaxError('opening', '('));
-      }
-
-      const extglob = extglobs[extglobs.length - 1];
-      if (extglob && state.parens === extglob.parens + 1) {
-        extglobClose(extglobs.pop());
-        continue;
-      }
-
-      push({ type: 'paren', value, output: state.parens ? ')' : '\\)' });
-      decrement('parens');
-      continue;
-    }
-
-    /**
-     * Square brackets
-     */
-
-    if (value === '[') {
-      if (opts.nobracket === true || !remaining().includes(']')) {
-        if (opts.nobracket !== true && opts.strictBrackets === true) {
-          throw new SyntaxError(syntaxError('closing', ']'));
-        }
-
-        value = `\\${value}`;
-      } else {
-        increment('brackets');
-      }
-
-      push({ type: 'bracket', value });
-      continue;
-    }
-
-    if (value === ']') {
-      if (opts.nobracket === true || (prev && prev.type === 'bracket' && prev.value.length === 1)) {
-        push({ type: 'text', value, output: `\\${value}` });
-        continue;
-      }
-
-      if (state.brackets === 0) {
-        if (opts.strictBrackets === true) {
-          throw new SyntaxError(syntaxError('opening', '['));
-        }
-
-        push({ type: 'text', value, output: `\\${value}` });
-        continue;
-      }
-
-      decrement('brackets');
-
-      const prevValue = prev.value.slice(1);
-      if (prev.posix !== true && prevValue[0] === '^' && !prevValue.includes('/')) {
-        value = `/${value}`;
-      }
-
-      prev.value += value;
-      append({ value });
-
-      // when literal brackets are explicitly disabled
-      // assume we should match with a regex character class
-      if (opts.literalBrackets === false || utils.hasRegexChars(prevValue)) {
-        continue;
-      }
-
-      const escaped = utils.escapeRegex(prev.value);
-      state.output = state.output.slice(0, -prev.value.length);
-
-      // when literal brackets are explicitly enabled
-      // assume we should escape the brackets to match literal characters
-      if (opts.literalBrackets === true) {
-        state.output += escaped;
-        prev.value = escaped;
-        continue;
-      }
-
-      // when the user specifies nothing, try to match both
-      prev.value = `(${capture}${escaped}|${prev.value})`;
-      state.output += prev.value;
-      continue;
-    }
-
-    /**
-     * Braces
-     */
-
-    if (value === '{' && opts.nobrace !== true) {
-      increment('braces');
-
-      const open = {
-        type: 'brace',
-        value,
-        output: '(',
-        outputIndex: state.output.length,
-        tokensIndex: state.tokens.length
-      };
-
-      braces.push(open);
-      push(open);
-      continue;
-    }
-
-    if (value === '}') {
-      const brace = braces[braces.length - 1];
-
-      if (opts.nobrace === true || !brace) {
-        push({ type: 'text', value, output: value });
-        continue;
-      }
-
-      let output = ')';
-
-      if (brace.dots === true) {
-        const arr = tokens.slice();
-        const range = [];
-
-        for (let i = arr.length - 1; i >= 0; i--) {
-          tokens.pop();
-          if (arr[i].type === 'brace') {
-            break;
-          }
-          if (arr[i].type !== 'dots') {
-            range.unshift(arr[i].value);
-          }
-        }
-
-        output = expandRange(range, opts);
-        state.backtrack = true;
-      }
-
-      if (brace.comma !== true && brace.dots !== true) {
-        const out = state.output.slice(0, brace.outputIndex);
-        const toks = state.tokens.slice(brace.tokensIndex);
-        brace.value = brace.output = '\\{';
-        value = output = '\\}';
-        state.output = out;
-        for (const t of toks) {
-          state.output += (t.output || t.value);
-        }
-      }
-
-      push({ type: 'brace', value, output });
-      decrement('braces');
-      braces.pop();
-      continue;
-    }
-
-    /**
-     * Pipes
-     */
-
-    if (value === '|') {
-      if (extglobs.length > 0) {
-        extglobs[extglobs.length - 1].conditions++;
-      }
-      push({ type: 'text', value });
-      continue;
-    }
-
-    /**
-     * Commas
-     */
-
-    if (value === ',') {
-      let output = value;
-
-      const brace = braces[braces.length - 1];
-      if (brace && stack[stack.length - 1] === 'braces') {
-        brace.comma = true;
-        output = '|';
-      }
-
-      push({ type: 'comma', value, output });
-      continue;
-    }
-
-    /**
-     * Slashes
-     */
-
-    if (value === '/') {
-      // if the beginning of the glob is "./", advance the start
-      // to the current index, and don't add the "./" characters
-      // to the state. This greatly simplifies lookbehinds when
-      // checking for BOS characters like "!" and "." (not "./")
-      if (prev.type === 'dot' && state.index === state.start + 1) {
-        state.start = state.index + 1;
-        state.consumed = '';
-        state.output = '';
-        tokens.pop();
-        prev = bos; // reset "prev" to the first token
-        continue;
-      }
-
-      push({ type: 'slash', value, output: SLASH_LITERAL });
-      continue;
-    }
-
-    /**
-     * Dots
-     */
-
-    if (value === '.') {
-      if (state.braces > 0 && prev.type === 'dot') {
-        if (prev.value === '.') prev.output = DOT_LITERAL;
-        const brace = braces[braces.length - 1];
-        prev.type = 'dots';
-        prev.output += value;
-        prev.value += value;
-        brace.dots = true;
-        continue;
-      }
-
-      if ((state.braces + state.parens) === 0 && prev.type !== 'bos' && prev.type !== 'slash') {
-        push({ type: 'text', value, output: DOT_LITERAL });
-        continue;
-      }
-
-      push({ type: 'dot', value, output: DOT_LITERAL });
-      continue;
-    }
-
-    /**
-     * Question marks
-     */
-
-    if (value === '?') {
-      const isGroup = prev && prev.value === '(';
-      if (!isGroup && opts.noextglob !== true && peek() === '(' && peek(2) !== '?') {
-        extglobOpen('qmark', value);
-        continue;
-      }
-
-      if (prev && prev.type === 'paren') {
-        const next = peek();
-        let output = value;
-
-        if (next === '<' && !utils.supportsLookbehinds()) {
-          throw new Error('Node.js v10 or higher is required for regex lookbehinds');
-        }
-
-        if ((prev.value === '(' && !/[!=<:]/.test(next)) || (next === '<' && !/<([!=]|\w+>)/.test(remaining()))) {
-          output = `\\${value}`;
-        }
-
-        push({ type: 'text', value, output });
-        continue;
-      }
-
-      if (opts.dot !== true && (prev.type === 'slash' || prev.type === 'bos')) {
-        push({ type: 'qmark', value, output: QMARK_NO_DOT });
-        continue;
-      }
-
-      push({ type: 'qmark', value, output: QMARK });
-      continue;
-    }
-
-    /**
-     * Exclamation
-     */
-
-    if (value === '!') {
-      if (opts.noextglob !== true && peek() === '(') {
-        if (peek(2) !== '?' || !/[!=<:]/.test(peek(3))) {
-          extglobOpen('negate', value);
-          continue;
-        }
-      }
-
-      if (opts.nonegate !== true && state.index === 0) {
-        negate();
-        continue;
-      }
-    }
-
-    /**
-     * Plus
-     */
-
-    if (value === '+') {
-      if (opts.noextglob !== true && peek() === '(' && peek(2) !== '?') {
-        extglobOpen('plus', value);
-        continue;
-      }
-
-      if ((prev && prev.value === '(') || opts.regex === false) {
-        push({ type: 'plus', value, output: PLUS_LITERAL });
-        continue;
-      }
-
-      if ((prev && (prev.type === 'bracket' || prev.type === 'paren' || prev.type === 'brace')) || state.parens > 0) {
-        push({ type: 'plus', value });
-        continue;
-      }
-
-      push({ type: 'plus', value: PLUS_LITERAL });
-      continue;
-    }
-
-    /**
-     * Plain text
-     */
-
-    if (value === '@') {
-      if (opts.noextglob !== true && peek() === '(' && peek(2) !== '?') {
-        push({ type: 'at', extglob: true, value, output: '' });
-        continue;
-      }
-
-      push({ type: 'text', value });
-      continue;
-    }
-
-    /**
-     * Plain text
-     */
-
-    if (value !== '*') {
-      if (value === '$' || value === '^') {
-        value = `\\${value}`;
-      }
-
-      const match = REGEX_NON_SPECIAL_CHARS.exec(remaining());
-      if (match) {
-        value += match[0];
-        state.index += match[0].length;
-      }
-
-      push({ type: 'text', value });
-      continue;
-    }
-
-    /**
-     * Stars
-     */
-
-    if (prev && (prev.type === 'globstar' || prev.star === true)) {
-      prev.type = 'star';
-      prev.star = true;
-      prev.value += value;
-      prev.output = star;
-      state.backtrack = true;
-      state.globstar = true;
-      consume(value);
-      continue;
-    }
-
-    let rest = remaining();
-    if (opts.noextglob !== true && /^\([^?]/.test(rest)) {
-      extglobOpen('star', value);
-      continue;
-    }
-
-    if (prev.type === 'star') {
-      if (opts.noglobstar === true) {
-        consume(value);
-        continue;
-      }
-
-      const prior = prev.prev;
-      const before = prior.prev;
-      const isStart = prior.type === 'slash' || prior.type === 'bos';
-      const afterStar = before && (before.type === 'star' || before.type === 'globstar');
-
-      if (opts.bash === true && (!isStart || (rest[0] && rest[0] !== '/'))) {
-        push({ type: 'star', value, output: '' });
-        continue;
-      }
-
-      const isBrace = state.braces > 0 && (prior.type === 'comma' || prior.type === 'brace');
-      const isExtglob = extglobs.length && (prior.type === 'pipe' || prior.type === 'paren');
-      if (!isStart && prior.type !== 'paren' && !isBrace && !isExtglob) {
-        push({ type: 'star', value, output: '' });
-        continue;
-      }
-
-      // strip consecutive `/**/`
-      while (rest.slice(0, 3) === '/**') {
-        const after = input[state.index + 4];
-        if (after && after !== '/') {
-          break;
-        }
-        rest = rest.slice(3);
-        consume('/**', 3);
-      }
-
-      if (prior.type === 'bos' && eos()) {
-        prev.type = 'globstar';
-        prev.value += value;
-        prev.output = globstar(opts);
-        state.output = prev.output;
-        state.globstar = true;
-        consume(value);
-        continue;
-      }
-
-      if (prior.type === 'slash' && prior.prev.type !== 'bos' && !afterStar && eos()) {
-        state.output = state.output.slice(0, -(prior.output + prev.output).length);
-        prior.output = `(?:${prior.output}`;
-
-        prev.type = 'globstar';
-        prev.output = globstar(opts) + (opts.strictSlashes ? ')' : '|$)');
-        prev.value += value;
-        state.globstar = true;
-        state.output += prior.output + prev.output;
-        consume(value);
-        continue;
-      }
-
-      if (prior.type === 'slash' && prior.prev.type !== 'bos' && rest[0] === '/') {
-        const end = rest[1] !== void 0 ? '|$' : '';
-
-        state.output = state.output.slice(0, -(prior.output + prev.output).length);
-        prior.output = `(?:${prior.output}`;
-
-        prev.type = 'globstar';
-        prev.output = `${globstar(opts)}${SLASH_LITERAL}|${SLASH_LITERAL}${end})`;
-        prev.value += value;
-
-        state.output += prior.output + prev.output;
-        state.globstar = true;
-
-        consume(value + advance());
-
-        push({ type: 'slash', value: '/', output: '' });
-        continue;
-      }
-
-      if (prior.type === 'bos' && rest[0] === '/') {
-        prev.type = 'globstar';
-        prev.value += value;
-        prev.output = `(?:^|${SLASH_LITERAL}|${globstar(opts)}${SLASH_LITERAL})`;
-        state.output = prev.output;
-        state.globstar = true;
-        consume(value + advance());
-        push({ type: 'slash', value: '/', output: '' });
-        continue;
-      }
-
-      // remove single star from output
-      state.output = state.output.slice(0, -prev.output.length);
-
-      // reset previous token to globstar
-      prev.type = 'globstar';
-      prev.output = globstar(opts);
-      prev.value += value;
-
-      // reset output with globstar
-      state.output += prev.output;
-      state.globstar = true;
-      consume(value);
-      continue;
-    }
-
-    const token = { type: 'star', value, output: star };
-
-    if (opts.bash === true) {
-      token.output = '.*?';
-      if (prev.type === 'bos' || prev.type === 'slash') {
-        token.output = nodot + token.output;
-      }
-      push(token);
-      continue;
-    }
-
-    if (prev && (prev.type === 'bracket' || prev.type === 'paren') && opts.regex === true) {
-      token.output = value;
-      push(token);
-      continue;
-    }
-
-    if (state.index === state.start || prev.type === 'slash' || prev.type === 'dot') {
-      if (prev.type === 'dot') {
-        state.output += NO_DOT_SLASH;
-        prev.output += NO_DOT_SLASH;
-
-      } else if (opts.dot === true) {
-        state.output += NO_DOTS_SLASH;
-        prev.output += NO_DOTS_SLASH;
-
-      } else {
-        state.output += nodot;
-        prev.output += nodot;
-      }
-
-      if (peek() !== '*') {
-        state.output += ONE_CHAR;
-        prev.output += ONE_CHAR;
-      }
-    }
-
-    push(token);
-  }
-
-  while (state.brackets > 0) {
-    if (opts.strictBrackets === true) throw new SyntaxError(syntaxError('closing', ']'));
-    state.output = utils.escapeLast(state.output, '[');
-    decrement('brackets');
-  }
-
-  while (state.parens > 0) {
-    if (opts.strictBrackets === true) throw new SyntaxError(syntaxError('closing', ')'));
-    state.output = utils.escapeLast(state.output, '(');
-    decrement('parens');
-  }
-
-  while (state.braces > 0) {
-    if (opts.strictBrackets === true) throw new SyntaxError(syntaxError('closing', '}'));
-    state.output = utils.escapeLast(state.output, '{');
-    decrement('braces');
-  }
-
-  if (opts.strictSlashes !== true && (prev.type === 'star' || prev.type === 'bracket')) {
-    push({ type: 'maybe_slash', value: '', output: `${SLASH_LITERAL}?` });
-  }
-
-  // rebuild the output if we had to backtrack at any point
-  if (state.backtrack === true) {
-    state.output = '';
-
-    for (const token of state.tokens) {
-      state.output += token.output != null ? token.output : token.value;
-
-      if (token.suffix) {
-        state.output += token.suffix;
-      }
-    }
-  }
-
-  return state;
-};
-
-/**
- * Fast paths for creating regular expressions for common glob patterns.
- * This can significantly speed up processing and has very little downside
- * impact when none of the fast paths match.
- */
-
-parse.fastpaths = (input, options) => {
-  const opts = { ...options };
-  const max = typeof opts.maxLength === 'number' ? Math.min(MAX_LENGTH, opts.maxLength) : MAX_LENGTH;
-  const len = input.length;
-  if (len > max) {
-    throw new SyntaxError(`Input length: ${len}, exceeds maximum allowed length: ${max}`);
-  }
-
-  input = REPLACEMENTS[input] || input;
-  const win32 = utils.isWindows(options);
-
-  // create constants based on platform, for windows or posix
-  const {
-    DOT_LITERAL,
-    SLASH_LITERAL,
-    ONE_CHAR,
-    DOTS_SLASH,
-    NO_DOT,
-    NO_DOTS,
-    NO_DOTS_SLASH,
-    STAR,
-    START_ANCHOR
-  } = constants.globChars(win32);
-
-  const nodot = opts.dot ? NO_DOTS : NO_DOT;
-  const slashDot = opts.dot ? NO_DOTS_SLASH : NO_DOT;
-  const capture = opts.capture ? '' : '?:';
-  const state = { negated: false, prefix: '' };
-  let star = opts.bash === true ? '.*?' : STAR;
-
-  if (opts.capture) {
-    star = `(${star})`;
-  }
-
-  const globstar = (opts) => {
-    if (opts.noglobstar === true) return star;
-    return `(${capture}(?:(?!${START_ANCHOR}${opts.dot ? DOTS_SLASH : DOT_LITERAL}).)*?)`;
-  };
-
-  const create = str => {
-    switch (str) {
-      case '*':
-        return `${nodot}${ONE_CHAR}${star}`;
-
-      case '.*':
-        return `${DOT_LITERAL}${ONE_CHAR}${star}`;
-
-      case '*.*':
-        return `${nodot}${star}${DOT_LITERAL}${ONE_CHAR}${star}`;
-
-      case '*/*':
-        return `${nodot}${star}${SLASH_LITERAL}${ONE_CHAR}${slashDot}${star}`;
-
-      case '**':
-        return nodot + globstar(opts);
-
-      case '**/*':
-        return `(?:${nodot}${globstar(opts)}${SLASH_LITERAL})?${slashDot}${ONE_CHAR}${star}`;
-
-      case '**/*.*':
-        return `(?:${nodot}${globstar(opts)}${SLASH_LITERAL})?${slashDot}${star}${DOT_LITERAL}${ONE_CHAR}${star}`;
-
-      case '**/.*':
-        return `(?:${nodot}${globstar(opts)}${SLASH_LITERAL})?${DOT_LITERAL}${ONE_CHAR}${star}`;
-
-      default: {
-        const match = /^(.*?)\.(\w+)$/.exec(str);
-        if (!match) return;
-
-        const source = create(match[1]);
-        if (!source) return;
-
-        return source + DOT_LITERAL + match[2];
-      }
-    }
-  };
-
-  const output = utils.removePrefix(input, state);
-  let source = create(output);
-
-  if (source && opts.strictSlashes !== true) {
-    source += `${SLASH_LITERAL}?`;
-  }
-
-  return source;
-};
-
-module.exports = parse;
+Object.defineProperty(exports, "__esModule", { value: true });
 
 
 /***/ }),
-
-/***/ 807:
+/* 807 */
 /***/ (function(module) {
 
 "use strict";
@@ -14224,8 +34133,12 @@ module.exports = {
 
 
 /***/ }),
-
-/***/ 813:
+/* 808 */,
+/* 809 */,
+/* 810 */,
+/* 811 */,
+/* 812 */,
+/* 813 */
 /***/ (function(__unusedmodule, exports) {
 
 "use strict";
@@ -14281,8 +34194,7 @@ exports.createTokenAuth = createTokenAuth;
 
 
 /***/ }),
-
-/***/ 814:
+/* 814 */
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
 module.exports = which
@@ -14423,8 +34335,8 @@ function whichSync (cmd, opt) {
 
 
 /***/ }),
-
-/***/ 816:
+/* 815 */,
+/* 816 */
 /***/ (function(module) {
 
 "use strict";
@@ -14433,8 +34345,8 @@ module.exports = /^#!.*/;
 
 
 /***/ }),
-
-/***/ 818:
+/* 817 */,
+/* 818 */
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
 module.exports = isexe
@@ -14482,8 +34394,15 @@ function sync (path, options) {
 
 
 /***/ }),
-
-/***/ 827:
+/* 819 */,
+/* 820 */,
+/* 821 */,
+/* 822 */,
+/* 823 */,
+/* 824 */,
+/* 825 */,
+/* 826 */,
+/* 827 */
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
 "use strict";
@@ -14493,8 +34412,36 @@ module.exports = __webpack_require__(366);
 
 
 /***/ }),
+/* 828 */,
+/* 829 */,
+/* 830 */,
+/* 831 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
 
-/***/ 833:
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getMinMaxBoundedDistributiveLattice = void 0;
+var DistributiveLattice_1 = __webpack_require__(121);
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+function getMinMaxBoundedDistributiveLattice(O) {
+    var L = DistributiveLattice_1.getMinMaxDistributiveLattice(O);
+    return function (min, max) { return ({
+        join: L.join,
+        meet: L.meet,
+        zero: min,
+        one: max
+    }); };
+}
+exports.getMinMaxBoundedDistributiveLattice = getMinMaxBoundedDistributiveLattice;
+
+
+/***/ }),
+/* 832 */,
+/* 833 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
@@ -14515,15 +34462,28 @@ exports.default = SyncProvider;
 
 
 /***/ }),
-
-/***/ 835:
+/* 834 */,
+/* 835 */
 /***/ (function(module) {
 
 module.exports = require("url");
 
 /***/ }),
+/* 836 */,
+/* 837 */
+/***/ (function(__unusedmodule, exports) {
 
-/***/ 842:
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+
+
+/***/ }),
+/* 838 */,
+/* 839 */,
+/* 840 */,
+/* 841 */,
+/* 842 */
 /***/ (function(__unusedmodule, exports) {
 
 "use strict";
@@ -15712,16 +35672,478 @@ exports.restEndpointMethods = restEndpointMethods;
 
 
 /***/ }),
+/* 843 */,
+/* 844 */,
+/* 845 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
 
-/***/ 858:
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getTraversableComposition = void 0;
+var Foldable_1 = __webpack_require__(684);
+var Functor_1 = __webpack_require__(943);
+function getTraversableComposition(F, G) {
+    var FC = Foldable_1.getFoldableComposition(F, G);
+    return {
+        map: Functor_1.getFunctorComposition(F, G).map,
+        reduce: FC.reduce,
+        foldMap: FC.foldMap,
+        reduceRight: FC.reduceRight,
+        traverse: function (H) {
+            var traverseF = F.traverse(H);
+            var traverseG = G.traverse(H);
+            return function (fga, f) { return traverseF(fga, function (ga) { return traverseG(ga, f); }); };
+        },
+        sequence: function (H) {
+            var sequenceF = F.sequence(H);
+            var sequenceG = G.sequence(H);
+            return function (fgha) { return sequenceF(F.map(fgha, sequenceG)); };
+        }
+    };
+}
+exports.getTraversableComposition = getTraversableComposition;
+
+
+/***/ }),
+/* 846 */,
+/* 847 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.sequenceArray = exports.traverseArray = exports.traverseArrayWithIndex = exports.apS = exports.bind = exports.bindTo = exports.Do = exports.io = exports.ChainRec = exports.MonadIO = exports.Monad = exports.Applicative = exports.Functor = exports.getMonoid = exports.getSemigroup = exports.URI = exports.fromIO = exports.flatten = exports.chainFirst = exports.chain = exports.of = exports.apSecond = exports.apFirst = exports.ap = exports.map = void 0;
+var function_1 = __webpack_require__(231);
+// -------------------------------------------------------------------------------------
+// non-pipeables
+// -------------------------------------------------------------------------------------
+var map_ = function (ma, f) { return function () { return f(ma()); }; };
+var ap_ = function (mab, ma) { return function () { return mab()(ma()); }; };
+var chain_ = function (ma, f) { return function () { return f(ma())(); }; };
+var chainRec_ = function (a, f) { return function () {
+    var e = f(a)();
+    while (e._tag === 'Left') {
+        e = f(e.left)();
+    }
+    return e.right;
+}; };
+// -------------------------------------------------------------------------------------
+// pipeables
+// -------------------------------------------------------------------------------------
+/**
+ * `map` can be used to turn functions `(a: A) => B` into functions `(fa: F<A>) => F<B>` whose argument and return types
+ * use the type constructor `F` to represent some computational context.
+ *
+ * @category Functor
+ * @since 2.0.0
+ */
+var map = function (f) { return function (fa) { return map_(fa, f); }; };
+exports.map = map;
+/**
+ * Apply a function to an argument under a type constructor.
+ *
+ * @category Apply
+ * @since 2.0.0
+ */
+var ap = function (fa) { return function (fab) { return ap_(fab, fa); }; };
+exports.ap = ap;
+/**
+ * Combine two effectful actions, keeping only the result of the first.
+ *
+ * Derivable from `Apply`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+var apFirst = function (fb) {
+    return function_1.flow(exports.map(function (a) { return function () { return a; }; }), exports.ap(fb));
+};
+exports.apFirst = apFirst;
+/**
+ * Combine two effectful actions, keeping only the result of the second.
+ *
+ * Derivable from `Apply`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+var apSecond = function (fb) {
+    return function_1.flow(exports.map(function () { return function (b) { return b; }; }), exports.ap(fb));
+};
+exports.apSecond = apSecond;
+/**
+ * Wrap a value into the type constructor.
+ *
+ * @category Applicative
+ * @since 2.0.0
+ */
+exports.of = function_1.constant;
+/**
+ * Composes computations in sequence, using the return value of one computation to determine the next computation.
+ *
+ * @category Monad
+ * @since 2.0.0
+ */
+var chain = function (f) { return function (ma) { return chain_(ma, f); }; };
+exports.chain = chain;
+/**
+ * Composes computations in sequence, using the return value of one computation to determine the next computation and
+ * keeping only the result of the first.
+ *
+ * Derivable from `Monad`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+var chainFirst = function (f) {
+    return exports.chain(function (a) {
+        return function_1.pipe(f(a), exports.map(function () { return a; }));
+    });
+};
+exports.chainFirst = chainFirst;
+/**
+ * Derivable from `Monad`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.flatten = 
+/*#__PURE__*/
+exports.chain(function_1.identity);
+/**
+ * @category MonadIO
+ * @since 2.7.0
+ */
+exports.fromIO = function_1.identity;
+// -------------------------------------------------------------------------------------
+// instances
+// -------------------------------------------------------------------------------------
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.URI = 'IO';
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+function getSemigroup(S) {
+    return {
+        concat: function (x, y) { return function () { return S.concat(x(), y()); }; }
+    };
+}
+exports.getSemigroup = getSemigroup;
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+function getMonoid(M) {
+    return {
+        concat: getSemigroup(M).concat,
+        empty: exports.of(M.empty)
+    };
+}
+exports.getMonoid = getMonoid;
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Functor = {
+    URI: exports.URI,
+    map: map_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Applicative = {
+    URI: exports.URI,
+    map: map_,
+    ap: ap_,
+    of: exports.of
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Monad = {
+    URI: exports.URI,
+    map: map_,
+    ap: ap_,
+    of: exports.of,
+    chain: chain_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.MonadIO = {
+    URI: exports.URI,
+    map: map_,
+    ap: ap_,
+    of: exports.of,
+    chain: chain_,
+    fromIO: exports.fromIO
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.ChainRec = {
+    URI: exports.URI,
+    map: map_,
+    ap: ap_,
+    chain: chain_,
+    chainRec: chainRec_
+};
+// TODO: remove in v3
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.io = {
+    URI: exports.URI,
+    map: map_,
+    of: exports.of,
+    ap: ap_,
+    chain: chain_,
+    fromIO: exports.fromIO,
+    chainRec: chainRec_
+};
+// -------------------------------------------------------------------------------------
+// do notation
+// -------------------------------------------------------------------------------------
+/**
+ * @since 2.9.0
+ */
+exports.Do = 
+/*#__PURE__*/
+exports.of({});
+/**
+ * @since 2.8.0
+ */
+var bindTo = function (name) { return exports.map(function_1.bindTo_(name)); };
+exports.bindTo = bindTo;
+/**
+ * @since 2.8.0
+ */
+var bind = function (name, f) {
+    return exports.chain(function (a) {
+        return function_1.pipe(f(a), exports.map(function (b) { return function_1.bind_(a, name, b); }));
+    });
+};
+exports.bind = bind;
+// -------------------------------------------------------------------------------------
+// pipeable sequence S
+// -------------------------------------------------------------------------------------
+/**
+ * @since 2.8.0
+ */
+var apS = function (name, fb) {
+    return function_1.flow(exports.map(function (a) { return function (b) { return function_1.bind_(a, name, b); }; }), exports.ap(fb));
+};
+exports.apS = apS;
+// -------------------------------------------------------------------------------------
+// array utils
+// -------------------------------------------------------------------------------------
+/**
+ * @since 2.9.0
+ */
+var traverseArrayWithIndex = function (f) { return function (arr) { return function () { return arr.map(function (a, i) { return f(i, a)(); }); }; }; };
+exports.traverseArrayWithIndex = traverseArrayWithIndex;
+/**
+ * runs an action for every element in array, and accumulates the results IO in the array.
+ *
+ * this function has the same behavior of `A.traverse(IO.io)` but it's stack safe
+ *
+ * @example
+ * import * as RA from 'fp-ts/ReadonlyArray'
+ * import { traverseArray, IO } from 'fp-ts/IO'
+ * import { pipe } from 'fp-ts/function'
+ *
+ * const logger: Array<unknown> = []
+ * const log: <A>(a: A) => IO<void> = (a) => () => { logger.push(a) }
+ *
+ * pipe(RA.range(0, 100), traverseArray(log))()
+ * assert.deepStrictEqual(logger, RA.range(0, 100))
+ *
+ * @since 2.9.0
+ */
+var traverseArray = function (f) {
+    return exports.traverseArrayWithIndex(function (_, a) { return f(a); });
+};
+exports.traverseArray = traverseArray;
+/**
+ * transform Array of IO to IO of Array
+ *
+ * this function has the same behavior of `A.sequence(IO.io)` but it's stack safe
+ *
+ * @example
+ * import * as RA from 'fp-ts/ReadonlyArray'
+ * import { sequenceArray, IO } from 'fp-ts/IO'
+ * import { pipe } from 'fp-ts/function'
+ *
+ * const logger: Array<unknown> = []
+ * const log: <A>(a: A) => IO<void> = (a) => () => { logger.push(a) }
+ *
+ * pipe(RA.range(0, 100), RA.map(log), sequenceArray)()
+ * assert.deepStrictEqual(logger, RA.range(0, 100))
+ *
+ * @since 2.9.0
+ */
+exports.sequenceArray = 
+/*#__PURE__*/
+exports.traverseArray(function_1.identity);
+
+
+/***/ }),
+/* 848 */,
+/* 849 */,
+/* 850 */,
+/* 851 */,
+/* 852 */,
+/* 853 */,
+/* 854 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.store = exports.Comonad = exports.Functor = exports.URI = exports.map = exports.duplicate = exports.extract = exports.extend = exports.experiment = exports.peeks = exports.seeks = exports.seek = void 0;
+var function_1 = __webpack_require__(231);
+/**
+ * Reposition the focus at the specified position
+ *
+ * @since 2.0.0
+ */
+function seek(s) {
+    return function (wa) { return ({ peek: wa.peek, pos: s }); };
+}
+exports.seek = seek;
+/**
+ * Reposition the focus at the specified position, which depends on the current position
+ *
+ * @since 2.0.0
+ */
+function seeks(f) {
+    return function (wa) { return ({ peek: wa.peek, pos: f(wa.pos) }); };
+}
+exports.seeks = seeks;
+/**
+ * Extract a value from a position which depends on the current position
+ *
+ * @since 2.0.0
+ */
+function peeks(f) {
+    return function (wa) { return wa.peek(f(wa.pos)); };
+}
+exports.peeks = peeks;
+function experiment(F) {
+    return function (f) { return function (wa) { return F.map(f(wa.pos), function (s) { return wa.peek(s); }); }; };
+}
+exports.experiment = experiment;
+// -------------------------------------------------------------------------------------
+// non-pipeables
+// -------------------------------------------------------------------------------------
+/* istanbul ignore next */
+var map_ = function (fa, f) { return function_1.pipe(fa, exports.map(f)); };
+/* istanbul ignore next */
+var extend_ = function (wa, f) { return function_1.pipe(wa, exports.extend(f)); };
+// -------------------------------------------------------------------------------------
+// pipeables
+// -------------------------------------------------------------------------------------
+/**
+ * @category Extend
+ * @since 2.0.0
+ */
+var extend = function (f) { return function (wa) { return ({
+    peek: function (s) { return f({ peek: wa.peek, pos: s }); },
+    pos: wa.pos
+}); }; };
+exports.extend = extend;
+/**
+ * @category Extract
+ * @since 2.6.2
+ */
+var extract = function (wa) { return wa.peek(wa.pos); };
+exports.extract = extract;
+/**
+ * Derivable from `Extend`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.duplicate = 
+/*#__PURE__*/
+exports.extend(function_1.identity);
+/**
+ * `map` can be used to turn functions `(a: A) => B` into functions `(fa: F<A>) => F<B>` whose argument and return types
+ * use the type constructor `F` to represent some computational context.
+ *
+ * @category Functor
+ * @since 2.0.0
+ */
+var map = function (f) { return function (fa) { return ({
+    peek: function (s) { return f(fa.peek(s)); },
+    pos: fa.pos
+}); }; };
+exports.map = map;
+// -------------------------------------------------------------------------------------
+// instances
+// -------------------------------------------------------------------------------------
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.URI = 'Store';
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Functor = {
+    URI: exports.URI,
+    map: map_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Comonad = {
+    URI: exports.URI,
+    map: map_,
+    extend: extend_,
+    extract: exports.extract
+};
+// TODO: remove in v3
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.store = exports.Comonad;
+
+
+/***/ }),
+/* 855 */,
+/* 856 */
+/***/ (function(__unusedmodule, exports) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+
+
+/***/ }),
+/* 857 */,
+/* 858 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.statSync = exports.stat = exports.Settings = void 0;
-const async = __webpack_require__(728);
-const sync = __webpack_require__(593);
+const async = __webpack_require__(36);
+const sync = __webpack_require__(641);
 const settings_1 = __webpack_require__(872);
 exports.Settings = settings_1.default;
 function stat(path, optionsOrSettingsOrCallback, callback) {
@@ -15745,8 +36167,14 @@ function getSettings(settingsOrOptions = {}) {
 
 
 /***/ }),
-
-/***/ 866:
+/* 859 */,
+/* 860 */,
+/* 861 */,
+/* 862 */,
+/* 863 */,
+/* 864 */,
+/* 865 */,
+/* 866 */
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
 "use strict";
@@ -15772,8 +36200,68 @@ module.exports = function (str) {
 
 
 /***/ }),
+/* 867 */,
+/* 868 */
+/***/ (function(__unusedmodule, exports) {
 
-/***/ 872:
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.newIORef = exports.IORef = void 0;
+/**
+ * @example
+ * import { io } from 'fp-ts/IO'
+ * import { newIORef } from 'fp-ts/IORef'
+ *
+ * assert.strictEqual(io.chain(newIORef(1), ref => io.chain(ref.write(2), () => ref.read))(), 2)
+ *
+ * @category model
+ * @since 2.0.0
+ */
+var IORef = /** @class */ (function () {
+    function IORef(value) {
+        var _this = this;
+        this.value = value;
+        this.read = function () { return _this.value; };
+        this.write = this.write.bind(this);
+        this.modify = this.modify.bind(this);
+    }
+    /**
+     * @since 2.0.0
+     */
+    IORef.prototype.write = function (a) {
+        var _this = this;
+        return function () {
+            _this.value = a;
+        };
+    };
+    /**
+     * @since 2.0.0
+     */
+    IORef.prototype.modify = function (f) {
+        var _this = this;
+        return function () {
+            _this.value = f(_this.value);
+        };
+    };
+    return IORef;
+}());
+exports.IORef = IORef;
+/**
+ * @category constructors
+ * @since 2.0.0
+ */
+function newIORef(a) {
+    return function () { return new IORef(a); };
+}
+exports.newIORef = newIORef;
+
+
+/***/ }),
+/* 869 */,
+/* 870 */,
+/* 871 */,
+/* 872 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
@@ -15796,8 +36284,8 @@ exports.default = Settings;
 
 
 /***/ }),
-
-/***/ 874:
+/* 873 */,
+/* 874 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
@@ -15823,8 +36311,9 @@ exports.createFileSystemAdapter = createFileSystemAdapter;
 
 
 /***/ }),
-
-/***/ 877:
+/* 875 */,
+/* 876 */,
+/* 877 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
@@ -15847,8 +36336,10 @@ exports.default = default_1;
 
 
 /***/ }),
-
-/***/ 881:
+/* 878 */,
+/* 879 */,
+/* 880 */,
+/* 881 */
 /***/ (function(module) {
 
 "use strict";
@@ -15914,8 +36405,9 @@ module.exports = {
 
 
 /***/ }),
-
-/***/ 884:
+/* 882 */,
+/* 883 */,
+/* 884 */
 /***/ (function(__unusedmodule, exports) {
 
 "use strict";
@@ -15933,8 +36425,7 @@ exports.isEmpty = isEmpty;
 
 
 /***/ }),
-
-/***/ 885:
+/* 885 */
 /***/ (function(module) {
 
 /*! run-parallel. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
@@ -15989,8 +36480,8 @@ function runParallel (tasks, cb) {
 
 
 /***/ }),
-
-/***/ 887:
+/* 886 */,
+/* 887 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
@@ -16059,8 +36550,7 @@ exports.default = DeepFilter;
 
 
 /***/ }),
-
-/***/ 888:
+/* 888 */
 /***/ (function(module) {
 
 /*!
@@ -16086,8 +36576,16 @@ module.exports = function isExtglob(str) {
 
 
 /***/ }),
-
-/***/ 898:
+/* 889 */,
+/* 890 */,
+/* 891 */,
+/* 892 */,
+/* 893 */,
+/* 894 */,
+/* 895 */,
+/* 896 */,
+/* 897 */,
+/* 898 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
@@ -16179,47 +36677,1378 @@ exports.withCustomRequest = withCustomRequest;
 
 
 /***/ }),
-
-/***/ 914:
-/***/ (function(module) {
+/* 899 */,
+/* 900 */,
+/* 901 */,
+/* 902 */
+/***/ (function(module, __unusedexports, __webpack_require__) {
 
 "use strict";
-/*!
- * is-number <https://github.com/jonschlinkert/is-number>
- *
- * Copyright (c) 2014-present, Jon Schlinkert.
- * Released under the MIT License.
+
+
+const constants = __webpack_require__(199);
+const utils = __webpack_require__(265);
+
+/**
+ * Constants
  */
 
+const {
+  MAX_LENGTH,
+  POSIX_REGEX_SOURCE,
+  REGEX_NON_SPECIAL_CHARS,
+  REGEX_SPECIAL_CHARS_BACKREF,
+  REPLACEMENTS
+} = constants;
 
+/**
+ * Helpers
+ */
 
-module.exports = function(num) {
-  if (typeof num === 'number') {
-    return num - num === 0;
+const expandRange = (args, options) => {
+  if (typeof options.expandRange === 'function') {
+    return options.expandRange(...args, options);
   }
-  if (typeof num === 'string' && num.trim() !== '') {
-    return Number.isFinite ? Number.isFinite(+num) : isFinite(+num);
+
+  args.sort();
+  const value = `[${args.join('-')}]`;
+
+  try {
+    /* eslint-disable-next-line no-new */
+    new RegExp(value);
+  } catch (ex) {
+    return args.map(v => utils.escapeRegex(v)).join('..');
   }
-  return false;
+
+  return value;
 };
+
+/**
+ * Create the message for a syntax error
+ */
+
+const syntaxError = (type, char) => {
+  return `Missing ${type}: "${char}" - use "\\\\${char}" to match literal characters`;
+};
+
+/**
+ * Parse the given input string.
+ * @param {String} input
+ * @param {Object} options
+ * @return {Object}
+ */
+
+const parse = (input, options) => {
+  if (typeof input !== 'string') {
+    throw new TypeError('Expected a string');
+  }
+
+  input = REPLACEMENTS[input] || input;
+
+  const opts = { ...options };
+  const max = typeof opts.maxLength === 'number' ? Math.min(MAX_LENGTH, opts.maxLength) : MAX_LENGTH;
+
+  let len = input.length;
+  if (len > max) {
+    throw new SyntaxError(`Input length: ${len}, exceeds maximum allowed length: ${max}`);
+  }
+
+  const bos = { type: 'bos', value: '', output: opts.prepend || '' };
+  const tokens = [bos];
+
+  const capture = opts.capture ? '' : '?:';
+  const win32 = utils.isWindows(options);
+
+  // create constants based on platform, for windows or posix
+  const PLATFORM_CHARS = constants.globChars(win32);
+  const EXTGLOB_CHARS = constants.extglobChars(PLATFORM_CHARS);
+
+  const {
+    DOT_LITERAL,
+    PLUS_LITERAL,
+    SLASH_LITERAL,
+    ONE_CHAR,
+    DOTS_SLASH,
+    NO_DOT,
+    NO_DOT_SLASH,
+    NO_DOTS_SLASH,
+    QMARK,
+    QMARK_NO_DOT,
+    STAR,
+    START_ANCHOR
+  } = PLATFORM_CHARS;
+
+  const globstar = (opts) => {
+    return `(${capture}(?:(?!${START_ANCHOR}${opts.dot ? DOTS_SLASH : DOT_LITERAL}).)*?)`;
+  };
+
+  const nodot = opts.dot ? '' : NO_DOT;
+  const qmarkNoDot = opts.dot ? QMARK : QMARK_NO_DOT;
+  let star = opts.bash === true ? globstar(opts) : STAR;
+
+  if (opts.capture) {
+    star = `(${star})`;
+  }
+
+  // minimatch options support
+  if (typeof opts.noext === 'boolean') {
+    opts.noextglob = opts.noext;
+  }
+
+  const state = {
+    input,
+    index: -1,
+    start: 0,
+    dot: opts.dot === true,
+    consumed: '',
+    output: '',
+    prefix: '',
+    backtrack: false,
+    negated: false,
+    brackets: 0,
+    braces: 0,
+    parens: 0,
+    quotes: 0,
+    globstar: false,
+    tokens
+  };
+
+  input = utils.removePrefix(input, state);
+  len = input.length;
+
+  const extglobs = [];
+  const braces = [];
+  const stack = [];
+  let prev = bos;
+  let value;
+
+  /**
+   * Tokenizing helpers
+   */
+
+  const eos = () => state.index === len - 1;
+  const peek = state.peek = (n = 1) => input[state.index + n];
+  const advance = state.advance = () => input[++state.index];
+  const remaining = () => input.slice(state.index + 1);
+  const consume = (value = '', num = 0) => {
+    state.consumed += value;
+    state.index += num;
+  };
+  const append = token => {
+    state.output += token.output != null ? token.output : token.value;
+    consume(token.value);
+  };
+
+  const negate = () => {
+    let count = 1;
+
+    while (peek() === '!' && (peek(2) !== '(' || peek(3) === '?')) {
+      advance();
+      state.start++;
+      count++;
+    }
+
+    if (count % 2 === 0) {
+      return false;
+    }
+
+    state.negated = true;
+    state.start++;
+    return true;
+  };
+
+  const increment = type => {
+    state[type]++;
+    stack.push(type);
+  };
+
+  const decrement = type => {
+    state[type]--;
+    stack.pop();
+  };
+
+  /**
+   * Push tokens onto the tokens array. This helper speeds up
+   * tokenizing by 1) helping us avoid backtracking as much as possible,
+   * and 2) helping us avoid creating extra tokens when consecutive
+   * characters are plain text. This improves performance and simplifies
+   * lookbehinds.
+   */
+
+  const push = tok => {
+    if (prev.type === 'globstar') {
+      const isBrace = state.braces > 0 && (tok.type === 'comma' || tok.type === 'brace');
+      const isExtglob = tok.extglob === true || (extglobs.length && (tok.type === 'pipe' || tok.type === 'paren'));
+
+      if (tok.type !== 'slash' && tok.type !== 'paren' && !isBrace && !isExtglob) {
+        state.output = state.output.slice(0, -prev.output.length);
+        prev.type = 'star';
+        prev.value = '*';
+        prev.output = star;
+        state.output += prev.output;
+      }
+    }
+
+    if (extglobs.length && tok.type !== 'paren' && !EXTGLOB_CHARS[tok.value]) {
+      extglobs[extglobs.length - 1].inner += tok.value;
+    }
+
+    if (tok.value || tok.output) append(tok);
+    if (prev && prev.type === 'text' && tok.type === 'text') {
+      prev.value += tok.value;
+      prev.output = (prev.output || '') + tok.value;
+      return;
+    }
+
+    tok.prev = prev;
+    tokens.push(tok);
+    prev = tok;
+  };
+
+  const extglobOpen = (type, value) => {
+    const token = { ...EXTGLOB_CHARS[value], conditions: 1, inner: '' };
+
+    token.prev = prev;
+    token.parens = state.parens;
+    token.output = state.output;
+    const output = (opts.capture ? '(' : '') + token.open;
+
+    increment('parens');
+    push({ type, value, output: state.output ? '' : ONE_CHAR });
+    push({ type: 'paren', extglob: true, value: advance(), output });
+    extglobs.push(token);
+  };
+
+  const extglobClose = token => {
+    let output = token.close + (opts.capture ? ')' : '');
+
+    if (token.type === 'negate') {
+      let extglobStar = star;
+
+      if (token.inner && token.inner.length > 1 && token.inner.includes('/')) {
+        extglobStar = globstar(opts);
+      }
+
+      if (extglobStar !== star || eos() || /^\)+$/.test(remaining())) {
+        output = token.close = `)$))${extglobStar}`;
+      }
+
+      if (token.prev.type === 'bos' && eos()) {
+        state.negatedExtglob = true;
+      }
+    }
+
+    push({ type: 'paren', extglob: true, value, output });
+    decrement('parens');
+  };
+
+  /**
+   * Fast paths
+   */
+
+  if (opts.fastpaths !== false && !/(^[*!]|[/()[\]{}"])/.test(input)) {
+    let backslashes = false;
+
+    let output = input.replace(REGEX_SPECIAL_CHARS_BACKREF, (m, esc, chars, first, rest, index) => {
+      if (first === '\\') {
+        backslashes = true;
+        return m;
+      }
+
+      if (first === '?') {
+        if (esc) {
+          return esc + first + (rest ? QMARK.repeat(rest.length) : '');
+        }
+        if (index === 0) {
+          return qmarkNoDot + (rest ? QMARK.repeat(rest.length) : '');
+        }
+        return QMARK.repeat(chars.length);
+      }
+
+      if (first === '.') {
+        return DOT_LITERAL.repeat(chars.length);
+      }
+
+      if (first === '*') {
+        if (esc) {
+          return esc + first + (rest ? star : '');
+        }
+        return star;
+      }
+      return esc ? m : `\\${m}`;
+    });
+
+    if (backslashes === true) {
+      if (opts.unescape === true) {
+        output = output.replace(/\\/g, '');
+      } else {
+        output = output.replace(/\\+/g, m => {
+          return m.length % 2 === 0 ? '\\\\' : (m ? '\\' : '');
+        });
+      }
+    }
+
+    if (output === input && opts.contains === true) {
+      state.output = input;
+      return state;
+    }
+
+    state.output = utils.wrapOutput(output, state, options);
+    return state;
+  }
+
+  /**
+   * Tokenize input until we reach end-of-string
+   */
+
+  while (!eos()) {
+    value = advance();
+
+    if (value === '\u0000') {
+      continue;
+    }
+
+    /**
+     * Escaped characters
+     */
+
+    if (value === '\\') {
+      const next = peek();
+
+      if (next === '/' && opts.bash !== true) {
+        continue;
+      }
+
+      if (next === '.' || next === ';') {
+        continue;
+      }
+
+      if (!next) {
+        value += '\\';
+        push({ type: 'text', value });
+        continue;
+      }
+
+      // collapse slashes to reduce potential for exploits
+      const match = /^\\+/.exec(remaining());
+      let slashes = 0;
+
+      if (match && match[0].length > 2) {
+        slashes = match[0].length;
+        state.index += slashes;
+        if (slashes % 2 !== 0) {
+          value += '\\';
+        }
+      }
+
+      if (opts.unescape === true) {
+        value = advance() || '';
+      } else {
+        value += advance() || '';
+      }
+
+      if (state.brackets === 0) {
+        push({ type: 'text', value });
+        continue;
+      }
+    }
+
+    /**
+     * If we're inside a regex character class, continue
+     * until we reach the closing bracket.
+     */
+
+    if (state.brackets > 0 && (value !== ']' || prev.value === '[' || prev.value === '[^')) {
+      if (opts.posix !== false && value === ':') {
+        const inner = prev.value.slice(1);
+        if (inner.includes('[')) {
+          prev.posix = true;
+
+          if (inner.includes(':')) {
+            const idx = prev.value.lastIndexOf('[');
+            const pre = prev.value.slice(0, idx);
+            const rest = prev.value.slice(idx + 2);
+            const posix = POSIX_REGEX_SOURCE[rest];
+            if (posix) {
+              prev.value = pre + posix;
+              state.backtrack = true;
+              advance();
+
+              if (!bos.output && tokens.indexOf(prev) === 1) {
+                bos.output = ONE_CHAR;
+              }
+              continue;
+            }
+          }
+        }
+      }
+
+      if ((value === '[' && peek() !== ':') || (value === '-' && peek() === ']')) {
+        value = `\\${value}`;
+      }
+
+      if (value === ']' && (prev.value === '[' || prev.value === '[^')) {
+        value = `\\${value}`;
+      }
+
+      if (opts.posix === true && value === '!' && prev.value === '[') {
+        value = '^';
+      }
+
+      prev.value += value;
+      append({ value });
+      continue;
+    }
+
+    /**
+     * If we're inside a quoted string, continue
+     * until we reach the closing double quote.
+     */
+
+    if (state.quotes === 1 && value !== '"') {
+      value = utils.escapeRegex(value);
+      prev.value += value;
+      append({ value });
+      continue;
+    }
+
+    /**
+     * Double quotes
+     */
+
+    if (value === '"') {
+      state.quotes = state.quotes === 1 ? 0 : 1;
+      if (opts.keepQuotes === true) {
+        push({ type: 'text', value });
+      }
+      continue;
+    }
+
+    /**
+     * Parentheses
+     */
+
+    if (value === '(') {
+      increment('parens');
+      push({ type: 'paren', value });
+      continue;
+    }
+
+    if (value === ')') {
+      if (state.parens === 0 && opts.strictBrackets === true) {
+        throw new SyntaxError(syntaxError('opening', '('));
+      }
+
+      const extglob = extglobs[extglobs.length - 1];
+      if (extglob && state.parens === extglob.parens + 1) {
+        extglobClose(extglobs.pop());
+        continue;
+      }
+
+      push({ type: 'paren', value, output: state.parens ? ')' : '\\)' });
+      decrement('parens');
+      continue;
+    }
+
+    /**
+     * Square brackets
+     */
+
+    if (value === '[') {
+      if (opts.nobracket === true || !remaining().includes(']')) {
+        if (opts.nobracket !== true && opts.strictBrackets === true) {
+          throw new SyntaxError(syntaxError('closing', ']'));
+        }
+
+        value = `\\${value}`;
+      } else {
+        increment('brackets');
+      }
+
+      push({ type: 'bracket', value });
+      continue;
+    }
+
+    if (value === ']') {
+      if (opts.nobracket === true || (prev && prev.type === 'bracket' && prev.value.length === 1)) {
+        push({ type: 'text', value, output: `\\${value}` });
+        continue;
+      }
+
+      if (state.brackets === 0) {
+        if (opts.strictBrackets === true) {
+          throw new SyntaxError(syntaxError('opening', '['));
+        }
+
+        push({ type: 'text', value, output: `\\${value}` });
+        continue;
+      }
+
+      decrement('brackets');
+
+      const prevValue = prev.value.slice(1);
+      if (prev.posix !== true && prevValue[0] === '^' && !prevValue.includes('/')) {
+        value = `/${value}`;
+      }
+
+      prev.value += value;
+      append({ value });
+
+      // when literal brackets are explicitly disabled
+      // assume we should match with a regex character class
+      if (opts.literalBrackets === false || utils.hasRegexChars(prevValue)) {
+        continue;
+      }
+
+      const escaped = utils.escapeRegex(prev.value);
+      state.output = state.output.slice(0, -prev.value.length);
+
+      // when literal brackets are explicitly enabled
+      // assume we should escape the brackets to match literal characters
+      if (opts.literalBrackets === true) {
+        state.output += escaped;
+        prev.value = escaped;
+        continue;
+      }
+
+      // when the user specifies nothing, try to match both
+      prev.value = `(${capture}${escaped}|${prev.value})`;
+      state.output += prev.value;
+      continue;
+    }
+
+    /**
+     * Braces
+     */
+
+    if (value === '{' && opts.nobrace !== true) {
+      increment('braces');
+
+      const open = {
+        type: 'brace',
+        value,
+        output: '(',
+        outputIndex: state.output.length,
+        tokensIndex: state.tokens.length
+      };
+
+      braces.push(open);
+      push(open);
+      continue;
+    }
+
+    if (value === '}') {
+      const brace = braces[braces.length - 1];
+
+      if (opts.nobrace === true || !brace) {
+        push({ type: 'text', value, output: value });
+        continue;
+      }
+
+      let output = ')';
+
+      if (brace.dots === true) {
+        const arr = tokens.slice();
+        const range = [];
+
+        for (let i = arr.length - 1; i >= 0; i--) {
+          tokens.pop();
+          if (arr[i].type === 'brace') {
+            break;
+          }
+          if (arr[i].type !== 'dots') {
+            range.unshift(arr[i].value);
+          }
+        }
+
+        output = expandRange(range, opts);
+        state.backtrack = true;
+      }
+
+      if (brace.comma !== true && brace.dots !== true) {
+        const out = state.output.slice(0, brace.outputIndex);
+        const toks = state.tokens.slice(brace.tokensIndex);
+        brace.value = brace.output = '\\{';
+        value = output = '\\}';
+        state.output = out;
+        for (const t of toks) {
+          state.output += (t.output || t.value);
+        }
+      }
+
+      push({ type: 'brace', value, output });
+      decrement('braces');
+      braces.pop();
+      continue;
+    }
+
+    /**
+     * Pipes
+     */
+
+    if (value === '|') {
+      if (extglobs.length > 0) {
+        extglobs[extglobs.length - 1].conditions++;
+      }
+      push({ type: 'text', value });
+      continue;
+    }
+
+    /**
+     * Commas
+     */
+
+    if (value === ',') {
+      let output = value;
+
+      const brace = braces[braces.length - 1];
+      if (brace && stack[stack.length - 1] === 'braces') {
+        brace.comma = true;
+        output = '|';
+      }
+
+      push({ type: 'comma', value, output });
+      continue;
+    }
+
+    /**
+     * Slashes
+     */
+
+    if (value === '/') {
+      // if the beginning of the glob is "./", advance the start
+      // to the current index, and don't add the "./" characters
+      // to the state. This greatly simplifies lookbehinds when
+      // checking for BOS characters like "!" and "." (not "./")
+      if (prev.type === 'dot' && state.index === state.start + 1) {
+        state.start = state.index + 1;
+        state.consumed = '';
+        state.output = '';
+        tokens.pop();
+        prev = bos; // reset "prev" to the first token
+        continue;
+      }
+
+      push({ type: 'slash', value, output: SLASH_LITERAL });
+      continue;
+    }
+
+    /**
+     * Dots
+     */
+
+    if (value === '.') {
+      if (state.braces > 0 && prev.type === 'dot') {
+        if (prev.value === '.') prev.output = DOT_LITERAL;
+        const brace = braces[braces.length - 1];
+        prev.type = 'dots';
+        prev.output += value;
+        prev.value += value;
+        brace.dots = true;
+        continue;
+      }
+
+      if ((state.braces + state.parens) === 0 && prev.type !== 'bos' && prev.type !== 'slash') {
+        push({ type: 'text', value, output: DOT_LITERAL });
+        continue;
+      }
+
+      push({ type: 'dot', value, output: DOT_LITERAL });
+      continue;
+    }
+
+    /**
+     * Question marks
+     */
+
+    if (value === '?') {
+      const isGroup = prev && prev.value === '(';
+      if (!isGroup && opts.noextglob !== true && peek() === '(' && peek(2) !== '?') {
+        extglobOpen('qmark', value);
+        continue;
+      }
+
+      if (prev && prev.type === 'paren') {
+        const next = peek();
+        let output = value;
+
+        if (next === '<' && !utils.supportsLookbehinds()) {
+          throw new Error('Node.js v10 or higher is required for regex lookbehinds');
+        }
+
+        if ((prev.value === '(' && !/[!=<:]/.test(next)) || (next === '<' && !/<([!=]|\w+>)/.test(remaining()))) {
+          output = `\\${value}`;
+        }
+
+        push({ type: 'text', value, output });
+        continue;
+      }
+
+      if (opts.dot !== true && (prev.type === 'slash' || prev.type === 'bos')) {
+        push({ type: 'qmark', value, output: QMARK_NO_DOT });
+        continue;
+      }
+
+      push({ type: 'qmark', value, output: QMARK });
+      continue;
+    }
+
+    /**
+     * Exclamation
+     */
+
+    if (value === '!') {
+      if (opts.noextglob !== true && peek() === '(') {
+        if (peek(2) !== '?' || !/[!=<:]/.test(peek(3))) {
+          extglobOpen('negate', value);
+          continue;
+        }
+      }
+
+      if (opts.nonegate !== true && state.index === 0) {
+        negate();
+        continue;
+      }
+    }
+
+    /**
+     * Plus
+     */
+
+    if (value === '+') {
+      if (opts.noextglob !== true && peek() === '(' && peek(2) !== '?') {
+        extglobOpen('plus', value);
+        continue;
+      }
+
+      if ((prev && prev.value === '(') || opts.regex === false) {
+        push({ type: 'plus', value, output: PLUS_LITERAL });
+        continue;
+      }
+
+      if ((prev && (prev.type === 'bracket' || prev.type === 'paren' || prev.type === 'brace')) || state.parens > 0) {
+        push({ type: 'plus', value });
+        continue;
+      }
+
+      push({ type: 'plus', value: PLUS_LITERAL });
+      continue;
+    }
+
+    /**
+     * Plain text
+     */
+
+    if (value === '@') {
+      if (opts.noextglob !== true && peek() === '(' && peek(2) !== '?') {
+        push({ type: 'at', extglob: true, value, output: '' });
+        continue;
+      }
+
+      push({ type: 'text', value });
+      continue;
+    }
+
+    /**
+     * Plain text
+     */
+
+    if (value !== '*') {
+      if (value === '$' || value === '^') {
+        value = `\\${value}`;
+      }
+
+      const match = REGEX_NON_SPECIAL_CHARS.exec(remaining());
+      if (match) {
+        value += match[0];
+        state.index += match[0].length;
+      }
+
+      push({ type: 'text', value });
+      continue;
+    }
+
+    /**
+     * Stars
+     */
+
+    if (prev && (prev.type === 'globstar' || prev.star === true)) {
+      prev.type = 'star';
+      prev.star = true;
+      prev.value += value;
+      prev.output = star;
+      state.backtrack = true;
+      state.globstar = true;
+      consume(value);
+      continue;
+    }
+
+    let rest = remaining();
+    if (opts.noextglob !== true && /^\([^?]/.test(rest)) {
+      extglobOpen('star', value);
+      continue;
+    }
+
+    if (prev.type === 'star') {
+      if (opts.noglobstar === true) {
+        consume(value);
+        continue;
+      }
+
+      const prior = prev.prev;
+      const before = prior.prev;
+      const isStart = prior.type === 'slash' || prior.type === 'bos';
+      const afterStar = before && (before.type === 'star' || before.type === 'globstar');
+
+      if (opts.bash === true && (!isStart || (rest[0] && rest[0] !== '/'))) {
+        push({ type: 'star', value, output: '' });
+        continue;
+      }
+
+      const isBrace = state.braces > 0 && (prior.type === 'comma' || prior.type === 'brace');
+      const isExtglob = extglobs.length && (prior.type === 'pipe' || prior.type === 'paren');
+      if (!isStart && prior.type !== 'paren' && !isBrace && !isExtglob) {
+        push({ type: 'star', value, output: '' });
+        continue;
+      }
+
+      // strip consecutive `/**/`
+      while (rest.slice(0, 3) === '/**') {
+        const after = input[state.index + 4];
+        if (after && after !== '/') {
+          break;
+        }
+        rest = rest.slice(3);
+        consume('/**', 3);
+      }
+
+      if (prior.type === 'bos' && eos()) {
+        prev.type = 'globstar';
+        prev.value += value;
+        prev.output = globstar(opts);
+        state.output = prev.output;
+        state.globstar = true;
+        consume(value);
+        continue;
+      }
+
+      if (prior.type === 'slash' && prior.prev.type !== 'bos' && !afterStar && eos()) {
+        state.output = state.output.slice(0, -(prior.output + prev.output).length);
+        prior.output = `(?:${prior.output}`;
+
+        prev.type = 'globstar';
+        prev.output = globstar(opts) + (opts.strictSlashes ? ')' : '|$)');
+        prev.value += value;
+        state.globstar = true;
+        state.output += prior.output + prev.output;
+        consume(value);
+        continue;
+      }
+
+      if (prior.type === 'slash' && prior.prev.type !== 'bos' && rest[0] === '/') {
+        const end = rest[1] !== void 0 ? '|$' : '';
+
+        state.output = state.output.slice(0, -(prior.output + prev.output).length);
+        prior.output = `(?:${prior.output}`;
+
+        prev.type = 'globstar';
+        prev.output = `${globstar(opts)}${SLASH_LITERAL}|${SLASH_LITERAL}${end})`;
+        prev.value += value;
+
+        state.output += prior.output + prev.output;
+        state.globstar = true;
+
+        consume(value + advance());
+
+        push({ type: 'slash', value: '/', output: '' });
+        continue;
+      }
+
+      if (prior.type === 'bos' && rest[0] === '/') {
+        prev.type = 'globstar';
+        prev.value += value;
+        prev.output = `(?:^|${SLASH_LITERAL}|${globstar(opts)}${SLASH_LITERAL})`;
+        state.output = prev.output;
+        state.globstar = true;
+        consume(value + advance());
+        push({ type: 'slash', value: '/', output: '' });
+        continue;
+      }
+
+      // remove single star from output
+      state.output = state.output.slice(0, -prev.output.length);
+
+      // reset previous token to globstar
+      prev.type = 'globstar';
+      prev.output = globstar(opts);
+      prev.value += value;
+
+      // reset output with globstar
+      state.output += prev.output;
+      state.globstar = true;
+      consume(value);
+      continue;
+    }
+
+    const token = { type: 'star', value, output: star };
+
+    if (opts.bash === true) {
+      token.output = '.*?';
+      if (prev.type === 'bos' || prev.type === 'slash') {
+        token.output = nodot + token.output;
+      }
+      push(token);
+      continue;
+    }
+
+    if (prev && (prev.type === 'bracket' || prev.type === 'paren') && opts.regex === true) {
+      token.output = value;
+      push(token);
+      continue;
+    }
+
+    if (state.index === state.start || prev.type === 'slash' || prev.type === 'dot') {
+      if (prev.type === 'dot') {
+        state.output += NO_DOT_SLASH;
+        prev.output += NO_DOT_SLASH;
+
+      } else if (opts.dot === true) {
+        state.output += NO_DOTS_SLASH;
+        prev.output += NO_DOTS_SLASH;
+
+      } else {
+        state.output += nodot;
+        prev.output += nodot;
+      }
+
+      if (peek() !== '*') {
+        state.output += ONE_CHAR;
+        prev.output += ONE_CHAR;
+      }
+    }
+
+    push(token);
+  }
+
+  while (state.brackets > 0) {
+    if (opts.strictBrackets === true) throw new SyntaxError(syntaxError('closing', ']'));
+    state.output = utils.escapeLast(state.output, '[');
+    decrement('brackets');
+  }
+
+  while (state.parens > 0) {
+    if (opts.strictBrackets === true) throw new SyntaxError(syntaxError('closing', ')'));
+    state.output = utils.escapeLast(state.output, '(');
+    decrement('parens');
+  }
+
+  while (state.braces > 0) {
+    if (opts.strictBrackets === true) throw new SyntaxError(syntaxError('closing', '}'));
+    state.output = utils.escapeLast(state.output, '{');
+    decrement('braces');
+  }
+
+  if (opts.strictSlashes !== true && (prev.type === 'star' || prev.type === 'bracket')) {
+    push({ type: 'maybe_slash', value: '', output: `${SLASH_LITERAL}?` });
+  }
+
+  // rebuild the output if we had to backtrack at any point
+  if (state.backtrack === true) {
+    state.output = '';
+
+    for (const token of state.tokens) {
+      state.output += token.output != null ? token.output : token.value;
+
+      if (token.suffix) {
+        state.output += token.suffix;
+      }
+    }
+  }
+
+  return state;
+};
+
+/**
+ * Fast paths for creating regular expressions for common glob patterns.
+ * This can significantly speed up processing and has very little downside
+ * impact when none of the fast paths match.
+ */
+
+parse.fastpaths = (input, options) => {
+  const opts = { ...options };
+  const max = typeof opts.maxLength === 'number' ? Math.min(MAX_LENGTH, opts.maxLength) : MAX_LENGTH;
+  const len = input.length;
+  if (len > max) {
+    throw new SyntaxError(`Input length: ${len}, exceeds maximum allowed length: ${max}`);
+  }
+
+  input = REPLACEMENTS[input] || input;
+  const win32 = utils.isWindows(options);
+
+  // create constants based on platform, for windows or posix
+  const {
+    DOT_LITERAL,
+    SLASH_LITERAL,
+    ONE_CHAR,
+    DOTS_SLASH,
+    NO_DOT,
+    NO_DOTS,
+    NO_DOTS_SLASH,
+    STAR,
+    START_ANCHOR
+  } = constants.globChars(win32);
+
+  const nodot = opts.dot ? NO_DOTS : NO_DOT;
+  const slashDot = opts.dot ? NO_DOTS_SLASH : NO_DOT;
+  const capture = opts.capture ? '' : '?:';
+  const state = { negated: false, prefix: '' };
+  let star = opts.bash === true ? '.*?' : STAR;
+
+  if (opts.capture) {
+    star = `(${star})`;
+  }
+
+  const globstar = (opts) => {
+    if (opts.noglobstar === true) return star;
+    return `(${capture}(?:(?!${START_ANCHOR}${opts.dot ? DOTS_SLASH : DOT_LITERAL}).)*?)`;
+  };
+
+  const create = str => {
+    switch (str) {
+      case '*':
+        return `${nodot}${ONE_CHAR}${star}`;
+
+      case '.*':
+        return `${DOT_LITERAL}${ONE_CHAR}${star}`;
+
+      case '*.*':
+        return `${nodot}${star}${DOT_LITERAL}${ONE_CHAR}${star}`;
+
+      case '*/*':
+        return `${nodot}${star}${SLASH_LITERAL}${ONE_CHAR}${slashDot}${star}`;
+
+      case '**':
+        return nodot + globstar(opts);
+
+      case '**/*':
+        return `(?:${nodot}${globstar(opts)}${SLASH_LITERAL})?${slashDot}${ONE_CHAR}${star}`;
+
+      case '**/*.*':
+        return `(?:${nodot}${globstar(opts)}${SLASH_LITERAL})?${slashDot}${star}${DOT_LITERAL}${ONE_CHAR}${star}`;
+
+      case '**/.*':
+        return `(?:${nodot}${globstar(opts)}${SLASH_LITERAL})?${DOT_LITERAL}${ONE_CHAR}${star}`;
+
+      default: {
+        const match = /^(.*?)\.(\w+)$/.exec(str);
+        if (!match) return;
+
+        const source = create(match[1]);
+        if (!source) return;
+
+        return source + DOT_LITERAL + match[2];
+      }
+    }
+  };
+
+  const output = utils.removePrefix(input, state);
+  let source = create(output);
+
+  if (source && opts.strictSlashes !== true) {
+    source += `${SLASH_LITERAL}?`;
+  }
+
+  return source;
+};
+
+module.exports = parse;
 
 
 /***/ }),
-
-/***/ 933:
+/* 903 */,
+/* 904 */,
+/* 905 */,
+/* 906 */,
+/* 907 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.fs = void 0;
-const fs = __webpack_require__(210);
-exports.fs = fs;
+exports.getTupleRing = exports.negate = exports.getFunctionRing = void 0;
+/**
+ * The `Ring` class is for types that support addition, multiplication, and subtraction operations.
+ *
+ * Instances must satisfy the following law in addition to the `Semiring` laws:
+ *
+ * - Additive inverse: `a - a <-> (zero - a) + a <-> zero`
+ *
+ * Adapted from https://github.com/purescript/purescript-prelude/blob/master/src/Data/Ring.purs
+ *
+ * @since 2.0.0
+ */
+var Semiring_1 = __webpack_require__(754);
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+function getFunctionRing(ring) {
+    var S = Semiring_1.getFunctionSemiring(ring);
+    return {
+        add: S.add,
+        mul: S.mul,
+        one: S.one,
+        zero: S.zero,
+        sub: function (f, g) { return function (x) { return ring.sub(f(x), g(x)); }; }
+    };
+}
+exports.getFunctionRing = getFunctionRing;
+/**
+ * `negate x` can be used as a shorthand for `zero - x`
+ *
+ * @since 2.0.0
+ */
+function negate(ring) {
+    return function (a) { return ring.sub(ring.zero, a); };
+}
+exports.negate = negate;
+/**
+ * Given a tuple of `Ring`s returns a `Ring` for the tuple
+ *
+ * @example
+ * import { getTupleRing } from 'fp-ts/Ring'
+ * import { fieldNumber } from 'fp-ts/Field'
+ *
+ * const R = getTupleRing(fieldNumber, fieldNumber, fieldNumber)
+ * assert.deepStrictEqual(R.add([1, 2, 3], [4, 5, 6]), [5, 7, 9])
+ * assert.deepStrictEqual(R.mul([1, 2, 3], [4, 5, 6]), [4, 10, 18])
+ * assert.deepStrictEqual(R.one, [1, 1, 1])
+ * assert.deepStrictEqual(R.sub([1, 2, 3], [4, 5, 6]), [-3, -3, -3])
+ * assert.deepStrictEqual(R.zero, [0, 0, 0])
+ *
+ * @category instances
+ * @since 2.0.0
+ */
+function getTupleRing() {
+    var rings = [];
+    for (var _i = 0; _i < arguments.length; _i++) {
+        rings[_i] = arguments[_i];
+    }
+    return {
+        add: function (x, y) { return rings.map(function (R, i) { return R.add(x[i], y[i]); }); },
+        zero: rings.map(function (R) { return R.zero; }),
+        mul: function (x, y) { return rings.map(function (R, i) { return R.mul(x[i], y[i]); }); },
+        one: rings.map(function (R) { return R.one; }),
+        sub: function (x, y) { return rings.map(function (R, i) { return R.sub(x[i], y[i]); }); }
+    };
+}
+exports.getTupleRing = getTupleRing;
 
 
 /***/ }),
+/* 908 */,
+/* 909 */,
+/* 910 */,
+/* 911 */,
+/* 912 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
 
-/***/ 948:
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const utils = __webpack_require__(444);
+class EntryTransformer {
+    constructor(_settings) {
+        this._settings = _settings;
+    }
+    getTransformer() {
+        return (entry) => this._transform(entry);
+    }
+    _transform(entry) {
+        let filepath = entry.path;
+        if (this._settings.absolute) {
+            filepath = utils.path.makeAbsolute(this._settings.cwd, filepath);
+            filepath = utils.path.unixify(filepath);
+        }
+        if (this._settings.markDirectories && entry.dirent.isDirectory()) {
+            filepath += '/';
+        }
+        if (!this._settings.objectMode) {
+            return filepath;
+        }
+        return Object.assign(Object.assign({}, entry), { path: filepath });
+    }
+}
+exports.default = EntryTransformer;
+
+
+/***/ }),
+/* 913 */
+/***/ (function(__unusedmodule, exports) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+
+
+/***/ }),
+/* 914 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.randomBool = exports.randomRange = exports.randomInt = exports.random = void 0;
+/**
+ * @since 2.0.0
+ */
+var IO_1 = __webpack_require__(847);
+var function_1 = __webpack_require__(231);
+/**
+ * Returns a random number between 0 (inclusive) and 1 (exclusive). This is a direct wrapper around JavaScript's
+ * `Math.random()`.
+ *
+ * @since 2.0.0
+ */
+var random = function () { return Math.random(); };
+exports.random = random;
+/**
+ * Takes a range specified by `low` (the first argument) and `high` (the second), and returns a random integer uniformly
+ * distributed in the closed interval `[low, high]`. It is unspecified what happens if `low > high`, or if either of
+ * `low` or `high` is not an integer.
+ *
+ * @since 2.0.0
+ */
+function randomInt(low, high) {
+    return function_1.pipe(exports.random, IO_1.map(function (n) { return Math.floor((high - low + 1) * n + low); }));
+}
+exports.randomInt = randomInt;
+/**
+ * Returns a random number between a minimum value (inclusive) and a maximum value (exclusive). It is unspecified what
+ * happens if `maximum < minimum`.
+ *
+ * @since 2.0.0
+ */
+function randomRange(min, max) {
+    return function_1.pipe(exports.random, IO_1.map(function (n) { return (max - min) * n + min; }));
+}
+exports.randomRange = randomRange;
+/**
+ * Returns a random boolean value with an equal chance of being `true` or `false`
+ *
+ * @since 2.0.0
+ */
+exports.randomBool = 
+/*#__PURE__*/
+function_1.pipe(exports.random, IO_1.map(function (n) { return n < 0.5; }));
+
+
+/***/ }),
+/* 915 */,
+/* 916 */,
+/* 917 */,
+/* 918 */,
+/* 919 */,
+/* 920 */
+/***/ (function(__unusedmodule, exports) {
+
+"use strict";
+
+/**
+ * A meet-semilattice (or lower semilattice) is a semilattice whose operation is called `meet`, and which can be thought
+ * of as a greatest lower bound.
+ *
+ * A `MeetSemilattice` must satisfy the following laws:
+ *
+ * - Associativity: `a ∧ (b ∧ c) <-> (a ∧ b) ∧ c`
+ * - Commutativity: `a ∧ b <-> b ∧ a`
+ * - Idempotency:   `a ∧ a <-> a`
+ *
+ * @since 2.0.0
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+
+
+/***/ }),
+/* 921 */,
+/* 922 */,
+/* 923 */,
+/* 924 */,
+/* 925 */,
+/* 926 */
+/***/ (function(__unusedmodule, exports) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+
+
+/***/ }),
+/* 927 */,
+/* 928 */,
+/* 929 */,
+/* 930 */,
+/* 931 */,
+/* 932 */,
+/* 933 */
+/***/ (function(__unusedmodule, exports) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.splitWhen = exports.flatten = void 0;
+function flatten(items) {
+    return items.reduce((collection, item) => [].concat(collection, item), []);
+}
+exports.flatten = flatten;
+function splitWhen(items, predicate) {
+    const result = [[]];
+    let groupIndex = 0;
+    for (const item of items) {
+        if (predicate(item)) {
+            groupIndex++;
+            result[groupIndex] = [];
+        }
+        else {
+            result[groupIndex].push(item);
+        }
+    }
+    return result;
+}
+exports.splitWhen = splitWhen;
+
+
+/***/ }),
+/* 934 */,
+/* 935 */,
+/* 936 */,
+/* 937 */,
+/* 938 */,
+/* 939 */,
+/* 940 */,
+/* 941 */,
+/* 942 */,
+/* 943 */
+/***/ (function(__unusedmodule, exports) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getFunctorComposition = void 0;
+function getFunctorComposition(F, G) {
+    return {
+        map: function (fa, f) { return F.map(fa, function (ga) { return G.map(ga, f); }); }
+    };
+}
+exports.getFunctorComposition = getFunctorComposition;
+
+
+/***/ }),
+/* 944 */,
+/* 945 */,
+/* 946 */,
+/* 947 */,
+/* 948 */
 /***/ (function(module) {
 
 "use strict";
@@ -16237,8 +38066,7 @@ module.exports = function(fn) {
 }
 
 /***/ }),
-
-/***/ 949:
+/* 949 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
@@ -16278,8 +38106,7 @@ exports.default = Reader;
 
 
 /***/ }),
-
-/***/ 950:
+/* 950 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
@@ -16344,8 +38171,10 @@ exports.checkBypass = checkBypass;
 
 
 /***/ }),
-
-/***/ 954:
+/* 951 */,
+/* 952 */,
+/* 953 */,
+/* 954 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
@@ -16359,8 +38188,7 @@ Object.defineProperty(exports, "npm", { enumerable: true, get: function () { ret
 
 
 /***/ }),
-
-/***/ 955:
+/* 955 */
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
 "use strict";
@@ -16728,8 +38556,323 @@ module.exports.shellSync = (cmd, opts) => handleShell(module.exports.sync, cmd, 
 
 
 /***/ }),
+/* 956 */,
+/* 957 */,
+/* 958 */,
+/* 959 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
 
-/***/ 962:
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getJoinMonoid = exports.getMeetMonoid = exports.getStructMonoid = exports.getEndomorphismMonoid = exports.getFunctionMonoid = exports.getDualMonoid = exports.getTupleMonoid = exports.fold = exports.monoidVoid = exports.monoidString = exports.monoidProduct = exports.monoidSum = exports.monoidAny = exports.monoidAll = void 0;
+var function_1 = __webpack_require__(231);
+var S = __importStar(__webpack_require__(156));
+/**
+ * `boolean` monoid under conjunction.
+ *
+ * The `empty` value is `true`.
+ *
+ * @example
+ * import * as M from 'fp-ts/Monoid'
+ *
+ * assert.deepStrictEqual(M.monoidAll.concat(true, true), true)
+ * assert.deepStrictEqual(M.monoidAll.concat(true, false), false)
+ *
+ * @category instances
+ * @since 2.0.0
+ */
+exports.monoidAll = {
+    concat: S.semigroupAll.concat,
+    empty: true
+};
+/**
+ * `boolean` monoid under disjunction.
+ *
+ * The `empty` value is `false`.
+ *
+ * @example
+ * import * as M from 'fp-ts/Monoid'
+ *
+ * assert.deepStrictEqual(M.monoidAny.concat(true, true), true)
+ * assert.deepStrictEqual(M.monoidAny.concat(true, false), true)
+ * assert.deepStrictEqual(M.monoidAny.concat(false, false), false)
+ *
+ * @category instances
+ * @since 2.0.0
+ */
+exports.monoidAny = {
+    concat: S.semigroupAny.concat,
+    empty: false
+};
+/**
+ * `number` monoid under addition.
+ *
+ * The `empty` value is `0`.
+ *
+ * @example
+ * import * as M from 'fp-ts/Monoid'
+ *
+ * assert.deepStrictEqual(M.monoidSum.concat(2, 3), 5)
+ *
+ * @category instances
+ * @since 2.0.0
+ */
+exports.monoidSum = {
+    concat: S.semigroupSum.concat,
+    empty: 0
+};
+/**
+ * `number` monoid under multiplication.
+ *
+ * The `empty` value is `1`.
+ *
+ * @example
+ * import * as M from 'fp-ts/Monoid'
+ *
+ * assert.deepStrictEqual(M.monoidProduct.concat(2, 3), 6)
+ *
+ * @category instances
+ * @since 2.0.0
+ */
+exports.monoidProduct = {
+    concat: S.semigroupProduct.concat,
+    empty: 1
+};
+/**
+ * `string` monoid under concatenation.
+ *
+ * The `empty` value is `''`.
+ *
+ * @example
+ * import * as M from 'fp-ts/Monoid'
+ *
+ * assert.deepStrictEqual(M.monoidString.concat('a', 'b'), 'ab')
+ *
+ * @category instances
+ * @since 2.0.0
+ */
+exports.monoidString = {
+    concat: S.semigroupString.concat,
+    empty: ''
+};
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.monoidVoid = {
+    concat: S.semigroupVoid.concat,
+    empty: undefined
+};
+/**
+ * Given a sequence of `as`, concat them and return the total.
+ *
+ * If `as` is empty, return the monoid `empty` value.
+ *
+ * @example
+ * import * as M from 'fp-ts/Monoid'
+ *
+ * assert.deepStrictEqual(M.fold(M.monoidSum)([1, 2, 3]), 6)
+ * assert.deepStrictEqual(M.fold(M.monoidSum)([]), 0)
+ *
+ * @since 2.0.0
+ */
+function fold(M) {
+    return S.fold(M)(M.empty);
+}
+exports.fold = fold;
+/**
+ * Given a tuple of monoids returns a monoid for the tuple
+ *
+ * @example
+ * import { getTupleMonoid, monoidString, monoidSum, monoidAll } from 'fp-ts/Monoid'
+ *
+ * const M1 = getTupleMonoid(monoidString, monoidSum)
+ * assert.deepStrictEqual(M1.concat(['a', 1], ['b', 2]), ['ab', 3])
+ *
+ * const M2 = getTupleMonoid(monoidString, monoidSum, monoidAll)
+ * assert.deepStrictEqual(M2.concat(['a', 1, true], ['b', 2, false]), ['ab', 3, false])
+ *
+ * @category instances
+ * @since 2.0.0
+ */
+function getTupleMonoid() {
+    var monoids = [];
+    for (var _i = 0; _i < arguments.length; _i++) {
+        monoids[_i] = arguments[_i];
+    }
+    return {
+        concat: S.getTupleSemigroup.apply(S, monoids).concat,
+        empty: monoids.map(function (m) { return m.empty; })
+    };
+}
+exports.getTupleMonoid = getTupleMonoid;
+/**
+ * The dual of a `Monoid`, obtained by swapping the arguments of `concat`.
+ *
+ * @example
+ * import { getDualMonoid, monoidString } from 'fp-ts/Monoid'
+ *
+ * assert.deepStrictEqual(getDualMonoid(monoidString).concat('a', 'b'), 'ba')
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+function getDualMonoid(M) {
+    return {
+        concat: S.getDualSemigroup(M).concat,
+        empty: M.empty
+    };
+}
+exports.getDualMonoid = getDualMonoid;
+/**
+ * Unary functions form a monoid as long as you can provide a monoid for the codomain.
+ *
+ * @example
+ * import { Predicate } from 'fp-ts/function'
+ * import * as M from 'fp-ts/Monoid'
+ *
+ * const f: Predicate<number> = (n) => n <= 2
+ * const g: Predicate<number> = (n) => n >= 0
+ *
+ * const M1 = M.getFunctionMonoid(M.monoidAll)<number>()
+ *
+ * assert.deepStrictEqual(M1.concat(f, g)(1), true)
+ * assert.deepStrictEqual(M1.concat(f, g)(3), false)
+ *
+ * const M2 = M.getFunctionMonoid(M.monoidAny)<number>()
+ *
+ * assert.deepStrictEqual(M2.concat(f, g)(1), true)
+ * assert.deepStrictEqual(M2.concat(f, g)(3), true)
+ *
+ * @category instances
+ * @since 2.0.0
+ */
+function getFunctionMonoid(M) {
+    return function () { return ({
+        concat: S.getFunctionSemigroup(M)().concat,
+        empty: function () { return M.empty; }
+    }); };
+}
+exports.getFunctionMonoid = getFunctionMonoid;
+// TODO: swap execution order in v3
+/**
+ * Endomorphism form a monoid where the `empty` value is the identity function.
+ *
+ * @category instances
+ * @since 2.0.0
+ */
+function getEndomorphismMonoid() {
+    return {
+        concat: function (x, y) { return function (a) { return x(y(a)); }; },
+        empty: function_1.identity
+    };
+}
+exports.getEndomorphismMonoid = getEndomorphismMonoid;
+/**
+ * Given a struct of monoids returns a monoid for the struct.
+ *
+ * @example
+ * import * as M from 'fp-ts/Monoid'
+ *
+ * interface Point {
+ *   readonly x: number
+ *   readonly y: number
+ * }
+ *
+ * const monoidPoint = M.getStructMonoid<Point>({
+ *   x: M.monoidSum,
+ *   y: M.monoidSum
+ * })
+ *
+ * assert.deepStrictEqual(monoidPoint.concat({ x: 1, y: 2 }, { x: 3, y: 4 }), { x: 4, y: 6 })
+ *
+ * @category instances
+ * @since 2.0.0
+ */
+function getStructMonoid(monoids) {
+    var empty = {};
+    for (var _i = 0, _a = Object.keys(monoids); _i < _a.length; _i++) {
+        var key = _a[_i];
+        empty[key] = monoids[key].empty;
+    }
+    return {
+        concat: S.getStructSemigroup(monoids).concat,
+        empty: empty
+    };
+}
+exports.getStructMonoid = getStructMonoid;
+/**
+ * Get a monoid where `concat` will return the minimum, based on the provided bounded order.
+ *
+ * The `empty` value is the `top` value.
+ *
+ * @example
+ * import * as B from 'fp-ts/Bounded'
+ * import * as M from 'fp-ts/Monoid'
+ *
+ * const M1 = M.getMeetMonoid(B.boundedNumber)
+ *
+ * assert.deepStrictEqual(M1.concat(1, 2), 1)
+ *
+ * @category instances
+ * @since 2.0.0
+ */
+function getMeetMonoid(B) {
+    return {
+        concat: S.getMeetSemigroup(B).concat,
+        empty: B.top
+    };
+}
+exports.getMeetMonoid = getMeetMonoid;
+/**
+ * Get a monoid where `concat` will return the maximum, based on the provided bounded order.
+ *
+ * The `empty` value is the `bottom` value.
+ *
+ * @example
+ * import * as B from 'fp-ts/Bounded'
+ * import * as M from 'fp-ts/Monoid'
+ *
+ * const M1 = M.getJoinMonoid(B.boundedNumber)
+ *
+ * assert.deepStrictEqual(M1.concat(1, 2), 2)
+ *
+ * @category instances
+ * @since 2.0.0
+ */
+function getJoinMonoid(B) {
+    return {
+        concat: S.getJoinSemigroup(B).concat,
+        empty: B.bottom
+    };
+}
+exports.getJoinMonoid = getJoinMonoid;
+
+
+/***/ }),
+/* 960 */,
+/* 961 */,
+/* 962 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
@@ -16747,8 +38890,10 @@ exports.default = Reader;
 
 
 /***/ }),
-
-/***/ 966:
+/* 963 */,
+/* 964 */,
+/* 965 */,
+/* 966 */
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
 "use strict";
@@ -16806,8 +38951,9 @@ module.exports = options => {
 
 
 /***/ }),
-
-/***/ 969:
+/* 967 */,
+/* 968 */,
+/* 969 */
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
 var wrappy = __webpack_require__(11)
@@ -16855,8 +39001,623 @@ function onceStrict (fn) {
 
 
 /***/ }),
+/* 970 */,
+/* 971 */,
+/* 972 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
 
-/***/ 984:
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.readerEither = exports.MonadThrow = exports.Alt = exports.Bifunctor = exports.Monad = exports.Applicative = exports.Functor = exports.getReaderValidation = exports.getAltReaderValidation = exports.getApplicativeReaderValidation = exports.getApplyMonoid = exports.getApplySemigroup = exports.getSemigroup = exports.URI = exports.throwError = exports.alt = exports.altW = exports.flatten = exports.chainFirst = exports.chainFirstW = exports.chain = exports.chainW = exports.of = exports.apSecond = exports.apFirst = exports.ap = exports.apW = exports.mapLeft = exports.bimap = exports.map = exports.filterOrElse = exports.filterOrElseW = exports.chainEitherK = exports.chainEitherKW = exports.fromEitherK = exports.local = exports.swap = exports.orElse = exports.getOrElse = exports.getOrElseW = exports.fold = exports.fromPredicate = exports.fromOption = exports.fromEither = exports.asks = exports.ask = exports.leftReader = exports.rightReader = exports.right = exports.left = void 0;
+exports.sequenceArray = exports.traverseArray = exports.traverseArrayWithIndex = exports.apS = exports.apSW = exports.bind = exports.bindW = exports.bindTo = exports.Do = void 0;
+var E = __importStar(__webpack_require__(311));
+var function_1 = __webpack_require__(231);
+var R = __importStar(__webpack_require__(600));
+// -------------------------------------------------------------------------------------
+// constructors
+// -------------------------------------------------------------------------------------
+/**
+ * @category constructors
+ * @since 2.0.0
+ */
+exports.left = 
+/*#__PURE__*/
+function_1.flow(E.left, R.of);
+/**
+ * @category constructors
+ * @since 2.0.0
+ */
+exports.right = 
+/*#__PURE__*/
+function_1.flow(E.right, R.of);
+/**
+ * @category constructors
+ * @since 2.0.0
+ */
+exports.rightReader = 
+/*#__PURE__*/
+R.map(E.right);
+/**
+ * @category constructors
+ * @since 2.0.0
+ */
+exports.leftReader = 
+/*#__PURE__*/
+R.map(E.left);
+/**
+ * @category constructors
+ * @since 2.0.0
+ */
+var ask = function () { return E.right; };
+exports.ask = ask;
+/**
+ * @category constructors
+ * @since 2.0.0
+ */
+var asks = function (f) { return function_1.flow(f, E.right); };
+exports.asks = asks;
+/**
+ * Derivable from `MonadThrow`.
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+exports.fromEither = 
+/*#__PURE__*/
+E.fold(exports.left, function (a) { return exports.right(a); });
+/**
+ * Derivable from `MonadThrow`.
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+var fromOption = function (onNone) { return function (ma) {
+    return ma._tag === 'None' ? exports.left(onNone()) : exports.right(ma.value);
+}; };
+exports.fromOption = fromOption;
+/**
+ * Derivable from `MonadThrow`.
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+var fromPredicate = function (predicate, onFalse) { return function (a) { return (predicate(a) ? exports.right(a) : exports.left(onFalse(a))); }; };
+exports.fromPredicate = fromPredicate;
+// -------------------------------------------------------------------------------------
+// destructors
+// -------------------------------------------------------------------------------------
+/**
+ * @category destructors
+ * @since 2.0.0
+ */
+exports.fold = 
+/*#__PURE__*/
+function_1.flow(E.fold, R.chain);
+/**
+ * Less strict version of [`getOrElse`](#getOrElse).
+ *
+ * @category destructors
+ * @since 2.6.0
+ */
+var getOrElseW = function (onLeft) { return function (ma) { return function_1.pipe(ma, R.chain(E.fold(onLeft, R.of))); }; };
+exports.getOrElseW = getOrElseW;
+/**
+ * @category destructors
+ * @since 2.0.0
+ */
+exports.getOrElse = exports.getOrElseW;
+// -------------------------------------------------------------------------------------
+// combinators
+// -------------------------------------------------------------------------------------
+/**
+ * @category combinators
+ * @since 2.0.0
+ */
+var orElse = function (f) { return R.chain(E.fold(f, exports.right)); };
+exports.orElse = orElse;
+/**
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.swap = 
+/*#__PURE__*/
+R.map(E.swap);
+// TODO: remove in v3
+/**
+ * @category combinators
+ * @since 2.0.0
+ */
+function local(f) {
+    return function (ma) { return function (q) { return ma(f(q)); }; };
+}
+exports.local = local;
+/**
+ * @category combinators
+ * @since 2.4.0
+ */
+function fromEitherK(f) {
+    return function () {
+        var a = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            a[_i] = arguments[_i];
+        }
+        return exports.fromEither(f.apply(void 0, a));
+    };
+}
+exports.fromEitherK = fromEitherK;
+/**
+ * Less strict version of [`chainEitherK`](#chainEitherK).
+ *
+ * @category combinators
+ * @since 2.6.1
+ */
+var chainEitherKW = function (f) { return exports.chainW(fromEitherK(f)); };
+exports.chainEitherKW = chainEitherKW;
+/**
+ * @category combinators
+ * @since 2.4.0
+ */
+exports.chainEitherK = exports.chainEitherKW;
+/**
+ * Less strict version of [`filterOrElse`](#filterOrElse).
+ *
+ * @since 2.9.0
+ */
+var filterOrElseW = function (predicate, onFalse) {
+    return exports.chainW(function (a) { return (predicate(a) ? exports.right(a) : exports.left(onFalse(a))); });
+};
+exports.filterOrElseW = filterOrElseW;
+/**
+ * Derivable from `MonadThrow`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.filterOrElse = exports.filterOrElseW;
+// -------------------------------------------------------------------------------------
+// non-pipeables
+// -------------------------------------------------------------------------------------
+/* istanbul ignore next */
+var map_ = function (fa, f) { return function_1.pipe(fa, exports.map(f)); };
+/* istanbul ignore next */
+var bimap_ = function (fa, f, g) { return function_1.pipe(fa, exports.bimap(f, g)); };
+/* istanbul ignore next */
+var mapLeft_ = function (fa, f) { return function_1.pipe(fa, exports.mapLeft(f)); };
+/* istanbul ignore next */
+var ap_ = function (fab, fa) { return function_1.pipe(fab, exports.ap(fa)); };
+/* istanbul ignore next */
+var chain_ = function (ma, f) { return function_1.pipe(ma, exports.chain(f)); };
+/* istanbul ignore next */
+var alt_ = function (fa, that) { return function_1.pipe(fa, exports.alt(that)); };
+// -------------------------------------------------------------------------------------
+// pipeables
+// -------------------------------------------------------------------------------------
+/**
+ * `map` can be used to turn functions `(a: A) => B` into functions `(fa: F<A>) => F<B>` whose argument and return types
+ * use the type constructor `F` to represent some computational context.
+ *
+ * @category Functor
+ * @since 2.0.0
+ */
+var map = function (f) {
+    return R.map(E.map(f));
+};
+exports.map = map;
+/**
+ * Map a pair of functions over the two last type arguments of the bifunctor.
+ *
+ * @category Bifunctor
+ * @since 2.0.0
+ */
+exports.bimap = 
+/*#__PURE__*/
+function_1.flow(E.bimap, R.map);
+/**
+ * Map a function over the second type argument of a bifunctor.
+ *
+ * @category Bifunctor
+ * @since 2.0.0
+ */
+var mapLeft = function (f) {
+    return R.map(E.mapLeft(f));
+};
+exports.mapLeft = mapLeft;
+/**
+ * Less strict version of [`ap`](#ap).
+ *
+ * @category Apply
+ * @since 2.8.0
+ */
+var apW = function (fa) {
+    return function_1.flow(R.map(function (gab) { return function (ga) { return E.apW(ga)(gab); }; }), R.apW(fa));
+};
+exports.apW = apW;
+/**
+ * Apply a function to an argument under a type constructor.
+ *
+ * @category Apply
+ * @since 2.0.0
+ */
+exports.ap = exports.apW;
+/**
+ * Combine two effectful actions, keeping only the result of the first.
+ *
+ * Derivable from `Apply`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+var apFirst = function (fb) {
+    return function_1.flow(exports.map(function (a) { return function () { return a; }; }), exports.ap(fb));
+};
+exports.apFirst = apFirst;
+/**
+ * Combine two effectful actions, keeping only the result of the second.
+ *
+ * Derivable from `Apply`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+var apSecond = function (fb) {
+    return function_1.flow(exports.map(function () { return function (b) { return b; }; }), exports.ap(fb));
+};
+exports.apSecond = apSecond;
+/**
+ * Wrap a value into the type constructor.
+ *
+ * Equivalent to [`right`](#right).
+ *
+ * @category Applicative
+ * @since 2.8.5
+ */
+exports.of = exports.right;
+/**
+ * Less strict version of [`chain`](#chain).
+ *
+ * @category Monad
+ * @since 2.6.0
+ */
+var chainW = function (f) { return function (ma) { return function_1.pipe(ma, R.chain(E.fold(exports.left, f))); }; };
+exports.chainW = chainW;
+/**
+ * Composes computations in sequence, using the return value of one computation to determine the next computation.
+ *
+ * @category Monad
+ * @since 2.0.0
+ */
+exports.chain = exports.chainW;
+/**
+ * Less strict version of [`chainFirst`](#chainFirst)
+ *
+ * Derivable from `Monad`.
+ *
+ * @category combinators
+ * @since 2.8.0
+ */
+var chainFirstW = function (f) {
+    return exports.chainW(function (a) {
+        return function_1.pipe(f(a), exports.map(function () { return a; }));
+    });
+};
+exports.chainFirstW = chainFirstW;
+/**
+ * Composes computations in sequence, using the return value of one computation to determine the next computation and
+ * keeping only the result of the first.
+ *
+ * Derivable from `Monad`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.chainFirst = exports.chainFirstW;
+/**
+ * Derivable from `Monad`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+exports.flatten = 
+/*#__PURE__*/
+exports.chain(function_1.identity);
+/**
+ * Less strict version of [`alt`](#alt).
+ *
+ * @category Alt
+ * @since 2.9.0
+ */
+var altW = function (that) { return function (fa) {
+    return function_1.pipe(fa, R.chain(E.fold(that, exports.right)));
+}; };
+exports.altW = altW;
+/**
+ * Identifies an associative operation on a type constructor. It is similar to `Semigroup`, except that it applies to
+ * types of kind `* -> *`.
+ *
+ * @category Alt
+ * @since 2.0.0
+ */
+exports.alt = exports.altW;
+/**
+ * @category MonadThrow
+ * @since 2.7.0
+ */
+exports.throwError = exports.left;
+// -------------------------------------------------------------------------------------
+// instances
+// -------------------------------------------------------------------------------------
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.URI = 'ReaderEither';
+/**
+ * Semigroup returning the left-most non-`Left` value. If both operands are `Right`s then the inner values are
+ * concatenated using the provided `Semigroup`
+ *
+ * @category instances
+ * @since 2.0.0
+ */
+function getSemigroup(S) {
+    return R.getSemigroup(E.getSemigroup(S));
+}
+exports.getSemigroup = getSemigroup;
+/**
+ * Semigroup returning the left-most `Left` value. If both operands are `Right`s then the inner values
+ * are concatenated using the provided `Semigroup`
+ *
+ * @category instances
+ * @since 2.0.0
+ */
+function getApplySemigroup(S) {
+    return R.getSemigroup(E.getApplySemigroup(S));
+}
+exports.getApplySemigroup = getApplySemigroup;
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+function getApplyMonoid(M) {
+    return {
+        concat: getApplySemigroup(M).concat,
+        empty: exports.right(M.empty)
+    };
+}
+exports.getApplyMonoid = getApplyMonoid;
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+function getApplicativeReaderValidation(SE) {
+    var AV = E.getApplicativeValidation(SE);
+    var ap = function (fga) {
+        return function_1.flow(R.map(function (gab) { return function (ga) { return AV.ap(gab, ga); }; }), R.ap(fga));
+    };
+    return {
+        URI: exports.URI,
+        _E: undefined,
+        map: map_,
+        ap: function (fab, fa) { return function_1.pipe(fab, ap(fa)); },
+        of: exports.of
+    };
+}
+exports.getApplicativeReaderValidation = getApplicativeReaderValidation;
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+function getAltReaderValidation(SE) {
+    var A = E.getAltValidation(SE);
+    return {
+        URI: exports.URI,
+        _E: undefined,
+        map: map_,
+        alt: function (me, that) { return function (r) { return A.alt(me(r), function () { return that()(r); }); }; }
+    };
+}
+exports.getAltReaderValidation = getAltReaderValidation;
+// TODO: remove in v3
+/**
+ * @category instances
+ * @since 2.3.0
+ */
+function getReaderValidation(SE) {
+    var applicativeReaderValidation = getApplicativeReaderValidation(SE);
+    var altReaderValidation = getAltReaderValidation(SE);
+    return {
+        URI: exports.URI,
+        _E: undefined,
+        map: map_,
+        ap: applicativeReaderValidation.ap,
+        of: exports.of,
+        chain: chain_,
+        bimap: bimap_,
+        mapLeft: mapLeft_,
+        alt: altReaderValidation.alt,
+        throwError: exports.throwError
+    };
+}
+exports.getReaderValidation = getReaderValidation;
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Functor = {
+    URI: exports.URI,
+    map: map_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Applicative = {
+    URI: exports.URI,
+    map: map_,
+    ap: ap_,
+    of: exports.of
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Monad = {
+    URI: exports.URI,
+    map: map_,
+    ap: ap_,
+    of: exports.of,
+    chain: chain_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Bifunctor = {
+    URI: exports.URI,
+    bimap: bimap_,
+    mapLeft: mapLeft_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.Alt = {
+    URI: exports.URI,
+    map: map_,
+    alt: alt_
+};
+/**
+ * @category instances
+ * @since 2.7.0
+ */
+exports.MonadThrow = {
+    URI: exports.URI,
+    map: map_,
+    ap: ap_,
+    of: exports.of,
+    chain: chain_,
+    throwError: exports.throwError
+};
+// TODO: remove in v3
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+exports.readerEither = {
+    URI: exports.URI,
+    bimap: bimap_,
+    mapLeft: mapLeft_,
+    map: map_,
+    of: exports.of,
+    ap: ap_,
+    chain: chain_,
+    alt: alt_,
+    throwError: exports.left
+};
+// -------------------------------------------------------------------------------------
+// do notation
+// -------------------------------------------------------------------------------------
+/**
+ * @since 2.9.0
+ */
+exports.Do = 
+/*#__PURE__*/
+exports.of({});
+/**
+ * @since 2.8.0
+ */
+var bindTo = function (name) { return exports.map(function_1.bindTo_(name)); };
+exports.bindTo = bindTo;
+/**
+ * @since 2.8.0
+ */
+var bindW = function (name, f) {
+    return exports.chainW(function (a) {
+        return function_1.pipe(f(a), exports.map(function (b) { return function_1.bind_(a, name, b); }));
+    });
+};
+exports.bindW = bindW;
+/**
+ * @since 2.8.0
+ */
+exports.bind = exports.bindW;
+// -------------------------------------------------------------------------------------
+// pipeable sequence S
+// -------------------------------------------------------------------------------------
+/**
+ * @since 2.8.0
+ */
+var apSW = function (name, fb) {
+    return function_1.flow(exports.map(function (a) { return function (b) { return function_1.bind_(a, name, b); }; }), exports.apW(fb));
+};
+exports.apSW = apSW;
+/**
+ * @since 2.8.0
+ */
+exports.apS = exports.apSW;
+// -------------------------------------------------------------------------------------
+// array utils
+// -------------------------------------------------------------------------------------
+/**
+ * @since 2.9.0
+ */
+var traverseArrayWithIndex = function (f) {
+    return function_1.flow(R.traverseArrayWithIndex(f), R.map(E.sequenceArray));
+};
+exports.traverseArrayWithIndex = traverseArrayWithIndex;
+/**
+ * @since 2.9.0
+ */
+var traverseArray = function (f) { return exports.traverseArrayWithIndex(function (_, a) { return f(a); }); };
+exports.traverseArray = traverseArray;
+/**
+ * @since 2.9.0
+ */
+exports.sequenceArray = 
+/*#__PURE__*/
+exports.traverseArray(function_1.identity);
+
+
+/***/ }),
+/* 973 */,
+/* 974 */,
+/* 975 */,
+/* 976 */,
+/* 977 */
+/***/ (function(__unusedmodule, exports) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+
+
+/***/ }),
+/* 978 */,
+/* 979 */,
+/* 980 */,
+/* 981 */,
+/* 982 */,
+/* 983 */,
+/* 984 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
@@ -16880,5 +39641,4 @@ exports.createFileSystemAdapter = createFileSystemAdapter;
 
 
 /***/ })
-
-/******/ });
+/******/ ]);

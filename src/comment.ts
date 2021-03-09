@@ -3,6 +3,7 @@ import { context, getOctokit } from "@actions/github";
 import { WebhookPayload } from "@actions/github/lib/interfaces";
 import { format } from "d3-format";
 import fetch from "node-fetch";
+import { array, ord } from "fp-ts";
 
 export async function comment(pr: NonNullable<WebhookPayload["pull_request"]>): Promise<void> {
   const base = pr!.base.sha;
@@ -60,19 +61,7 @@ export async function comment(pr: NonNullable<WebhookPayload["pull_request"]>): 
 
   // info(JSON.stringify(comments));
 
-  const body = `
-# Comparison
-
-${res.data.comparison.observations
-  .map((obs: any) => {
-    const abs = bytesToString(obs.diff.absolute);
-    const pct = Math.round(obs.diff.relative * 10) / 10;
-
-    const sign = { [-1]: "", [0]: "", [1]: "+" }[Math.sign(pct) as -1 | 0 | 1];
-    return ` - **${obs.series.name}**: ${sign}${abs} (${sign}${pct}%)`;
-  })
-  .join("\n")}
-`;
+  const body = makeCommentBody(res.data.comparison.observations);
 
   const comment = comments.data.find((x) => x.user.login === "github-actions[bot]");
   if (!comment) {
@@ -103,4 +92,26 @@ function bytesToString(bytes: number) {
   } else {
     return fmt(bytes / 1024 / 1024 / 1024) + "G";
   }
+}
+
+function makeCommentBody(observations: any[]): string {
+  /*
+   * Sort observations by relative difference (descending)
+   */
+  const ordByRelativeDiff = ord.contramap<number, any>((obs) => obs.diff.relative)(ord.ordNumber);
+  const sortedObservations = array.sortBy([ordByRelativeDiff])(observations);
+
+  return `
+# Comparison
+
+${sortedObservations
+  .map((obs) => {
+    const abs = bytesToString(obs.diff.absolute);
+    const pct = Math.round(obs.diff.relative * 10) / 10;
+
+    const sign = { [-1]: "", [0]: "", [1]: "+" }[Math.sign(pct) as -1 | 0 | 1];
+    return ` - **${obs.series.name}**: ${sign}${abs} (${sign}${pct}%)`;
+  })
+  .join("\n")}
+`;
 }
