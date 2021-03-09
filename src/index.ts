@@ -46,7 +46,7 @@ async function main(): Promise<void> {
   try {
     const iterables = config.collect.flatMap((spec) => {
       const c = collectors[spec.type];
-      return c ? [c()] : [];
+      return c ? [c(spec as any)] : [];
     });
 
     for await (const obs of combine(...iterables)) {

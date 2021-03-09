@@ -18185,15 +18185,24 @@ exports.filterMap = RS.filterMap;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Config = void 0;
 const fg = __webpack_require__(406);
 const fs = __webpack_require__(747);
-async function* default_1() {
+const t = __webpack_require__(491);
+const path = __webpack_require__(622);
+exports.Config = t.type({
+    type: t.literal("next.js"),
+    directory: t.union([t.undefined, t.string]),
+});
+async function* default_1(c) {
+    const { directory = "." } = c;
+    const cwd = path.join(process.env.GITHUB_WORKSPACE, directory);
     /*
      * Pages
      */
     {
         const entries = await fg(`.next/static/*/pages/**/*.js`, {
-            cwd: process.env.GITHUB_WORKSPACE,
+            cwd,
         });
         for (const page of entries) {
             const value = (await fs.promises.stat(page)).size;
@@ -18206,7 +18215,7 @@ async function* default_1() {
      */
     {
         const entries = await fg(`.next/static/chunks/*.js`, {
-            cwd: process.env.GITHUB_WORKSPACE,
+            cwd,
         });
         for (const page of entries) {
             if (page.match(/(framework|main|polyfills|webpack)/)) {
@@ -29278,7 +29287,7 @@ async function main() {
     try {
         const iterables = config.collect.flatMap((spec) => {
             const c = collectors_1.collectors[spec.type];
-            return c ? [c()] : [];
+            return c ? [c(spec)] : [];
         });
         for await (const obs of shared_1.combine(...iterables)) {
             await shared_1.upload({ time, ...obs });
@@ -41440,12 +41449,19 @@ module.exports = function (x) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Config = void 0;
 const fs = __webpack_require__(747);
 const path = __webpack_require__(622);
-async function* default_1() {
+const t = __webpack_require__(491);
+exports.Config = t.type({
+    type: t.literal("npm"),
+    directory: t.union([t.undefined, t.string]),
+});
+async function* default_1(c) {
+    const { directory = "." } = c;
     const workspace = process.env.GITHUB_WORKSPACE;
-    if (fs.existsSync(path.join(workspace, "package-lock.json"))) {
-        const { dependencies } = __webpack_require__(637)(path.join(workspace, "package-lock.json"));
+    if (fs.existsSync(path.join(workspace, directory, "package-lock.json"))) {
+        const { dependencies } = __webpack_require__(637)(path.join(workspace, directory, "package-lock.json"));
         const value = (function count(deps) {
             const values = Object.values(deps);
             return values.reduce((a, v) => a + count(v.dependencies || {}), values.length);

@@ -1,13 +1,24 @@
 import * as fg from "fast-glob";
 import * as fs from "fs";
+import * as t from "io-ts";
+import * as path from "path";
 
-export default async function* () {
+export type Config = t.TypeOf<typeof Config>;
+export const Config = t.type({
+  type: t.literal("next.js"),
+  directory: t.union([t.undefined, t.string]),
+});
+
+export default async function* (c: Config) {
+  const { directory = "." } = c;
+  const cwd = path.join(process.env.GITHUB_WORKSPACE!, directory);
+
   /*
    * Pages
    */
   {
     const entries = await fg(`.next/static/*/pages/**/*.js`, {
-      cwd: process.env.GITHUB_WORKSPACE,
+      cwd,
     });
 
     for (const page of entries) {
@@ -22,7 +33,7 @@ export default async function* () {
    */
   {
     const entries = await fg(`.next/static/chunks/*.js`, {
-      cwd: process.env.GITHUB_WORKSPACE,
+      cwd,
     });
 
     for (const page of entries) {
