@@ -1,7 +1,7 @@
 import { info, setFailed } from "@actions/core";
 import { context } from "@actions/github";
 import { comment } from "./comment";
-import * as plugins from "./plugins";
+import { collectors } from "./collectors";
 import { combine, upload } from "./shared";
 import * as fs from "fs";
 import * as path from "path";
@@ -45,7 +45,12 @@ async function main(): Promise<void> {
   }
 
   try {
-    for await (const obs of combine(plugins.npm(), plugins.next())) {
+    const iterables = config.collect.flatMap((spec) => {
+      const c = collectors[spec.type];
+      return c ? [c()] : [];
+    });
+
+    for await (const obs of combine(...iterables)) {
       await upload({ time, ...obs });
     }
 

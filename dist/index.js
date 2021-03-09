@@ -18179,7 +18179,48 @@ exports.filterMap = RS.filterMap;
 /* 352 */,
 /* 353 */,
 /* 354 */,
-/* 355 */,
+/* 355 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const fg = __webpack_require__(406);
+const fs = __webpack_require__(747);
+async function* default_1() {
+    /*
+     * Pages
+     */
+    {
+        const entries = await fg(`.next/static/*/pages/**/*.js`, {
+            cwd: process.env.GITHUB_WORKSPACE,
+        });
+        for (const page of entries) {
+            const value = (await fs.promises.stat(page)).size;
+            const series = page.match(/(pages\/.*)\.js$/)[1].slice(0, -21);
+            yield { series, measure: "size", value };
+        }
+    }
+    /*
+     * Chunks
+     */
+    {
+        const entries = await fg(`.next/static/chunks/*.js`, {
+            cwd: process.env.GITHUB_WORKSPACE,
+        });
+        for (const page of entries) {
+            if (page.match(/(framework|main|polyfills|webpack)/)) {
+                const value = (await fs.promises.stat(page)).size;
+                const series = page.match(/(chunks\/.*)\.js$/)[1].slice(0, -21);
+                yield { series, measure: "size", value };
+            }
+        }
+    }
+}
+exports.default = default_1;
+
+
+/***/ }),
 /* 356 */
 /***/ (function(__unusedmodule, exports) {
 
@@ -29204,7 +29245,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const core_1 = __webpack_require__(470);
 const github_1 = __webpack_require__(469);
 const comment_1 = __webpack_require__(105);
-const plugins = __webpack_require__(954);
+const collectors_1 = __webpack_require__(930);
 const shared_1 = __webpack_require__(739);
 const fs = __webpack_require__(747);
 const path = __webpack_require__(622);
@@ -29236,7 +29277,11 @@ async function main() {
         return;
     }
     try {
-        for await (const obs of shared_1.combine(plugins.npm(), plugins.next())) {
+        const iterables = config.collect.flatMap((spec) => {
+            const c = collectors_1.collectors[spec.type];
+            return c ? [c()] : [];
+        });
+        for await (const obs of shared_1.combine(...iterables)) {
             await shared_1.upload({ time, ...obs });
         }
         core_1.info(github_1.context.eventName);
@@ -30362,48 +30407,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /* 550 */,
 /* 551 */,
 /* 552 */,
-/* 553 */
-/***/ (function(__unusedmodule, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const fg = __webpack_require__(406);
-const fs = __webpack_require__(747);
-async function* default_1() {
-    /*
-     * Pages
-     */
-    {
-        const entries = await fg(`.next/static/*/pages/**/*.js`, {
-            cwd: process.env.GITHUB_WORKSPACE,
-        });
-        for (const page of entries) {
-            const value = (await fs.promises.stat(page)).size;
-            const series = page.match(/(pages\/.*)\.js$/)[1].slice(0, -21);
-            yield { series, measure: "size", value };
-        }
-    }
-    /*
-     * Chunks
-     */
-    {
-        const entries = await fg(`.next/static/chunks/*.js`, {
-            cwd: process.env.GITHUB_WORKSPACE,
-        });
-        for (const page of entries) {
-            if (page.match(/(framework|main|polyfills|webpack)/)) {
-                const value = (await fs.promises.stat(page)).size;
-                const series = page.match(/(chunks\/.*)\.js$/)[1].slice(0, -21);
-                yield { series, measure: "size", value };
-            }
-        }
-    }
-}
-exports.default = default_1;
-
-
-/***/ }),
+/* 553 */,
 /* 554 */
 /***/ (function(__unusedmodule, exports) {
 
@@ -30529,24 +30533,7 @@ exports.traced = exports.Functor;
 /***/ }),
 /* 559 */,
 /* 560 */,
-/* 561 */
-/***/ (function(module) {
-
-function webpackEmptyContext(req) {
-	if (typeof req === 'number' && __webpack_require__.m[req])
-  return __webpack_require__(req);
-try { return require(req) }
-catch (e) { if (e.code !== 'MODULE_NOT_FOUND') throw e }
-var e = new Error("Cannot find module '" + req + "'");
-	e.code = 'MODULE_NOT_FOUND';
-	throw e;
-}
-webpackEmptyContext.keys = function() { return []; };
-webpackEmptyContext.resolve = webpackEmptyContext;
-module.exports = webpackEmptyContext;
-webpackEmptyContext.id = 561;
-
-/***/ }),
+/* 561 */,
 /* 562 */,
 /* 563 */,
 /* 564 */
@@ -33130,7 +33117,24 @@ exports.fs = fs;
 /* 634 */,
 /* 635 */,
 /* 636 */,
-/* 637 */,
+/* 637 */
+/***/ (function(module) {
+
+function webpackEmptyContext(req) {
+	if (typeof req === 'number' && __webpack_require__.m[req])
+  return __webpack_require__(req);
+try { return require(req) }
+catch (e) { if (e.code !== 'MODULE_NOT_FOUND') throw e }
+var e = new Error("Cannot find module '" + req + "'");
+	e.code = 'MODULE_NOT_FOUND';
+	throw e;
+}
+webpackEmptyContext.keys = function() { return []; };
+webpackEmptyContext.resolve = webpackEmptyContext;
+module.exports = webpackEmptyContext;
+webpackEmptyContext.id = 637;
+
+/***/ }),
 /* 638 */,
 /* 639 */,
 /* 640 */,
@@ -41431,7 +41435,29 @@ module.exports = function (x) {
 
 
 /***/ }),
-/* 769 */,
+/* 769 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const fs = __webpack_require__(747);
+const path = __webpack_require__(622);
+async function* default_1() {
+    const workspace = process.env.GITHUB_WORKSPACE;
+    if (fs.existsSync(path.join(workspace, "package-lock.json"))) {
+        const { dependencies } = __webpack_require__(637)(path.join(workspace, "package-lock.json"));
+        const value = (function count(deps) {
+            const values = Object.values(deps);
+            return values.reduce((a, v) => a + count(v.dependencies || {}), values.length);
+        })(dependencies);
+        yield { series: "dependencies", measure: "count", value };
+    }
+}
+exports.default = default_1;
+
+
+/***/ }),
 /* 770 */,
 /* 771 */,
 /* 772 */,
@@ -44612,29 +44638,7 @@ exports.createFileSystemAdapter = createFileSystemAdapter;
 /***/ }),
 /* 875 */,
 /* 876 */,
-/* 877 */
-/***/ (function(__unusedmodule, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const fs = __webpack_require__(747);
-const path = __webpack_require__(622);
-async function* default_1() {
-    const workspace = process.env.GITHUB_WORKSPACE;
-    if (fs.existsSync(path.join(workspace, "package-lock.json"))) {
-        const { dependencies } = __webpack_require__(561)(path.join(workspace, "package-lock.json"));
-        const value = (function count(deps) {
-            const values = Object.values(deps);
-            return values.reduce((a, v) => a + count(v.dependencies || {}), values.length);
-        })(dependencies);
-        yield { series: "dependencies", measure: "count", value };
-    }
-}
-exports.default = default_1;
-
-
-/***/ }),
+/* 877 */,
 /* 878 */,
 /* 879 */,
 /* 880 */,
@@ -46286,7 +46290,22 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /* 927 */,
 /* 928 */,
 /* 929 */,
-/* 930 */,
+/* 930 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.collectors = void 0;
+const next_js_1 = __webpack_require__(355);
+const npm_1 = __webpack_require__(769);
+exports.collectors = {
+    ["next.js"]: next_js_1.default,
+    ["npm"]: npm_1.default,
+};
+
+
+/***/ }),
 /* 931 */,
 /* 932 */,
 /* 933 */
@@ -46473,20 +46492,7 @@ exports.checkBypass = checkBypass;
 /* 951 */,
 /* 952 */,
 /* 953 */,
-/* 954 */
-/***/ (function(__unusedmodule, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.npm = exports.next = void 0;
-var next_1 = __webpack_require__(553);
-Object.defineProperty(exports, "next", { enumerable: true, get: function () { return next_1.default; } });
-var npm_1 = __webpack_require__(877);
-Object.defineProperty(exports, "npm", { enumerable: true, get: function () { return npm_1.default; } });
-
-
-/***/ }),
+/* 954 */,
 /* 955 */
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
