@@ -113,7 +113,9 @@ ${sortedObservations
     const pct = Math.round(obs.diff.relative * 10) / 10;
 
     const sign = { [-1]: "", [0]: "", [1]: "+" }[Math.sign(pct) as -1 | 0 | 1];
-    return `| ${obs.series.name} | ${obs.diff.base.value} | ${obs.value} | ${sign}${abs} | ${sign}${pct}% |`;
+    return `| ${obs.series.name} | ${bytesToString(obs.diff.base.value)} | ${bytesToString(
+      obs.value
+    )} | ${sign}${abs} | ${sign}${pct}% |`;
   })
   .join("\n")}
 `;
