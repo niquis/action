@@ -4,17 +4,17 @@ import { WebhookPayload } from "@actions/github/lib/interfaces";
 import { format } from "d3-format";
 import fetch from "node-fetch";
 
-export async function comment(
-  pull_request: NonNullable<WebhookPayload["pull_request"]>
-): Promise<void> {
-  const base = pull_request!.base.sha;
+export async function comment(pr: NonNullable<WebhookPayload["pull_request"]>): Promise<void> {
+  const base = pr!.base.sha;
   const head = process.env.GITHUB_SHA;
 
   const dataSet = `github.com/${process.env.GITHUB_REPOSITORY!}`;
 
-  // core.info(JSON.stringify({ base, head, GITHUB_SHA: process.env.GITHUB_SHA });
-
+  /*
+   * Wait a bit to allow the DB to reach eventual consistency.
+   */
   await new Promise((resolve) => setTimeout(resolve, 1000));
+
   const res = await fetch("https://api.niquis.im/graphql", {
     method: "POST",
     headers: {
@@ -54,7 +54,7 @@ export async function comment(
   await octokit.issues.createComment({
     owner: context.payload.repository!.owner.login,
     repo: context.payload.repository!.name,
-    issue_number: pull_request.number,
+    issue_number: pr.number,
     body: `
 # Comparison
 
