@@ -7,7 +7,7 @@ const sloc = require("node-sloc");
 
 export type Config = t.TypeOf<typeof Config>;
 export const Config = t.type({
-  type: t.literal("next.js"),
+  type: t.literal("sloc"),
   directory: t.union([t.undefined, t.string]),
   extensions: t.union([t.undefined, t.array(t.string)]),
 });
