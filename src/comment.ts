@@ -58,6 +58,8 @@ export async function comment(pr: NonNullable<WebhookPayload["pull_request"]>): 
     issue_number: pr.number,
   });
 
+  info(JSON.stringify(comments));
+
   const body = `
 # Comparison
 

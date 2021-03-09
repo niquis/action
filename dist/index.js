@@ -1118,6 +1118,7 @@ async function comment(pr) {
         repo: github_1.context.payload.repository.name,
         issue_number: pr.number,
     });
+    core_1.info(JSON.stringify(comments));
     const body = `
 # Comparison
 
