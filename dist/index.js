@@ -3143,12 +3143,14 @@ function makeCommentBody(observations) {
     return `
 # Comparison
 
+| series | base | value | diff (abs) | diff (pct) |
+| ------ | ---- | ----- | ---------- | ---------- |
 ${sortedObservations
         .map((obs) => {
         const abs = bytesToString(obs.diff.absolute);
         const pct = Math.round(obs.diff.relative * 10) / 10;
         const sign = { [-1]: "", [0]: "", [1]: "+" }[Math.sign(pct)];
-        return ` - **${obs.series.name}**: ${sign}${abs} (${sign}${pct}%)`;
+        return `| ${obs.series.name} | ${obs.diff.base.value} | ${obs.value} | ${sign}${abs} | ${sign}${pct}% |`;
     })
         .join("\n")}
 `;
