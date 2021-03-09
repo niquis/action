@@ -107,6 +107,7 @@ function makeCommentBody(observations: any[]): string {
 | series | base | value | diff (abs) | diff (pct) |
 | ------ | ---- | ----- | ---------- | ---------- |
 ${sortedObservations
+  .filter((obs) => Math.abs(obs.diff.absolute) > 0)
   .map((obs) => {
     const abs = bytesToString(obs.diff.absolute);
     const pct = Math.round(obs.diff.relative * 10) / 10;
