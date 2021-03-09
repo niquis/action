@@ -29211,26 +29211,27 @@ const path = __webpack_require__(622);
 const YAML = __webpack_require__(596);
 const fp_ts_1 = __webpack_require__(58);
 const config_1 = __webpack_require__(478);
+async function loadConfig() {
+    const workspace = process.env.GITHUB_WORKSPACE;
+    const configPath = path.join(workspace, ".github", "niquis.yml");
+    if (!fs.existsSync(configPath)) {
+        core_1.info("Config file not found.");
+        return undefined;
+    }
+    return fp_ts_1.pipeable.pipe(config_1.Config.decode(YAML.parse(fs.readFileSync(configPath, "utf-8"))), fp_ts_1.either.fold(() => {
+        core_1.info("Could not decode config file.");
+        return undefined;
+    }, (config) => {
+        return config;
+    }));
+}
 async function main() {
     const time = Date.now() / 1000;
     /*
      * Load the config from .github/niquis.yml. If the config file doesn't
      * exist, bail.
      */
-    const config = await (async () => {
-        const workspace = process.env.GITHUB_WORKSPACE;
-        const configPath = path.join(workspace, ".github", "niquis.yml");
-        if (!fs.existsSync(configPath)) {
-            core_1.info("Config file not found.");
-            return undefined;
-        }
-        return fp_ts_1.pipeable.pipe(config_1.Config.decode(YAML.parse(fs.readFileSync(configPath, "utf-8"))), fp_ts_1.either.fold(() => {
-            core_1.info("Could not decode config file.");
-            return undefined;
-        }, (config) => {
-            return config;
-        }));
-    })();
+    const config = await loadConfig();
     if (!config) {
         return;
     }

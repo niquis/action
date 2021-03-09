@@ -9,6 +9,29 @@ import * as YAML from "yaml";
 import { either, pipeable } from "fp-ts";
 import { Config } from "./config";
 
+async function loadConfig(): Promise<undefined | Config> {
+  const workspace = process.env.GITHUB_WORKSPACE!;
+  const configPath = path.join(workspace, ".github", "niquis.yml");
+
+  if (!fs.existsSync(configPath)) {
+    info("Config file not found.");
+    return undefined;
+  }
+
+  return pipeable.pipe(
+    Config.decode(YAML.parse(fs.readFileSync(configPath, "utf-8"))),
+    either.fold<unknown, Config, undefined | Config>(
+      () => {
+        info("Could not decode config file.");
+        return undefined;
+      },
+      (config) => {
+        return config;
+      }
+    )
+  );
+}
+
 async function main(): Promise<void> {
   const time = Date.now() / 1000;
 
@@ -16,29 +39,7 @@ async function main(): Promise<void> {
    * Load the config from .github/niquis.yml. If the config file doesn't
    * exist, bail.
    */
-  const config = await (async (): Promise<undefined | Config> => {
-    const workspace = process.env.GITHUB_WORKSPACE!;
-    const configPath = path.join(workspace, ".github", "niquis.yml");
-
-    if (!fs.existsSync(configPath)) {
-      info("Config file not found.");
-      return undefined;
-    }
-
-    return pipeable.pipe(
-      Config.decode(YAML.parse(fs.readFileSync(configPath, "utf-8"))),
-      either.fold<unknown, Config, undefined | Config>(
-        () => {
-          info("Could not decode config file.");
-          return undefined;
-        },
-        (config) => {
-          return config;
-        }
-      )
-    );
-  })();
-
+  const config = await loadConfig();
   if (!config) {
     return;
   }
