@@ -65,6 +65,11 @@ Note: During the alpha phase the niquis action will require a token to access th
 cloud API. Send an email to tomc@caurea.org if you're interested in the project
 and you will receive the token.
 
+## Scope
+
+Niquis isn't currently focused on the absolute value of the metrics, but rather on the relative
+change compared to a baseline.
+
 ## Future
 
 Because all the data is stored in a cloud database, Niquis will eventually offer a web
