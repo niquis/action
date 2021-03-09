@@ -20,15 +20,10 @@ async function loadConfig(): Promise<undefined | Config> {
 
   return pipeable.pipe(
     Config.decode(YAML.parse(fs.readFileSync(configPath, "utf-8"))),
-    either.fold<unknown, Config, undefined | Config>(
-      () => {
-        info("Could not decode config file.");
-        return undefined;
-      },
-      (config) => {
-        return config;
-      }
-    )
+    either.getOrElseW(() => {
+      info("Could not decode config file.");
+      return undefined;
+    })
   );
 }
 
@@ -45,8 +40,19 @@ async function main(): Promise<void> {
 
   try {
     const iterables = config.collect.flatMap((spec) => {
-      const c = collectors[spec.type];
-      return c ? [c(spec as any)] : [];
+      if (spec.type in collectors) {
+        const { Config, default: collect } = collectors[spec.type as keyof typeof collectors];
+
+        return pipeable.pipe(
+          Config.decode(spec),
+          either.fold<unknown, any, AsyncGenerator<any>[]>(
+            () => [],
+            (config) => [collect(config)]
+          )
+        );
+      } else {
+        return [];
+      }
     });
 
     for await (const obs of combine(...iterables)) {

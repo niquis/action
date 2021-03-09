@@ -25266,19 +25266,10 @@ exports.getState = getState;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Config = void 0;
 const t = __webpack_require__(491);
-const collectors = {
-    ["next.js"]: t.type({
-        type: t.literal("next.js"),
-        directory: t.union([t.undefined, t.string]),
-    }),
-    ["npm"]: t.type({
-        type: t.literal("npm"),
-        directory: t.union([t.undefined, t.string]),
-    }),
-};
+const collectors_1 = __webpack_require__(930);
 exports.Config = t.type({
     version: t.literal("v0"),
-    collect: t.array(t.union([collectors["next.js"], collectors["npm"]])),
+    collect: t.array(t.union([collectors_1.collectors["next.js"].Config, collectors_1.collectors["npm"].Config])),
 });
 
 
@@ -29268,11 +29259,9 @@ async function loadConfig() {
         core_1.info("Config file not found.");
         return undefined;
     }
-    return fp_ts_1.pipeable.pipe(config_1.Config.decode(YAML.parse(fs.readFileSync(configPath, "utf-8"))), fp_ts_1.either.fold(() => {
+    return fp_ts_1.pipeable.pipe(config_1.Config.decode(YAML.parse(fs.readFileSync(configPath, "utf-8"))), fp_ts_1.either.getOrElseW(() => {
         core_1.info("Could not decode config file.");
         return undefined;
-    }, (config) => {
-        return config;
     }));
 }
 async function main() {
@@ -29286,8 +29275,13 @@ async function main() {
     }
     try {
         const iterables = config.collect.flatMap((spec) => {
-            const c = collectors_1.collectors[spec.type];
-            return c ? [c(spec)] : [];
+            if (spec.type in collectors_1.collectors) {
+                const { Config, default: collect } = collectors_1.collectors[spec.type];
+                return fp_ts_1.pipeable.pipe(Config.decode(spec), fp_ts_1.either.fold(() => [], (config) => [collect(config)]));
+            }
+            else {
+                return [];
+            }
         });
         for await (const obs of shared_1.combine(...iterables)) {
             await shared_1.upload({ time, ...obs });
@@ -46312,11 +46306,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.collectors = void 0;
-const next_js_1 = __webpack_require__(355);
-const npm_1 = __webpack_require__(769);
+const next = __webpack_require__(355);
+const npm = __webpack_require__(769);
 exports.collectors = {
-    ["next.js"]: next_js_1.default,
-    ["npm"]: npm_1.default,
+    ["next.js"]: next,
+    ["npm"]: npm,
 };
 
 
