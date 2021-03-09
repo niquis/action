@@ -3141,7 +3141,7 @@ function makeCommentBody(observations) {
     const ordByRelativeDiff = fp_ts_1.ord.getDualOrd(fp_ts_1.ord.contramap((obs) => obs.diff.relative)(fp_ts_1.ord.ordNumber));
     const sortedObservations = fp_ts_1.array.sortBy([ordByRelativeDiff])(observations);
     return `
-**👋 Hi there!** Here are details how certain metrics have changed (either increased or
+**👋 Hi there!** Here are details how metrics have changed (either increased or
 decreased). Metrics for which there is no difference between baseline and this pull
 request are omitted. 
 
