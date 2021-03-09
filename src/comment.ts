@@ -98,7 +98,7 @@ function makeCommentBody(observations: any[]): string {
   /*
    * Sort observations by relative difference (descending)
    */
-  const ordByRelativeDiff = ord.contramap<number, any>((obs) => obs.diff.relative)(ord.ordNumber);
+  const ordByRelativeDiff = ord.getDualOrd(ord.contramap<number, any>((obs) => obs.diff.relative)(ord.ordNumber));
   const sortedObservations = array.sortBy([ordByRelativeDiff])(observations);
 
   return `

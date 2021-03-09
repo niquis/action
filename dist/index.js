@@ -3138,7 +3138,7 @@ function makeCommentBody(observations) {
     /*
      * Sort observations by relative difference (descending)
      */
-    const ordByRelativeDiff = fp_ts_1.ord.contramap((obs) => obs.diff.relative)(fp_ts_1.ord.ordNumber);
+    const ordByRelativeDiff = fp_ts_1.ord.getDualOrd(fp_ts_1.ord.contramap((obs) => obs.diff.relative)(fp_ts_1.ord.ordNumber));
     const sortedObservations = fp_ts_1.array.sortBy([ordByRelativeDiff])(observations);
     return `
 # Comparison
