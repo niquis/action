@@ -7,9 +7,9 @@ export default async function* () {
   if (fs.existsSync(path.join(workspace, "package-lock.json"))) {
     const { dependencies } = require(path.join(workspace, "package-lock.json"));
     const value = (function count(deps: any): number {
-      const values = Object.values(deps) as any[];
+      const values = Object.values(deps);
       return values.reduce<number>(
-        (a, v): number => a + count(v.dependencies || {}),
+        (a, v: any): number => a + count(v.dependencies || {}),
         values.length
       );
     })(dependencies);
