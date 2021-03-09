@@ -41,7 +41,12 @@ Filename: .github/workflows/build.yml
 
 ```
 name: Build
-on: [push, pull_request]
+on:
+  push:
+    branches: master
+  pull_request:
+    types: [opened, synchronize, reopened]
+
 jobs:
   test:
     runs-on: ubuntu-latest
