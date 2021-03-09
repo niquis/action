@@ -25,7 +25,7 @@ Two steps are required:
 **Step 1**: Create a config file. If the file is not present, the
 action remain inactive. In the file you specify what metrics should be collected:
 
-Filename: .github/niquis.yml
+Filename: `.github/niquis.yml`
 
 ```
 version: v0
@@ -37,7 +37,7 @@ collect:
 **Step 2**: Create a workflow file where you run your build command(s), and then the niquis
 action (or at whichever point you are ready to collect the metrics) .
 
-Filename: .github/workflows/build.yml
+Filename: `.github/workflows/build.yml`
 
 ```
 name: Build
