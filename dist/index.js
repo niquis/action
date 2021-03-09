@@ -29269,8 +29269,7 @@ async function loadConfig() {
 async function main() {
     const time = Date.now() / 1000;
     /*
-     * Load the config from .github/niquis.yml. If the config file doesn't
-     * exist, bail.
+     * Load the config file. If it doesn't exist then bail.
      */
     const config = await loadConfig();
     if (!config) {
