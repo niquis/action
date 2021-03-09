@@ -102,7 +102,9 @@ function makeCommentBody(observations: any[]): string {
   const sortedObservations = array.sortBy([ordByRelativeDiff])(observations);
 
   return `
-# Comparison
+**👋 Hi there!** Here are details how certain metrics have changed (either increased or
+decreased). Metrics for which there is no difference between baseline and this pull
+request are omitted. 
 
 | series | base | value | diff (abs) | diff (pct) |
 | ------ | ---- | ----- | ---------- | ---------- |
