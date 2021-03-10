@@ -82,7 +82,11 @@ export async function comment(pr: NonNullable<WebhookPayload["pull_request"]>): 
       });
     }
   } catch {
-    // ignore
+    /*
+     * Creating or updating the comment may fail if the provided GITHUB_TOKEN
+     * doesn't have write permissions to the repository (such as when the workflow
+     * is run from a forked repo, or triggered by dependabot).
+     */
   }
 }
 

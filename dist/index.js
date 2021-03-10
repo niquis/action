@@ -4854,21 +4854,30 @@ async function comment(pr) {
     // info(JSON.stringify(comments));
     const body = makeCommentBody(res.data.comparison.observations);
     const comment = comments.data.find((x) => x.user.login === "github-actions[bot]");
-    if (!comment) {
-        await octokit.issues.createComment({
-            owner: github_1.context.payload.repository.owner.login,
-            repo: github_1.context.payload.repository.name,
-            issue_number: pr.number,
-            body,
-        });
+    try {
+        if (!comment) {
+            await octokit.issues.createComment({
+                owner: github_1.context.payload.repository.owner.login,
+                repo: github_1.context.payload.repository.name,
+                issue_number: pr.number,
+                body,
+            });
+        }
+        else {
+            await octokit.issues.updateComment({
+                owner: github_1.context.payload.repository.owner.login,
+                repo: github_1.context.payload.repository.name,
+                comment_id: comment.id,
+                body,
+            });
+        }
     }
-    else {
-        await octokit.issues.updateComment({
-            owner: github_1.context.payload.repository.owner.login,
-            repo: github_1.context.payload.repository.name,
-            comment_id: comment.id,
-            body,
-        });
+    catch {
+        /*
+         * Creating or updating the comment may fail if the provided GITHUB_TOKEN
+         * doesn't have write permissions to the repository (such as when the workflow
+         * is run from a forked repo, or triggered by dependabot).
+         */
     }
 }
 exports.comment = comment;
