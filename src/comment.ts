@@ -64,20 +64,25 @@ export async function comment(pr: NonNullable<WebhookPayload["pull_request"]>): 
   const body = makeCommentBody(res.data.comparison.observations);
 
   const comment = comments.data.find((x) => x.user.login === "github-actions[bot]");
-  if (!comment) {
-    await octokit.issues.createComment({
-      owner: context.payload.repository!.owner.login,
-      repo: context.payload.repository!.name,
-      issue_number: pr.number,
-      body,
-    });
-  } else {
-    await octokit.issues.updateComment({
-      owner: context.payload.repository!.owner.login,
-      repo: context.payload.repository!.name,
-      comment_id: comment.id,
-      body,
-    });
+
+  try {
+    if (!comment) {
+      await octokit.issues.createComment({
+        owner: context.payload.repository!.owner.login,
+        repo: context.payload.repository!.name,
+        issue_number: pr.number,
+        body,
+      });
+    } else {
+      await octokit.issues.updateComment({
+        owner: context.payload.repository!.owner.login,
+        repo: context.payload.repository!.name,
+        comment_id: comment.id,
+        body,
+      });
+    }
+  } catch {
+    // ignore
   }
 }
 
