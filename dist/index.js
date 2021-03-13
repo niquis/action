@@ -2,476 +2,6 @@ module.exports =
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 607:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.decode = exports.encode = void 0;
-const bytesToHex = (() => {
-    const s = Array.from({ length: 256 }).map((_, i) => i.toString(16).padStart(2, "0"));
-    return (uint8a) => [...uint8a].map((o) => s[o]).join("");
-})();
-const alphabet = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
-function encode(input) {
-    if (input.length === 0) {
-        return "";
-    }
-    // string -> Uint8Array
-    const source = new TextEncoder().encode(input);
-    // Uint8Array -> BigInt (Big Endian)
-    let x = BigInt("0x" + bytesToHex(source));
-    const output = [];
-    while (x > 0n) {
-        const mod = x % 58n;
-        x = x / 58n;
-        output.push(alphabet[Number(mod)]);
-    }
-    for (let i = 0; source[i] === 0; i++) {
-        output.push(alphabet[0]);
-    }
-    return output.reverse().join("");
-}
-exports.encode = encode;
-function decode(output) {
-    if (output.length === 0) {
-        return "";
-    }
-    const bytes = [0];
-    const letters = alphabet;
-    for (const char of output) {
-        const value = letters.indexOf(char);
-        if (value === undefined) {
-            throw new Error(`base58.decode received invalid input. Character '${char}' is not in the base58 alphabet.`);
-        }
-        for (let j = 0; j < bytes.length; j++) {
-            bytes[j] *= 58;
-        }
-        bytes[0] += value;
-        let carry = 0;
-        for (let j = 0; j < bytes.length; j++) {
-            bytes[j] += carry;
-            carry = bytes[j] >> 8;
-            bytes[j] &= 0xff;
-        }
-        while (carry > 0) {
-            bytes.push(carry & 0xff);
-            carry >>= 8;
-        }
-    }
-    for (let i = 0; i < output.length && output[i] === "1"; i++) {
-        bytes.push(0);
-    }
-    return new TextDecoder().decode(new Uint8Array(bytes.reverse()));
-}
-exports.decode = decode;
-
-
-/***/ }),
-
-/***/ 8488:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.collectors = void 0;
-const next = __nccwpck_require__(9050);
-const npm = __nccwpck_require__(5330);
-// import * as sloc from "./sloc";
-exports.collectors = {
-    ["next.js"]: next,
-    ["npm"]: npm,
-    // ["sloc"]: sloc,
-};
-
-
-/***/ }),
-
-/***/ 9050:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.Config = void 0;
-const fg = __nccwpck_require__(3664);
-const fs = __nccwpck_require__(5747);
-const t = __nccwpck_require__(5428);
-const path = __nccwpck_require__(5622);
-exports.Config = t.type({
-    type: t.literal("next.js"),
-    directory: t.union([t.undefined, t.string]),
-});
-async function* default_1(c) {
-    const { directory = "." } = c;
-    const cwd = path.join(process.env.GITHUB_WORKSPACE, directory);
-    /*
-     * Pages
-     */
-    {
-        const entries = await fg(`.next/static/*/pages/**/*.js`, {
-            cwd,
-        });
-        for (const page of entries) {
-            const value = (await fs.promises.stat(page)).size;
-            const series = page.match(/(pages\/.*)\.js$/)[1].slice(0, -21);
-            yield { series, measure: "size", value };
-        }
-    }
-    /*
-     * Chunks
-     */
-    {
-        const entries = await fg(`.next/static/chunks/*.js`, {
-            cwd,
-        });
-        for (const page of entries) {
-            if (page.match(/(framework|main|polyfills|webpack)/)) {
-                const value = (await fs.promises.stat(page)).size;
-                const series = page.match(/(chunks\/.*)\.js$/)[1].slice(0, -21);
-                yield { series, measure: "size", value };
-            }
-        }
-    }
-}
-exports.default = default_1;
-
-
-/***/ }),
-
-/***/ 5330:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.Config = void 0;
-const fs = __nccwpck_require__(5747);
-const path = __nccwpck_require__(5622);
-const t = __nccwpck_require__(5428);
-const core_1 = __nccwpck_require__(2186);
-exports.Config = t.type({
-    type: t.literal("npm"),
-    directory: t.union([t.undefined, t.string]),
-});
-async function* default_1(c) {
-    const { directory = "." } = c;
-    const workspace = process.env.GITHUB_WORKSPACE;
-    const packageLockPath = path.join(workspace, directory, "package-lock.json");
-    core_1.info(`packageLockPath: ${packageLockPath}`);
-    if (fs.existsSync(packageLockPath)) {
-        const { dependencies } = require(packageLockPath);
-        const value = (function count(deps) {
-            const values = Object.values(deps);
-            return values.reduce((a, v) => a + count(v.dependencies || {}), values.length);
-        })(dependencies);
-        yield { series: "dependencies", measure: "count", value };
-    }
-}
-exports.default = default_1;
-
-
-/***/ }),
-
-/***/ 1667:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.comment = void 0;
-const github_1 = __nccwpck_require__(5438);
-const d3_format_1 = __nccwpck_require__(9174);
-const node_fetch_1 = __nccwpck_require__(467);
-const fp_ts_1 = __nccwpck_require__(5187);
-const base58 = __nccwpck_require__(607);
-async function comment(pr) {
-    const base = pr.base.sha;
-    const head = process.env.GITHUB_SHA;
-    const dataSet = `github.com/${process.env.GITHUB_REPOSITORY}`;
-    /*
-     * Wait a bit to allow the DB to reach eventual consistency.
-     */
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    const res = await node_fetch_1.default("https://api.niquis.im/graphql", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            query: `
-          query comparisonQuery($dataSet: String!, $base: String!, $head: String!) {
-            comparison(dataSet: $dataSet, base: $base, head: $head) {
-              observations {
-                id
-                series {
-                  name
-                }
-                measure {
-                  name
-                }
-                value
-                diff {
-                  base {
-                    value
-                  }
-                  absolute
-                  relative
-                }
-              }
-            }
-          }
-        `,
-            variables: { dataSet, base, head },
-        }),
-    }).then((res) => res.json());
-    // info(JSON.stringify(res));
-    const octokit = github_1.getOctokit(process.env.GITHUB_TOKEN);
-    const comments = await octokit.issues.listComments({
-        owner: github_1.context.payload.repository.owner.login,
-        repo: github_1.context.payload.repository.name,
-        issue_number: pr.number,
-    });
-    // info(JSON.stringify(comments));
-    const body = makeCommentBody(dataSet, base, head, res.data.comparison.observations);
-    const comment = comments.data.find((x) => x.user.login === "github-actions[bot]");
-    try {
-        if (!comment) {
-            await octokit.issues.createComment({
-                owner: github_1.context.payload.repository.owner.login,
-                repo: github_1.context.payload.repository.name,
-                issue_number: pr.number,
-                body,
-            });
-        }
-        else {
-            await octokit.issues.updateComment({
-                owner: github_1.context.payload.repository.owner.login,
-                repo: github_1.context.payload.repository.name,
-                comment_id: comment.id,
-                body,
-            });
-        }
-    }
-    catch {
-        /*
-         * Creating or updating the comment may fail if the provided GITHUB_TOKEN
-         * doesn't have write permissions to the repository (such as when the workflow
-         * is run from a forked repo, or triggered by dependabot).
-         */
-    }
-}
-exports.comment = comment;
-const fmt = d3_format_1.format(".0f");
-function bytesToString(bytes) {
-    if (bytes < 1024) {
-        return fmt(bytes) + "";
-    }
-    else if (bytes < 1024 * 1024) {
-        return fmt(bytes / 1024) + "k";
-    }
-    else if (bytes < 1024 * 1024 * 1024) {
-        return fmt(bytes / 1024 / 1024) + "M";
-    }
-    else {
-        return fmt(bytes / 1024 / 1024 / 1024) + "G";
-    }
-}
-function makeCommentBody(dataSet, base, head, observations) {
-    /*
-     * Sort observations by relative difference (descending)
-     */
-    const ordByRelativeDiff = fp_ts_1.ord.getDualOrd(fp_ts_1.ord.contramap((obs) => obs.diff.relative)(fp_ts_1.ord.ordNumber));
-    const sortedObservations = fp_ts_1.array.sortBy([ordByRelativeDiff])(observations);
-    return `
-**👋 Hi there!** Here are details how metrics have changed (either increased or decreased). Metrics for which there is no difference between baseline and this pull request are omitted. 
-
-| series | base | value | diff | % |
-| ------ | ---- | ----- | ---- | - |
-${sortedObservations
-        .filter((obs) => Math.abs(obs.diff.absolute) > 0)
-        .map((obs) => {
-        const abs = bytesToString(obs.diff.absolute);
-        const pct = Math.round(obs.diff.relative * 10) / 10;
-        const sign = { [-1]: "", [0]: "", [1]: "+" }[Math.sign(pct)];
-        return `| ${obs.series.name} | ${bytesToString(obs.diff.base.value)} | ${bytesToString(obs.value)} | ${sign}${abs} | ${sign}${pct}% |`;
-    })
-        .join("\n")}
-
-A detailed report is available [here](https://app.niquis.im/ds/${base58.encode(dataSet)}/compare/${base}..${head}).
-`;
-}
-
-
-/***/ }),
-
-/***/ 88:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.Config = void 0;
-const t = __nccwpck_require__(5428);
-const collectors_1 = __nccwpck_require__(8488);
-exports.Config = t.type({
-    version: t.literal("v0"),
-    collect: t.array(t.union([collectors_1.collectors["next.js"].Config, collectors_1.collectors["npm"].Config])),
-});
-
-
-/***/ }),
-
-/***/ 4822:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-const core_1 = __nccwpck_require__(2186);
-const github_1 = __nccwpck_require__(5438);
-const comment_1 = __nccwpck_require__(1667);
-const collectors_1 = __nccwpck_require__(8488);
-const shared_1 = __nccwpck_require__(7734);
-const fs = __nccwpck_require__(5747);
-const path = __nccwpck_require__(5622);
-const YAML = __nccwpck_require__(3552);
-const fp_ts_1 = __nccwpck_require__(5187);
-const config_1 = __nccwpck_require__(88);
-async function loadConfig() {
-    const workspace = process.env.GITHUB_WORKSPACE;
-    const configPath = path.join(workspace, ".github", "niquis.yml");
-    if (!fs.existsSync(configPath)) {
-        core_1.info("Config file not found.");
-        return undefined;
-    }
-    return fp_ts_1.pipeable.pipe(config_1.Config.decode(YAML.parse(fs.readFileSync(configPath, "utf-8"))), fp_ts_1.either.getOrElseW(() => {
-        core_1.info("Could not decode config file.");
-        return undefined;
-    }));
-}
-async function main() {
-    const time = Date.now() / 1000;
-    /*
-     * Load the config file. If it doesn't exist then bail.
-     */
-    const config = await loadConfig();
-    if (!config) {
-        return;
-    }
-    try {
-        const iterables = config.collect.flatMap((spec) => {
-            if (spec.type in collectors_1.collectors) {
-                const { Config, default: collect } = collectors_1.collectors[spec.type];
-                return fp_ts_1.pipeable.pipe(Config.decode(spec), fp_ts_1.either.fold(() => [], (config) => [collect(config)]));
-            }
-            else {
-                return [];
-            }
-        });
-        for await (const obs of shared_1.combine(...iterables)) {
-            await shared_1.upload({ time, ...obs });
-        }
-        core_1.info(github_1.context.eventName);
-        if (github_1.context.eventName === "pull_request") {
-            await comment_1.comment(github_1.context.payload.pull_request);
-        }
-    }
-    catch (error) {
-        core_1.setFailed(error.message);
-    }
-}
-main();
-
-
-/***/ }),
-
-/***/ 7734:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.combine = exports.upload = void 0;
-const core = __nccwpck_require__(2186);
-const https = __nccwpck_require__(7211);
-/**
- * Upload one observation to via the /ingress API into the database.
- */
-async function upload(obs) {
-    const { time, series, measure, value } = obs;
-    core.info(`upload: series ${series}, measure ${measure}, value ${value}`);
-    const data = JSON.stringify({
-        dataSet: `github.com/${process.env.GITHUB_REPOSITORY}`,
-        lineage: process.env.GITHUB_REF.replace("refs/heads/", ""),
-        series,
-        measure,
-        time,
-        version: process.env.GITHUB_SHA,
-        value,
-    });
-    const options = {
-        hostname: "api.niquis.im",
-        port: 443,
-        path: "/ingress",
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Content-Length": data.length,
-            Authorization: `token ${process.env.NIQUIS_TOKEN}`,
-        },
-    };
-    const req = https.request(options, (res) => {
-        res.on("data", (d) => {
-            core.info(d);
-        });
-    });
-    req.on("error", (error) => {
-        core.debug(error.message);
-    });
-    req.write(data);
-    req.end();
-}
-exports.upload = upload;
-async function* combine(...iterable) {
-    const asyncIterators = iterable.map((o) => o[Symbol.asyncIterator]());
-    let count = asyncIterators.length;
-    const never = new Promise(() => { });
-    const results = [];
-    async function getNext(asyncIterator, index) {
-        return { index, result: await asyncIterator.next() };
-    }
-    const nextPromises = asyncIterators.map(getNext);
-    try {
-        while (count) {
-            const { index, result } = await Promise.race(nextPromises);
-            if (result.done) {
-                nextPromises[index] = never;
-                results[index] = result.value;
-                count--;
-            }
-            else {
-                nextPromises[index] = getNext(asyncIterators[index], index);
-                yield result.value;
-            }
-        }
-    }
-    finally {
-        for (const [index, iterator] of asyncIterators.entries())
-            if (nextPromises[index] != never && iterator.return != null) {
-                iterator.return();
-            }
-        // no await here - see https://github.com/tc39/proposal-async-iteration/issues/126
-    }
-    return results;
-}
-exports.combine = combine;
-
-
-/***/ }),
-
 /***/ 7351:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -47415,6 +46945,476 @@ module.exports = __nccwpck_require__(5065).YAML
 
 /***/ }),
 
+/***/ 889:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.decode = exports.encode = void 0;
+const bytesToHex = (() => {
+    const s = Array.from({ length: 256 }).map((_, i) => i.toString(16).padStart(2, "0"));
+    return (uint8a) => [...uint8a].map((o) => s[o]).join("");
+})();
+const alphabet = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+function encode(input) {
+    if (input.length === 0) {
+        return "";
+    }
+    // string -> Uint8Array
+    const source = new TextEncoder().encode(input);
+    // Uint8Array -> BigInt (Big Endian)
+    let x = BigInt("0x" + bytesToHex(source));
+    const output = [];
+    while (x > 0n) {
+        const mod = x % 58n;
+        x = x / 58n;
+        output.push(alphabet[Number(mod)]);
+    }
+    for (let i = 0; source[i] === 0; i++) {
+        output.push(alphabet[0]);
+    }
+    return output.reverse().join("");
+}
+exports.encode = encode;
+function decode(output) {
+    if (output.length === 0) {
+        return "";
+    }
+    const bytes = [0];
+    const letters = alphabet;
+    for (const char of output) {
+        const value = letters.indexOf(char);
+        if (value === undefined) {
+            throw new Error(`base58.decode received invalid input. Character '${char}' is not in the base58 alphabet.`);
+        }
+        for (let j = 0; j < bytes.length; j++) {
+            bytes[j] *= 58;
+        }
+        bytes[0] += value;
+        let carry = 0;
+        for (let j = 0; j < bytes.length; j++) {
+            bytes[j] += carry;
+            carry = bytes[j] >> 8;
+            bytes[j] &= 0xff;
+        }
+        while (carry > 0) {
+            bytes.push(carry & 0xff);
+            carry >>= 8;
+        }
+    }
+    for (let i = 0; i < output.length && output[i] === "1"; i++) {
+        bytes.push(0);
+    }
+    return new TextDecoder().decode(new Uint8Array(bytes.reverse()));
+}
+exports.decode = decode;
+
+
+/***/ }),
+
+/***/ 2131:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.collectors = void 0;
+const next = __nccwpck_require__(6105);
+const npm = __nccwpck_require__(8377);
+// import * as sloc from "./sloc";
+exports.collectors = {
+    ["next.js"]: next,
+    ["npm"]: npm,
+    // ["sloc"]: sloc,
+};
+
+
+/***/ }),
+
+/***/ 6105:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Config = void 0;
+const fg = __nccwpck_require__(3664);
+const fs = __nccwpck_require__(5747);
+const t = __nccwpck_require__(5428);
+const path = __nccwpck_require__(5622);
+exports.Config = t.type({
+    type: t.literal("next.js"),
+    directory: t.union([t.undefined, t.string]),
+});
+async function* default_1(c) {
+    const { directory = "." } = c;
+    const cwd = path.join(process.env.GITHUB_WORKSPACE, directory);
+    /*
+     * Pages
+     */
+    {
+        const entries = await fg(`.next/static/*/pages/**/*.js`, {
+            cwd,
+        });
+        for (const page of entries) {
+            const value = (await fs.promises.stat(page)).size;
+            const series = page.match(/(pages\/.*)\.js$/)[1].slice(0, -21);
+            yield { series, measure: "size", value };
+        }
+    }
+    /*
+     * Chunks
+     */
+    {
+        const entries = await fg(`.next/static/chunks/*.js`, {
+            cwd,
+        });
+        for (const page of entries) {
+            if (page.match(/(framework|main|polyfills|webpack)/)) {
+                const value = (await fs.promises.stat(page)).size;
+                const series = page.match(/(chunks\/.*)\.js$/)[1].slice(0, -21);
+                yield { series, measure: "size", value };
+            }
+        }
+    }
+}
+exports.default = default_1;
+
+
+/***/ }),
+
+/***/ 8377:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Config = void 0;
+const fs = __nccwpck_require__(5747);
+const path = __nccwpck_require__(5622);
+const t = __nccwpck_require__(5428);
+const core_1 = __nccwpck_require__(2186);
+exports.Config = t.type({
+    type: t.literal("npm"),
+    directory: t.union([t.undefined, t.string]),
+});
+async function* default_1(c) {
+    const { directory = "." } = c;
+    const workspace = process.env.GITHUB_WORKSPACE;
+    const packageLockPath = path.join(workspace, directory, "package-lock.json");
+    core_1.info(`packageLockPath: ${packageLockPath}`);
+    if (fs.existsSync(packageLockPath)) {
+        const { dependencies } = require(packageLockPath);
+        const value = (function count(deps) {
+            const values = Object.values(deps);
+            return values.reduce((a, v) => a + count(v.dependencies || {}), values.length);
+        })(dependencies);
+        yield { series: "dependencies", measure: "count", value };
+    }
+}
+exports.default = default_1;
+
+
+/***/ }),
+
+/***/ 7810:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.comment = void 0;
+const github_1 = __nccwpck_require__(5438);
+const d3_format_1 = __nccwpck_require__(9174);
+const node_fetch_1 = __nccwpck_require__(467);
+const fp_ts_1 = __nccwpck_require__(5187);
+const base58 = __nccwpck_require__(889);
+async function comment(pr) {
+    const base = pr.base.sha;
+    const head = process.env.GITHUB_SHA;
+    const dataSet = `github.com/${process.env.GITHUB_REPOSITORY}`;
+    /*
+     * Wait a bit to allow the DB to reach eventual consistency.
+     */
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    const res = await node_fetch_1.default("https://api.niquis.im/graphql", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            query: `
+          query comparisonQuery($dataSet: String!, $base: String!, $head: String!) {
+            comparison(dataSet: $dataSet, base: $base, head: $head) {
+              observations {
+                id
+                series {
+                  name
+                }
+                measure {
+                  name
+                }
+                value
+                diff {
+                  base {
+                    value
+                  }
+                  absolute
+                  relative
+                }
+              }
+            }
+          }
+        `,
+            variables: { dataSet, base, head },
+        }),
+    }).then((res) => res.json());
+    // info(JSON.stringify(res));
+    const octokit = github_1.getOctokit(process.env.GITHUB_TOKEN);
+    const comments = await octokit.issues.listComments({
+        owner: github_1.context.payload.repository.owner.login,
+        repo: github_1.context.payload.repository.name,
+        issue_number: pr.number,
+    });
+    // info(JSON.stringify(comments));
+    const body = makeCommentBody(dataSet, base, head, res.data.comparison.observations);
+    const comment = comments.data.find((x) => x.user.login === "github-actions[bot]");
+    try {
+        if (!comment) {
+            await octokit.issues.createComment({
+                owner: github_1.context.payload.repository.owner.login,
+                repo: github_1.context.payload.repository.name,
+                issue_number: pr.number,
+                body,
+            });
+        }
+        else {
+            await octokit.issues.updateComment({
+                owner: github_1.context.payload.repository.owner.login,
+                repo: github_1.context.payload.repository.name,
+                comment_id: comment.id,
+                body,
+            });
+        }
+    }
+    catch {
+        /*
+         * Creating or updating the comment may fail if the provided GITHUB_TOKEN
+         * doesn't have write permissions to the repository (such as when the workflow
+         * is run from a forked repo, or triggered by dependabot).
+         */
+    }
+}
+exports.comment = comment;
+const fmt = d3_format_1.format(".0f");
+function bytesToString(bytes) {
+    if (bytes < 1024) {
+        return fmt(bytes) + "";
+    }
+    else if (bytes < 1024 * 1024) {
+        return fmt(bytes / 1024) + "k";
+    }
+    else if (bytes < 1024 * 1024 * 1024) {
+        return fmt(bytes / 1024 / 1024) + "M";
+    }
+    else {
+        return fmt(bytes / 1024 / 1024 / 1024) + "G";
+    }
+}
+function makeCommentBody(dataSet, base, head, observations) {
+    /*
+     * Sort observations by relative difference (descending)
+     */
+    const ordByRelativeDiff = fp_ts_1.ord.getDualOrd(fp_ts_1.ord.contramap((obs) => obs.diff.relative)(fp_ts_1.ord.ordNumber));
+    const sortedObservations = fp_ts_1.array.sortBy([ordByRelativeDiff])(observations);
+    return `
+**👋 Hi there!** Here are details how metrics have changed (either increased or decreased). Metrics for which there is no difference between baseline and this pull request are omitted. 
+
+| series | base | value | diff | % |
+| ------ | ---- | ----- | ---- | - |
+${sortedObservations
+        .filter((obs) => Math.abs(obs.diff.absolute) > 0)
+        .map((obs) => {
+        const abs = bytesToString(obs.diff.absolute);
+        const pct = Math.round(obs.diff.relative * 10) / 10;
+        const sign = { [-1]: "", [0]: "", [1]: "+" }[Math.sign(pct)];
+        return `| ${obs.series.name} | ${bytesToString(obs.diff.base.value)} | ${bytesToString(obs.value)} | ${sign}${abs} | ${sign}${pct}% |`;
+    })
+        .join("\n")}
+
+A detailed report is available [here](https://app.niquis.im/ds/${base58.encode(dataSet)}/compare/${base}..${head}).
+`;
+}
+
+
+/***/ }),
+
+/***/ 6373:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Config = void 0;
+const t = __nccwpck_require__(5428);
+const collectors_1 = __nccwpck_require__(2131);
+exports.Config = t.type({
+    version: t.literal("v0"),
+    collect: t.array(t.union([collectors_1.collectors["next.js"].Config, collectors_1.collectors["npm"].Config])),
+});
+
+
+/***/ }),
+
+/***/ 6144:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const core_1 = __nccwpck_require__(2186);
+const github_1 = __nccwpck_require__(5438);
+const comment_1 = __nccwpck_require__(7810);
+const collectors_1 = __nccwpck_require__(2131);
+const shared_1 = __nccwpck_require__(3826);
+const fs = __nccwpck_require__(5747);
+const path = __nccwpck_require__(5622);
+const YAML = __nccwpck_require__(3552);
+const fp_ts_1 = __nccwpck_require__(5187);
+const config_1 = __nccwpck_require__(6373);
+async function loadConfig() {
+    const workspace = process.env.GITHUB_WORKSPACE;
+    const configPath = path.join(workspace, ".github", "niquis.yml");
+    if (!fs.existsSync(configPath)) {
+        core_1.info("Config file not found.");
+        return undefined;
+    }
+    return fp_ts_1.pipeable.pipe(config_1.Config.decode(YAML.parse(fs.readFileSync(configPath, "utf-8"))), fp_ts_1.either.getOrElseW(() => {
+        core_1.info("Could not decode config file.");
+        return undefined;
+    }));
+}
+async function main() {
+    const time = Date.now() / 1000;
+    /*
+     * Load the config file. If it doesn't exist then bail.
+     */
+    const config = await loadConfig();
+    if (!config) {
+        return;
+    }
+    try {
+        const iterables = config.collect.flatMap((spec) => {
+            if (spec.type in collectors_1.collectors) {
+                const { Config, default: collect } = collectors_1.collectors[spec.type];
+                return fp_ts_1.pipeable.pipe(Config.decode(spec), fp_ts_1.either.fold(() => [], (config) => [collect(config)]));
+            }
+            else {
+                return [];
+            }
+        });
+        for await (const obs of shared_1.combine(...iterables)) {
+            await shared_1.upload({ time, ...obs });
+        }
+        core_1.info(github_1.context.eventName);
+        if (github_1.context.eventName === "pull_request") {
+            await comment_1.comment(github_1.context.payload.pull_request);
+        }
+    }
+    catch (error) {
+        core_1.setFailed(error.message);
+    }
+}
+main();
+
+
+/***/ }),
+
+/***/ 3826:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.combine = exports.upload = void 0;
+const core = __nccwpck_require__(2186);
+const https = __nccwpck_require__(7211);
+/**
+ * Upload one observation to via the /ingress API into the database.
+ */
+async function upload(obs) {
+    const { time, series, measure, value } = obs;
+    core.info(`upload: series ${series}, measure ${measure}, value ${value}`);
+    const data = JSON.stringify({
+        dataSet: `github.com/${process.env.GITHUB_REPOSITORY}`,
+        lineage: process.env.GITHUB_REF.replace("refs/heads/", ""),
+        series,
+        measure,
+        time,
+        version: process.env.GITHUB_SHA,
+        value,
+    });
+    const options = {
+        hostname: "api.niquis.im",
+        port: 443,
+        path: "/ingress",
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Content-Length": data.length,
+            Authorization: `token ${process.env.NIQUIS_TOKEN}`,
+        },
+    };
+    const req = https.request(options, (res) => {
+        res.on("data", (d) => {
+            core.info(d);
+        });
+    });
+    req.on("error", (error) => {
+        core.debug(error.message);
+    });
+    req.write(data);
+    req.end();
+}
+exports.upload = upload;
+async function* combine(...iterable) {
+    const asyncIterators = iterable.map((o) => o[Symbol.asyncIterator]());
+    let count = asyncIterators.length;
+    const never = new Promise(() => { });
+    const results = [];
+    async function getNext(asyncIterator, index) {
+        return { index, result: await asyncIterator.next() };
+    }
+    const nextPromises = asyncIterators.map(getNext);
+    try {
+        while (count) {
+            const { index, result } = await Promise.race(nextPromises);
+            if (result.done) {
+                nextPromises[index] = never;
+                results[index] = result.value;
+                count--;
+            }
+            else {
+                nextPromises[index] = getNext(asyncIterators[index], index);
+                yield result.value;
+            }
+        }
+    }
+    finally {
+        for (const [index, iterator] of asyncIterators.entries())
+            if (nextPromises[index] != never && iterator.return != null) {
+                iterator.return();
+            }
+        // no await here - see https://github.com/tc39/proposal-async-iteration/issues/126
+    }
+    return results;
+}
+exports.combine = combine;
+
+
+/***/ }),
+
 /***/ 2877:
 /***/ ((module) => {
 
@@ -47573,6 +47573,6 @@ module.exports = require("zlib");;
 /******/ 	// module exports must be returned from runtime so entry inlining is disabled
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
-/******/ 	return __nccwpck_require__(4822);
+/******/ 	return __nccwpck_require__(6144);
 /******/ })()
 ;
