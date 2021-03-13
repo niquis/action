@@ -4,10 +4,11 @@ import { WebhookPayload } from "@actions/github/lib/interfaces";
 import { format } from "d3-format";
 import fetch from "node-fetch";
 import { array, ord } from "fp-ts";
+import * as base58 from "./base58";
 
 export async function comment(pr: NonNullable<WebhookPayload["pull_request"]>): Promise<void> {
   const base = pr!.base.sha;
-  const head = process.env.GITHUB_SHA;
+  const head = process.env.GITHUB_SHA!;
 
   const dataSet = `github.com/${process.env.GITHUB_REPOSITORY!}`;
 
@@ -61,7 +62,7 @@ export async function comment(pr: NonNullable<WebhookPayload["pull_request"]>): 
 
   // info(JSON.stringify(comments));
 
-  const body = makeCommentBody(res.data.comparison.observations);
+  const body = makeCommentBody(dataSet, base, head, res.data.comparison.observations);
 
   const comment = comments.data.find((x) => x.user.login === "github-actions[bot]");
 
@@ -103,7 +104,7 @@ function bytesToString(bytes: number) {
   }
 }
 
-function makeCommentBody(observations: any[]): string {
+function makeCommentBody(dataSet: string, base: string, head: string, observations: any[]): string {
   /*
    * Sort observations by relative difference (descending)
    */
@@ -113,8 +114,8 @@ function makeCommentBody(observations: any[]): string {
   return `
 **👋 Hi there!** Here are details how metrics have changed (either increased or decreased). Metrics for which there is no difference between baseline and this pull request are omitted. 
 
-| series | base | value | diff (abs) | diff (pct) |
-| ------ | ---- | ----- | ---------- | ---------- |
+| series | base | value | diff | % |
+| ------ | ---- | ----- | ---- | - |
 ${sortedObservations
   .filter((obs) => Math.abs(obs.diff.absolute) > 0)
   .map((obs) => {
@@ -127,5 +128,7 @@ ${sortedObservations
     )} | ${sign}${abs} | ${sign}${pct}% |`;
   })
   .join("\n")}
+
+A detailed report is available [here](https://app.niquis.im/ds/${base58.encode(dataSet)}/compare/${base}..${head}).
 `;
 }
