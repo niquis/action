@@ -2,21 +2,6 @@ module.exports =
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 3637:
-/***/ ((module) => {
-
-function webpackEmptyContext(req) {
-	var e = new Error("Cannot find module '" + req + "'");
-	e.code = 'MODULE_NOT_FOUND';
-	throw e;
-}
-webpackEmptyContext.keys = () => [];
-webpackEmptyContext.resolve = webpackEmptyContext;
-webpackEmptyContext.id = 3637;
-module.exports = webpackEmptyContext;
-
-/***/ }),
-
 /***/ 607:
 /***/ ((__unused_webpack_module, exports) => {
 
@@ -166,6 +151,7 @@ exports.Config = void 0;
 const fs = __nccwpck_require__(5747);
 const path = __nccwpck_require__(5622);
 const t = __nccwpck_require__(5428);
+const core_1 = __nccwpck_require__(2186);
 exports.Config = t.type({
     type: t.literal("npm"),
     directory: t.union([t.undefined, t.string]),
@@ -173,8 +159,10 @@ exports.Config = t.type({
 async function* default_1(c) {
     const { directory = "." } = c;
     const workspace = process.env.GITHUB_WORKSPACE;
-    if (fs.existsSync(path.join(workspace, directory, "package-lock.json"))) {
-        const { dependencies } = __nccwpck_require__(3637)(path.join(workspace, directory, "package-lock.json"));
+    const packageLockPath = path.join(workspace, directory, "package-lock.json");
+    core_1.info(`packageLockPath: ${packageLockPath}`);
+    if (fs.existsSync(packageLockPath)) {
+        const { dependencies } = require(packageLockPath);
         const value = (function count(deps) {
             const values = Object.values(deps);
             return values.reduce((a, v) => a + count(v.dependencies || {}), values.length);
@@ -47579,11 +47567,6 @@ module.exports = require("zlib");;
 /******/ 	}
 /******/ 	
 /************************************************************************/
-/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
-/******/ 	(() => {
-/******/ 		__nccwpck_require__.o = (obj, prop) => Object.prototype.hasOwnProperty.call(obj, prop)
-/******/ 	})();
-/******/ 	
 /******/ 	/* webpack/runtime/compat */
 /******/ 	
 /******/ 	__nccwpck_require__.ab = __dirname + "/";/************************************************************************/
