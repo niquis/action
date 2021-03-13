@@ -194,7 +194,6 @@ exports.default = default_1;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.comment = void 0;
-const core_1 = __nccwpck_require__(2186);
 const github_1 = __nccwpck_require__(5438);
 const d3_format_1 = __nccwpck_require__(9174);
 const node_fetch_1 = __nccwpck_require__(467);
@@ -240,7 +239,7 @@ async function comment(pr) {
             variables: { dataSet, base, head },
         }),
     }).then((res) => res.json());
-    core_1.info(JSON.stringify(res));
+    // info(JSON.stringify(res));
     const octokit = github_1.getOctokit(process.env.GITHUB_TOKEN);
     const comments = await octokit.issues.listComments({
         owner: github_1.context.payload.repository.owner.login,

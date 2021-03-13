@@ -1,4 +1,3 @@
-import { info } from "@actions/core";
 import { context, getOctokit } from "@actions/github";
 import { WebhookPayload } from "@actions/github/lib/interfaces";
 import { format } from "d3-format";
@@ -50,7 +49,7 @@ export async function comment(pr: NonNullable<WebhookPayload["pull_request"]>): 
     }),
   }).then((res) => res.json());
 
-  info(JSON.stringify(res));
+  // info(JSON.stringify(res));
 
   const octokit = getOctokit(process.env.GITHUB_TOKEN!);
 
