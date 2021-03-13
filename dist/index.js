@@ -47094,7 +47094,6 @@ exports.Config = void 0;
 const fs = __nccwpck_require__(5747);
 const path = __nccwpck_require__(5622);
 const t = __nccwpck_require__(5428);
-const core_1 = __nccwpck_require__(2186);
 exports.Config = t.type({
     type: t.literal("npm"),
     directory: t.union([t.undefined, t.string]),
@@ -47103,7 +47102,6 @@ async function* default_1(c) {
     const { directory = "." } = c;
     const workspace = process.env.GITHUB_WORKSPACE;
     const packageLockPath = path.join(workspace, directory, "package-lock.json");
-    core_1.info(`packageLockPath: ${packageLockPath}`);
     if (fs.existsSync(packageLockPath)) {
         const { dependencies } = require(packageLockPath);
         const value = (function count(deps) {

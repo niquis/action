@@ -1,7 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
 import * as t from "io-ts";
-import { info } from "@actions/core";
 
 export type Config = t.TypeOf<typeof Config>;
 export const Config = t.type({
@@ -14,7 +13,6 @@ export default async function* (c: Config) {
   const workspace = process.env.GITHUB_WORKSPACE!;
 
   const packageLockPath = path.join(workspace, directory, "package-lock.json");
-  info(`packageLockPath: ${packageLockPath}`)
   if (fs.existsSync(packageLockPath)) {
     const { dependencies } = require(packageLockPath);
     const value = (function count(deps: any): number {
