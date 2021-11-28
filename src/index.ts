@@ -1,13 +1,13 @@
 import { info, setFailed } from "@actions/core";
 import { context } from "@actions/github";
-import { comment } from "./comment";
-import { collectors } from "./collectors";
-import { combine, upload } from "./shared";
+import { either, pipeable } from "fp-ts";
 import * as fs from "fs";
 import * as path from "path";
 import * as YAML from "yaml";
-import { either, pipeable } from "fp-ts";
+import { collectors } from "./collectors";
+// import { comment } from "./comment";
 import { Config } from "./config";
+import { combine, upload } from "./shared";
 
 async function loadConfig(): Promise<undefined | Config> {
   const workspace = process.env.GITHUB_WORKSPACE!;
@@ -55,15 +55,28 @@ async function main(): Promise<void> {
       }
     });
 
+    const lineage = process.env.GITHUB_REF!.replace("refs/heads/", "");
+    const version = (() => {
+      if (context.eventName === "pull_request") {
+        return context.payload.pull_request!.head.sha;
+      } else {
+        return context.sha;
+      }
+    })();
+
     for await (const obs of combine(...iterables)) {
-      await upload({ time, ...obs });
+      await upload({ time, lineage, version, ...obs });
     }
 
+    /*
+     * … for debugging purposes only.
+     */
     info(context.eventName);
-    if (context.eventName === "pull_request") {
-      await comment(context.payload.pull_request!);
-    }
-  } catch (error) {
+
+    // if (context.eventName === "pull_request") {
+    //   await comment(context.payload.pull_request!);
+    // }
+  } catch (error: any) {
     setFailed(error.message);
   }
 }

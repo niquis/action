@@ -5876,355 +5876,6 @@ module.exports = resolveCommand;
 
 /***/ }),
 
-/***/ 9174:
-/***/ (function(__unused_webpack_module, exports) {
-
-// https://d3js.org/d3-format/ v2.0.0 Copyright 2020 Mike Bostock
-(function (global, factory) {
- true ? factory(exports) :
-0;
-}(this, (function (exports) { 'use strict';
-
-function formatDecimal(x) {
-  return Math.abs(x = Math.round(x)) >= 1e21
-      ? x.toLocaleString("en").replace(/,/g, "")
-      : x.toString(10);
-}
-
-// Computes the decimal coefficient and exponent of the specified number x with
-// significant digits p, where x is positive and p is in [1, 21] or undefined.
-// For example, formatDecimalParts(1.23) returns ["123", 0].
-function formatDecimalParts(x, p) {
-  if ((i = (x = p ? x.toExponential(p - 1) : x.toExponential()).indexOf("e")) < 0) return null; // NaN, ±Infinity
-  var i, coefficient = x.slice(0, i);
-
-  // The string returned by toExponential either has the form \d\.\d+e[-+]\d+
-  // (e.g., 1.2e+3) or the form \de[-+]\d+ (e.g., 1e+3).
-  return [
-    coefficient.length > 1 ? coefficient[0] + coefficient.slice(2) : coefficient,
-    +x.slice(i + 1)
-  ];
-}
-
-function exponent(x) {
-  return x = formatDecimalParts(Math.abs(x)), x ? x[1] : NaN;
-}
-
-function formatGroup(grouping, thousands) {
-  return function(value, width) {
-    var i = value.length,
-        t = [],
-        j = 0,
-        g = grouping[0],
-        length = 0;
-
-    while (i > 0 && g > 0) {
-      if (length + g + 1 > width) g = Math.max(1, width - length);
-      t.push(value.substring(i -= g, i + g));
-      if ((length += g + 1) > width) break;
-      g = grouping[j = (j + 1) % grouping.length];
-    }
-
-    return t.reverse().join(thousands);
-  };
-}
-
-function formatNumerals(numerals) {
-  return function(value) {
-    return value.replace(/[0-9]/g, function(i) {
-      return numerals[+i];
-    });
-  };
-}
-
-// [[fill]align][sign][symbol][0][width][,][.precision][~][type]
-var re = /^(?:(.)?([<>=^]))?([+\-( ])?([$#])?(0)?(\d+)?(,)?(\.\d+)?(~)?([a-z%])?$/i;
-
-function formatSpecifier(specifier) {
-  if (!(match = re.exec(specifier))) throw new Error("invalid format: " + specifier);
-  var match;
-  return new FormatSpecifier({
-    fill: match[1],
-    align: match[2],
-    sign: match[3],
-    symbol: match[4],
-    zero: match[5],
-    width: match[6],
-    comma: match[7],
-    precision: match[8] && match[8].slice(1),
-    trim: match[9],
-    type: match[10]
-  });
-}
-
-formatSpecifier.prototype = FormatSpecifier.prototype; // instanceof
-
-function FormatSpecifier(specifier) {
-  this.fill = specifier.fill === undefined ? " " : specifier.fill + "";
-  this.align = specifier.align === undefined ? ">" : specifier.align + "";
-  this.sign = specifier.sign === undefined ? "-" : specifier.sign + "";
-  this.symbol = specifier.symbol === undefined ? "" : specifier.symbol + "";
-  this.zero = !!specifier.zero;
-  this.width = specifier.width === undefined ? undefined : +specifier.width;
-  this.comma = !!specifier.comma;
-  this.precision = specifier.precision === undefined ? undefined : +specifier.precision;
-  this.trim = !!specifier.trim;
-  this.type = specifier.type === undefined ? "" : specifier.type + "";
-}
-
-FormatSpecifier.prototype.toString = function() {
-  return this.fill
-      + this.align
-      + this.sign
-      + this.symbol
-      + (this.zero ? "0" : "")
-      + (this.width === undefined ? "" : Math.max(1, this.width | 0))
-      + (this.comma ? "," : "")
-      + (this.precision === undefined ? "" : "." + Math.max(0, this.precision | 0))
-      + (this.trim ? "~" : "")
-      + this.type;
-};
-
-// Trims insignificant zeros, e.g., replaces 1.2000k with 1.2k.
-function formatTrim(s) {
-  out: for (var n = s.length, i = 1, i0 = -1, i1; i < n; ++i) {
-    switch (s[i]) {
-      case ".": i0 = i1 = i; break;
-      case "0": if (i0 === 0) i0 = i; i1 = i; break;
-      default: if (!+s[i]) break out; if (i0 > 0) i0 = 0; break;
-    }
-  }
-  return i0 > 0 ? s.slice(0, i0) + s.slice(i1 + 1) : s;
-}
-
-var prefixExponent;
-
-function formatPrefixAuto(x, p) {
-  var d = formatDecimalParts(x, p);
-  if (!d) return x + "";
-  var coefficient = d[0],
-      exponent = d[1],
-      i = exponent - (prefixExponent = Math.max(-8, Math.min(8, Math.floor(exponent / 3))) * 3) + 1,
-      n = coefficient.length;
-  return i === n ? coefficient
-      : i > n ? coefficient + new Array(i - n + 1).join("0")
-      : i > 0 ? coefficient.slice(0, i) + "." + coefficient.slice(i)
-      : "0." + new Array(1 - i).join("0") + formatDecimalParts(x, Math.max(0, p + i - 1))[0]; // less than 1y!
-}
-
-function formatRounded(x, p) {
-  var d = formatDecimalParts(x, p);
-  if (!d) return x + "";
-  var coefficient = d[0],
-      exponent = d[1];
-  return exponent < 0 ? "0." + new Array(-exponent).join("0") + coefficient
-      : coefficient.length > exponent + 1 ? coefficient.slice(0, exponent + 1) + "." + coefficient.slice(exponent + 1)
-      : coefficient + new Array(exponent - coefficient.length + 2).join("0");
-}
-
-var formatTypes = {
-  "%": (x, p) => (x * 100).toFixed(p),
-  "b": (x) => Math.round(x).toString(2),
-  "c": (x) => x + "",
-  "d": formatDecimal,
-  "e": (x, p) => x.toExponential(p),
-  "f": (x, p) => x.toFixed(p),
-  "g": (x, p) => x.toPrecision(p),
-  "o": (x) => Math.round(x).toString(8),
-  "p": (x, p) => formatRounded(x * 100, p),
-  "r": formatRounded,
-  "s": formatPrefixAuto,
-  "X": (x) => Math.round(x).toString(16).toUpperCase(),
-  "x": (x) => Math.round(x).toString(16)
-};
-
-function identity(x) {
-  return x;
-}
-
-var map = Array.prototype.map,
-    prefixes = ["y","z","a","f","p","n","µ","m","","k","M","G","T","P","E","Z","Y"];
-
-function formatLocale(locale) {
-  var group = locale.grouping === undefined || locale.thousands === undefined ? identity : formatGroup(map.call(locale.grouping, Number), locale.thousands + ""),
-      currencyPrefix = locale.currency === undefined ? "" : locale.currency[0] + "",
-      currencySuffix = locale.currency === undefined ? "" : locale.currency[1] + "",
-      decimal = locale.decimal === undefined ? "." : locale.decimal + "",
-      numerals = locale.numerals === undefined ? identity : formatNumerals(map.call(locale.numerals, String)),
-      percent = locale.percent === undefined ? "%" : locale.percent + "",
-      minus = locale.minus === undefined ? "−" : locale.minus + "",
-      nan = locale.nan === undefined ? "NaN" : locale.nan + "";
-
-  function newFormat(specifier) {
-    specifier = formatSpecifier(specifier);
-
-    var fill = specifier.fill,
-        align = specifier.align,
-        sign = specifier.sign,
-        symbol = specifier.symbol,
-        zero = specifier.zero,
-        width = specifier.width,
-        comma = specifier.comma,
-        precision = specifier.precision,
-        trim = specifier.trim,
-        type = specifier.type;
-
-    // The "n" type is an alias for ",g".
-    if (type === "n") comma = true, type = "g";
-
-    // The "" type, and any invalid type, is an alias for ".12~g".
-    else if (!formatTypes[type]) precision === undefined && (precision = 12), trim = true, type = "g";
-
-    // If zero fill is specified, padding goes after sign and before digits.
-    if (zero || (fill === "0" && align === "=")) zero = true, fill = "0", align = "=";
-
-    // Compute the prefix and suffix.
-    // For SI-prefix, the suffix is lazily computed.
-    var prefix = symbol === "$" ? currencyPrefix : symbol === "#" && /[boxX]/.test(type) ? "0" + type.toLowerCase() : "",
-        suffix = symbol === "$" ? currencySuffix : /[%p]/.test(type) ? percent : "";
-
-    // What format function should we use?
-    // Is this an integer type?
-    // Can this type generate exponential notation?
-    var formatType = formatTypes[type],
-        maybeSuffix = /[defgprs%]/.test(type);
-
-    // Set the default precision if not specified,
-    // or clamp the specified precision to the supported range.
-    // For significant precision, it must be in [1, 21].
-    // For fixed precision, it must be in [0, 20].
-    precision = precision === undefined ? 6
-        : /[gprs]/.test(type) ? Math.max(1, Math.min(21, precision))
-        : Math.max(0, Math.min(20, precision));
-
-    function format(value) {
-      var valuePrefix = prefix,
-          valueSuffix = suffix,
-          i, n, c;
-
-      if (type === "c") {
-        valueSuffix = formatType(value) + valueSuffix;
-        value = "";
-      } else {
-        value = +value;
-
-        // Determine the sign. -0 is not less than 0, but 1 / -0 is!
-        var valueNegative = value < 0 || 1 / value < 0;
-
-        // Perform the initial formatting.
-        value = isNaN(value) ? nan : formatType(Math.abs(value), precision);
-
-        // Trim insignificant zeros.
-        if (trim) value = formatTrim(value);
-
-        // If a negative value rounds to zero after formatting, and no explicit positive sign is requested, hide the sign.
-        if (valueNegative && +value === 0 && sign !== "+") valueNegative = false;
-
-        // Compute the prefix and suffix.
-        valuePrefix = (valueNegative ? (sign === "(" ? sign : minus) : sign === "-" || sign === "(" ? "" : sign) + valuePrefix;
-        valueSuffix = (type === "s" ? prefixes[8 + prefixExponent / 3] : "") + valueSuffix + (valueNegative && sign === "(" ? ")" : "");
-
-        // Break the formatted value into the integer “value” part that can be
-        // grouped, and fractional or exponential “suffix” part that is not.
-        if (maybeSuffix) {
-          i = -1, n = value.length;
-          while (++i < n) {
-            if (c = value.charCodeAt(i), 48 > c || c > 57) {
-              valueSuffix = (c === 46 ? decimal + value.slice(i + 1) : value.slice(i)) + valueSuffix;
-              value = value.slice(0, i);
-              break;
-            }
-          }
-        }
-      }
-
-      // If the fill character is not "0", grouping is applied before padding.
-      if (comma && !zero) value = group(value, Infinity);
-
-      // Compute the padding.
-      var length = valuePrefix.length + value.length + valueSuffix.length,
-          padding = length < width ? new Array(width - length + 1).join(fill) : "";
-
-      // If the fill character is "0", grouping is applied after padding.
-      if (comma && zero) value = group(padding + value, padding.length ? width - valueSuffix.length : Infinity), padding = "";
-
-      // Reconstruct the final output based on the desired alignment.
-      switch (align) {
-        case "<": value = valuePrefix + value + valueSuffix + padding; break;
-        case "=": value = valuePrefix + padding + value + valueSuffix; break;
-        case "^": value = padding.slice(0, length = padding.length >> 1) + valuePrefix + value + valueSuffix + padding.slice(length); break;
-        default: value = padding + valuePrefix + value + valueSuffix; break;
-      }
-
-      return numerals(value);
-    }
-
-    format.toString = function() {
-      return specifier + "";
-    };
-
-    return format;
-  }
-
-  function formatPrefix(specifier, value) {
-    var f = newFormat((specifier = formatSpecifier(specifier), specifier.type = "f", specifier)),
-        e = Math.max(-8, Math.min(8, Math.floor(exponent(value) / 3))) * 3,
-        k = Math.pow(10, -e),
-        prefix = prefixes[8 + e / 3];
-    return function(value) {
-      return f(k * value) + prefix;
-    };
-  }
-
-  return {
-    format: newFormat,
-    formatPrefix: formatPrefix
-  };
-}
-
-var locale;
-
-defaultLocale({
-  thousands: ",",
-  grouping: [3],
-  currency: ["$", ""]
-});
-
-function defaultLocale(definition) {
-  locale = formatLocale(definition);
-  exports.format = locale.format;
-  exports.formatPrefix = locale.formatPrefix;
-  return locale;
-}
-
-function precisionFixed(step) {
-  return Math.max(0, -exponent(Math.abs(step)));
-}
-
-function precisionPrefix(step, value) {
-  return Math.max(0, Math.max(-8, Math.min(8, Math.floor(exponent(value) / 3))) * 3 - exponent(Math.abs(step)));
-}
-
-function precisionRound(step, max) {
-  step = Math.abs(step), max = Math.abs(max) - step;
-  return Math.max(0, exponent(max) - exponent(step)) + 1;
-}
-
-exports.FormatSpecifier = FormatSpecifier;
-exports.formatDefaultLocale = defaultLocale;
-exports.formatLocale = formatLocale;
-exports.formatSpecifier = formatSpecifier;
-exports.precisionFixed = precisionFixed;
-exports.precisionPrefix = precisionPrefix;
-exports.precisionRound = precisionRound;
-
-Object.defineProperty(exports, '__esModule', { value: true });
-
-})));
-
-
-/***/ }),
-
 /***/ 8932:
 /***/ ((__unused_webpack_module, exports) => {
 
@@ -46945,74 +46596,6 @@ module.exports = __nccwpck_require__(5065).YAML
 
 /***/ }),
 
-/***/ 889:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.decode = exports.encode = void 0;
-const bytesToHex = (() => {
-    const s = Array.from({ length: 256 }).map((_, i) => i.toString(16).padStart(2, "0"));
-    return (uint8a) => [...uint8a].map((o) => s[o]).join("");
-})();
-const alphabet = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
-function encode(input) {
-    if (input.length === 0) {
-        return "";
-    }
-    // string -> Uint8Array
-    const source = new TextEncoder().encode(input);
-    // Uint8Array -> BigInt (Big Endian)
-    let x = BigInt("0x" + bytesToHex(source));
-    const output = [];
-    while (x > 0n) {
-        const mod = x % 58n;
-        x = x / 58n;
-        output.push(alphabet[Number(mod)]);
-    }
-    for (let i = 0; source[i] === 0; i++) {
-        output.push(alphabet[0]);
-    }
-    return output.reverse().join("");
-}
-exports.encode = encode;
-function decode(output) {
-    if (output.length === 0) {
-        return "";
-    }
-    const bytes = [0];
-    const letters = alphabet;
-    for (const char of output) {
-        const value = letters.indexOf(char);
-        if (value === undefined) {
-            throw new Error(`base58.decode received invalid input. Character '${char}' is not in the base58 alphabet.`);
-        }
-        for (let j = 0; j < bytes.length; j++) {
-            bytes[j] *= 58;
-        }
-        bytes[0] += value;
-        let carry = 0;
-        for (let j = 0; j < bytes.length; j++) {
-            bytes[j] += carry;
-            carry = bytes[j] >> 8;
-            bytes[j] &= 0xff;
-        }
-        while (carry > 0) {
-            bytes.push(carry & 0xff);
-            carry >>= 8;
-        }
-    }
-    for (let i = 0; i < output.length && output[i] === "1"; i++) {
-        bytes.push(0);
-    }
-    return new TextDecoder().decode(new Uint8Array(bytes.reverse()));
-}
-exports.decode = decode;
-
-
-/***/ }),
-
 /***/ 2131:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
@@ -47116,138 +46699,6 @@ exports.default = default_1;
 
 /***/ }),
 
-/***/ 7810:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.comment = void 0;
-const github_1 = __nccwpck_require__(5438);
-const d3_format_1 = __nccwpck_require__(9174);
-const node_fetch_1 = __nccwpck_require__(467);
-const fp_ts_1 = __nccwpck_require__(5187);
-const base58 = __nccwpck_require__(889);
-async function comment(pr) {
-    const base = pr.base.sha;
-    const head = process.env.GITHUB_SHA;
-    const dataSet = `github.com/${process.env.GITHUB_REPOSITORY}`;
-    /*
-     * Wait a bit to allow the DB to reach eventual consistency.
-     */
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    const res = await node_fetch_1.default("https://api.niquis.im/graphql", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            query: `
-          query comparisonQuery($dataSet: String!, $base: String!, $head: String!) {
-            comparison(dataSet: $dataSet, base: $base, head: $head) {
-              observations {
-                id
-                series {
-                  name
-                }
-                measure {
-                  name
-                }
-                value
-                diff {
-                  base {
-                    value
-                  }
-                  absolute
-                  relative
-                }
-              }
-            }
-          }
-        `,
-            variables: { dataSet, base, head },
-        }),
-    }).then((res) => res.json());
-    // info(JSON.stringify(res));
-    const octokit = github_1.getOctokit(process.env.GITHUB_TOKEN);
-    const comments = await octokit.issues.listComments({
-        owner: github_1.context.payload.repository.owner.login,
-        repo: github_1.context.payload.repository.name,
-        issue_number: pr.number,
-    });
-    // info(JSON.stringify(comments));
-    const body = makeCommentBody(dataSet, base, head, res.data.comparison.observations);
-    const comment = comments.data.find((x) => x.user.login === "github-actions[bot]");
-    try {
-        if (!comment) {
-            await octokit.issues.createComment({
-                owner: github_1.context.payload.repository.owner.login,
-                repo: github_1.context.payload.repository.name,
-                issue_number: pr.number,
-                body,
-            });
-        }
-        else {
-            await octokit.issues.updateComment({
-                owner: github_1.context.payload.repository.owner.login,
-                repo: github_1.context.payload.repository.name,
-                comment_id: comment.id,
-                body,
-            });
-        }
-    }
-    catch {
-        /*
-         * Creating or updating the comment may fail if the provided GITHUB_TOKEN
-         * doesn't have write permissions to the repository (such as when the workflow
-         * is run from a forked repo, or triggered by dependabot).
-         */
-    }
-}
-exports.comment = comment;
-const fmt = d3_format_1.format(".0f");
-function bytesToString(bytes) {
-    if (bytes < 1024) {
-        return fmt(bytes) + "";
-    }
-    else if (bytes < 1024 * 1024) {
-        return fmt(bytes / 1024) + "k";
-    }
-    else if (bytes < 1024 * 1024 * 1024) {
-        return fmt(bytes / 1024 / 1024) + "M";
-    }
-    else {
-        return fmt(bytes / 1024 / 1024 / 1024) + "G";
-    }
-}
-function makeCommentBody(dataSet, base, head, observations) {
-    /*
-     * Sort observations by relative difference (descending)
-     */
-    const ordByRelativeDiff = fp_ts_1.ord.getDualOrd(fp_ts_1.ord.contramap((obs) => obs.diff.relative)(fp_ts_1.ord.ordNumber));
-    const sortedObservations = fp_ts_1.array.sortBy([ordByRelativeDiff])(observations);
-    return `
-**👋 Hi there!** Here are details how metrics have changed (either increased or decreased). Metrics for which there is no difference between baseline and this pull request are omitted. 
-
-| series | base | value | diff | % |
-| ------ | ---- | ----- | ---- | - |
-${sortedObservations
-        .filter((obs) => Math.abs(obs.diff.absolute) > 0)
-        .map((obs) => {
-        const abs = bytesToString(obs.diff.absolute);
-        const pct = Math.round(obs.diff.relative * 10) / 10;
-        const sign = { [-1]: "", [0]: "", [1]: "+" }[Math.sign(pct)];
-        return `| ${obs.series.name} | ${bytesToString(obs.diff.base.value)} | ${bytesToString(obs.value)} | ${sign}${abs} | ${sign}${pct}% |`;
-    })
-        .join("\n")}
-
-A detailed report is available [here](https://app.niquis.im/ds/${base58.encode(dataSet)}/compare/${base}..${head}).
-`;
-}
-
-
-/***/ }),
-
 /***/ 6373:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
@@ -47273,14 +46724,14 @@ exports.Config = t.type({
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core_1 = __nccwpck_require__(2186);
 const github_1 = __nccwpck_require__(5438);
-const comment_1 = __nccwpck_require__(7810);
-const collectors_1 = __nccwpck_require__(2131);
-const shared_1 = __nccwpck_require__(3826);
+const fp_ts_1 = __nccwpck_require__(5187);
 const fs = __nccwpck_require__(5747);
 const path = __nccwpck_require__(5622);
 const YAML = __nccwpck_require__(3552);
-const fp_ts_1 = __nccwpck_require__(5187);
+const collectors_1 = __nccwpck_require__(2131);
+// import { comment } from "./comment";
 const config_1 = __nccwpck_require__(6373);
+const shared_1 = __nccwpck_require__(3826);
 async function loadConfig() {
     const workspace = process.env.GITHUB_WORKSPACE;
     const configPath = path.join(workspace, ".github", "niquis.yml");
@@ -47312,13 +46763,25 @@ async function main() {
                 return [];
             }
         });
+        const lineage = process.env.GITHUB_REF.replace("refs/heads/", "");
+        const version = (() => {
+            if (github_1.context.eventName === "pull_request") {
+                return github_1.context.payload.pull_request.head.sha;
+            }
+            else {
+                return github_1.context.sha;
+            }
+        })();
         for await (const obs of shared_1.combine(...iterables)) {
-            await shared_1.upload({ time, ...obs });
+            await shared_1.upload({ time, lineage, version, ...obs });
         }
+        /*
+         * … for debugging purposes only.
+         */
         core_1.info(github_1.context.eventName);
-        if (github_1.context.eventName === "pull_request") {
-            await comment_1.comment(github_1.context.payload.pull_request);
-        }
+        // if (context.eventName === "pull_request") {
+        //   await comment(context.payload.pull_request!);
+        // }
     }
     catch (error) {
         core_1.setFailed(error.message);
@@ -47342,15 +46805,15 @@ const https = __nccwpck_require__(7211);
  * Upload one observation to via the /ingress API into the database.
  */
 async function upload(obs) {
-    const { time, series, measure, value } = obs;
+    const { time, series, measure, lineage, version, value } = obs;
     core.info(`upload: series ${series}, measure ${measure}, value ${value}`);
     const data = JSON.stringify({
         dataSet: `github.com/${process.env.GITHUB_REPOSITORY}`,
-        lineage: process.env.GITHUB_REF.replace("refs/heads/", ""),
+        lineage,
         series,
         measure,
         time,
-        version: process.env.GITHUB_SHA,
+        version,
         value,
     });
     const options = {

@@ -6,8 +6,8 @@ import { array, ord } from "fp-ts";
 import * as base58 from "./base58";
 
 export async function comment(pr: NonNullable<WebhookPayload["pull_request"]>): Promise<void> {
-  const base = pr!.base.sha;
-  const head = process.env.GITHUB_SHA!;
+  const base = pr.base.sha;
+  const head = pr.head.sha;
 
   const dataSet = `github.com/${process.env.GITHUB_REPOSITORY!}`;
 

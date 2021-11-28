@@ -5,6 +5,8 @@ interface Observation {
   time: number;
   series: string;
   measure: string;
+  lineage: string;
+  version: string;
   value: number;
 }
 
@@ -12,17 +14,17 @@ interface Observation {
  * Upload one observation to via the /ingress API into the database.
  */
 export async function upload(obs: Observation) {
-  const { time, series, measure, value } = obs;
+  const { time, series, measure, lineage, version, value } = obs;
 
   core.info(`upload: series ${series}, measure ${measure}, value ${value}`);
 
   const data = JSON.stringify({
     dataSet: `github.com/${process.env.GITHUB_REPOSITORY!}`,
-    lineage: process.env.GITHUB_REF!.replace("refs/heads/", ""),
+    lineage,
     series,
     measure,
     time,
-    version: process.env.GITHUB_SHA!,
+    version,
     value,
   });
 
