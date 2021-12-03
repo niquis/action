@@ -10,7 +10,7 @@
     "@types/d3-format": "^3.0.1",
     "@types/glob": "^7.2.0",
     "@types/node-fetch": "^2.5.8",
-    "@vercel/ncc": "^0.27.0",
+    "@vercel/ncc": "^0.33.0",
     "d3-format": "^3.0.1",
     "fast-glob": "^3.2.7",
     "fp-ts": "^2.11.5",
