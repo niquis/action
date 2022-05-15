@@ -59382,6 +59382,10 @@ const https = __nccwpck_require__(7211);
  */
 async function upload(obs) {
     const { time, series, measure, lineage, version, value } = obs;
+    if (series.trim() === "") {
+        core.warning(`upload: skipping empty series (${JSON.stringify(obs)})`);
+        return;
+    }
     core.info(`upload: series ${series}, measure ${measure}, value ${value}`);
     const data = JSON.stringify({
         dataSet: `github.com/${process.env.GITHUB_REPOSITORY}`,
