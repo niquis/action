@@ -23,7 +23,8 @@ export default async function* (c: Config) {
 
     for (const page of entries) {
       const value = (await fs.promises.stat(page)).size;
-      const series = page.match(/(pages\/.*)\.js$/)![1].slice(0, -21);
+      const [, match] = page.match(/(pages\/.*)\.js$/)!;
+      const series = match.split("-").slice(0, -1).join("-");
       yield { series, measure: "size", value };
     }
   }
@@ -39,7 +40,8 @@ export default async function* (c: Config) {
     for (const page of entries) {
       if (page.match(/(framework|main|polyfills|webpack)/)) {
         const value = (await fs.promises.stat(page)).size;
-        const series = page.match(/(chunks\/.*)\.js$/)![1].slice(0, -21);
+        const [, match] = page.match(/(chunks\/.*)\.js$/)!;
+        const series = match.split("-").slice(0, -1).join("-");
         yield { series, measure: "size", value };
       }
     }
