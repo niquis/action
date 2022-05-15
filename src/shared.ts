@@ -16,6 +16,11 @@ interface Observation {
 export async function upload(obs: Observation) {
   const { time, series, measure, lineage, version, value } = obs;
 
+  if (series.trim() === "") {
+    core.warning(`upload: skipping empty series (${JSON.stringify(obs)})`);
+    return;
+  }
+
   core.info(`upload: series ${series}, measure ${measure}, value ${value}`);
 
   const data = JSON.stringify({
