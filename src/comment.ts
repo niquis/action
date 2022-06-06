@@ -47,7 +47,7 @@ export async function comment(pr: NonNullable<WebhookPayload["pull_request"]>): 
         `,
       variables: { dataSet, base, head },
     }),
-  }).then((res) => res.json());
+  }).then((res) => res.json() as any);
 
   // info(JSON.stringify(res));
 
