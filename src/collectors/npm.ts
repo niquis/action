@@ -14,7 +14,7 @@ export default async function* (c: Config) {
 
   const packageLockPath = path.join(workspace, directory, "package-lock.json");
   if (fs.existsSync(packageLockPath)) {
-    const { dependencies } = require(packageLockPath);
+    const { dependencies } = JSON.parse(fs.readFileSync(packageLockPath, "utf8"));
     const value = (function count(deps: any): number {
       const values = Object.values(deps);
       return values.reduce<number>((a, v: any): number => a + count(v.dependencies || {}), values.length);

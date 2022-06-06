@@ -52234,21 +52234,6 @@ module.exports = eval("require")("encoding");
 
 /***/ }),
 
-/***/ 1239:
-/***/ ((module) => {
-
-function webpackEmptyContext(req) {
-	var e = new Error("Cannot find module '" + req + "'");
-	e.code = 'MODULE_NOT_FOUND';
-	throw e;
-}
-webpackEmptyContext.keys = () => ([]);
-webpackEmptyContext.resolve = webpackEmptyContext;
-webpackEmptyContext.id = 1239;
-module.exports = webpackEmptyContext;
-
-/***/ }),
-
 /***/ 9491:
 /***/ ((module) => {
 
@@ -60824,7 +60809,7 @@ const npm_Config = io_ts_lib.type({
     const workspace = process.env.GITHUB_WORKSPACE;
     const packageLockPath = external_path_.join(workspace, directory, "package-lock.json");
     if (external_fs_.existsSync(packageLockPath)) {
-        const { dependencies } = __nccwpck_require__(1239)(packageLockPath);
+        const { dependencies } = JSON.parse(external_fs_.readFileSync(packageLockPath, "utf8"));
         const value = (function count(deps) {
             const values = Object.values(deps);
             return values.reduce((a, v) => a + count(v.dependencies || {}), values.length);
