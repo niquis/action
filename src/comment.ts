@@ -53,7 +53,7 @@ export async function comment(pr: NonNullable<WebhookPayload["pull_request"]>): 
 
   const octokit = getOctokit(process.env.GITHUB_TOKEN!);
 
-  const comments = await octokit.issues.listComments({
+  const comments = await octokit.rest.issues.listComments({
     owner: context.payload.repository!.owner.login,
     repo: context.payload.repository!.name,
     issue_number: pr.number,
@@ -63,18 +63,18 @@ export async function comment(pr: NonNullable<WebhookPayload["pull_request"]>): 
 
   const body = makeCommentBody(dataSet, base, head, res.data.comparison.observations);
 
-  const comment = comments.data.find((x) => x.user.login === "github-actions[bot]");
+  const comment = comments.data.find((x) => x.user?.login === "github-actions[bot]");
 
   try {
     if (!comment) {
-      await octokit.issues.createComment({
+      await octokit.rest.issues.createComment({
         owner: context.payload.repository!.owner.login,
         repo: context.payload.repository!.name,
         issue_number: pr.number,
         body,
       });
     } else {
-      await octokit.issues.updateComment({
+      await octokit.rest.issues.updateComment({
         owner: context.payload.repository!.owner.login,
         repo: context.payload.repository!.name,
         comment_id: comment.id,
