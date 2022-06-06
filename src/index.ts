@@ -1,6 +1,6 @@
 import { info, setFailed } from "@actions/core";
 import { context } from "@actions/github";
-import { either, pipeable } from "fp-ts";
+import * as F from 'fp-ts';
 import * as fs from "fs";
 import * as path from "path";
 import * as YAML from "yaml";
@@ -18,9 +18,9 @@ async function loadConfig(): Promise<undefined | Config> {
     return undefined;
   }
 
-  return pipeable.pipe(
+  return F.function.pipe(
     Config.decode(YAML.parse(fs.readFileSync(configPath, "utf-8"))),
-    either.getOrElseW(() => {
+    F.either.getOrElseW(() => {
       info("Could not decode config file.");
       return undefined;
     })
@@ -43,9 +43,9 @@ async function main(): Promise<void> {
       if (spec.type in collectors) {
         const { Config, default: collect } = collectors[spec.type as keyof typeof collectors];
 
-        return pipeable.pipe(
+        return F.function.pipe(
           Config.decode(spec),
-          either.fold<unknown, any, AsyncGenerator<any>[]>(
+          F.either.fold<unknown, any, AsyncGenerator<any>[]>(
             () => [],
             (config) => [collect(config)]
           )
