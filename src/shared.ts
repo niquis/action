@@ -53,6 +53,7 @@ export async function upload(obs: Observation) {
 
   req.on("error", (error) => {
     core.debug(error.message);
+    core.setFailed("upload");
   });
 
   req.write(data);
