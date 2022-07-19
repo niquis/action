@@ -15,7 +15,7 @@
     "fp-ts": "^2.12.1",
     "glob": "^8.0.3",
     "io-ts": "^2.2.16",
-    "node-fetch": "^3.2.6",
+    "node-fetch": "^3.2.9",
     "node-sloc": "^0.2.1",
     "typescript": "^4.7.4",
     "yaml": "^2.1.1"
