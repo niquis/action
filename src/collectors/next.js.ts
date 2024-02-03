@@ -30,6 +30,22 @@ export default async function* (c: Config) {
   }
 
   /*
+   * App
+   */
+  {
+    const entries = await fg(`.next/static/chunks/app/**/*.js`, {
+      cwd,
+    });
+
+    for (const page of entries) {
+      const value = (await fs.promises.stat(page)).size;
+      const [, match] = page.match(/(app\/.*)\.js$/)!;
+      const series = match.split("-").slice(0, -1).join("-");
+      yield { series, measure: "size", value };
+    }
+  }
+
+  /*
    * Chunks
    */
   {
