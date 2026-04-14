@@ -15,8 +15,8 @@ importers:
         specifier: ^5.0.3
         version: 5.0.3
       '@types/d3-format':
-        specifier: ^3.0.1
-        version: 3.0.1
+        specifier: ^3.0.4
+        version: 3.0.4
       '@types/glob':
         specifier: ^7.2.0
         version: 7.2.0
@@ -108,8 +108,8 @@ packages:
   '@octokit/types@6.34.0':
     resolution: {integrity: sha512-s1zLBjWhdEI2zwaoSgyOFoKSl109CUcVBCc7biPJ3aAf6LGLU6szDvi31JPU7bxfla2lqfhjbbg/5DdFNxOwHw==}
 
-  '@types/d3-format@3.0.1':
-    resolution: {integrity: sha512-5KY70ifCCzorkLuIkDe0Z9YTf9RR2CjBX1iaJG+rgM/cPP+sO+q9YdQ9WdhQcgPj1EQiJ2/0+yUkkziTG6Lubg==}
+  '@types/d3-format@3.0.4':
+    resolution: {integrity: sha512-fALi2aI6shfg7vM5KiR1wNJnZ7r6UuggVqtDA+xiEdPZQwy/trcQaHnwShLuLdta2rTymCNpxYTiMZX/e09F4g==}
 
   '@types/glob@7.2.0':
     resolution: {integrity: sha512-ZUxbzKl0IfJILTS6t7ip5fQQM/J3TJYubDm3nMbgubNNYS62eXeUpoLUC8/7fJNiFYHTrGPQn7hspDUzIHX3UA==}
@@ -428,7 +428,7 @@ snapshots:
     dependencies:
       '@octokit/openapi-types': 11.2.0
 
-  '@types/d3-format@3.0.1': {}
+  '@types/d3-format@3.0.4': {}
 
   '@types/glob@7.2.0':
     dependencies:
