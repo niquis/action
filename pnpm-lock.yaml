@@ -36,8 +36,8 @@ importers:
         specifier: ^8.0.3
         version: 8.0.3
       io-ts:
-        specifier: ^2.2.16
-        version: 2.2.16(fp-ts@2.16.11)
+        specifier: ^2.2.22
+        version: 2.2.22(fp-ts@2.16.11)
       node-fetch:
         specifier: ^3.2.10
         version: 3.2.10
@@ -211,8 +211,8 @@ packages:
   inherits@2.0.4:
     resolution: {integrity: sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==}
 
-  io-ts@2.2.16:
-    resolution: {integrity: sha512-y5TTSa6VP6le0hhmIyN0dqEXkrZeJLeC5KApJq6VLci3UEKF80lZ+KuoUs02RhBxNWlrqSNxzfI7otLX1Euv8Q==}
+  io-ts@2.2.22:
+    resolution: {integrity: sha512-FHCCztTkHoV9mdBsHpocLpdTAfh956ZQcIkWQxxS0U5HT53vtrcuYdQneEJKH6xILaLNzXVl2Cvwtoy8XNN0AA==}
     peerDependencies:
       fp-ts: ^2.5.0
 
@@ -525,7 +525,7 @@ snapshots:
 
   inherits@2.0.4: {}
 
-  io-ts@2.2.16(fp-ts@2.16.11):
+  io-ts@2.2.22(fp-ts@2.16.11):
     dependencies:
       fp-ts: 2.16.11
 
