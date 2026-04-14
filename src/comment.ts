@@ -1,10 +1,10 @@
 import { context, getOctokit } from "@actions/github";
-import { WebhookPayload } from "@actions/github/lib/interfaces";
+// import { WebhookPayload } from "@actions/github/lib/utils";
 import { format } from "d3-format";
 import { array, ord } from "fp-ts";
 import * as base58 from "./base58";
 
-export async function comment(pr: NonNullable<WebhookPayload["pull_request"]>): Promise<void> {
+export async function comment(pr: NonNullable<any /*WebhookPayload["pull_request"] */>): Promise<void> {
   const base = pr.base.sha;
   const head = pr.head.sha;
 
