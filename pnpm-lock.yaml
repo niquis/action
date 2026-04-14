@@ -24,8 +24,8 @@ importers:
         specifier: ^0.34.0
         version: 0.34.0
       d3-format:
-        specifier: ^3.1.0
-        version: 3.1.0
+        specifier: ^3.1.2
+        version: 3.1.2
       fast-glob:
         specifier: ^3.2.12
         version: 3.2.12
@@ -152,8 +152,8 @@ packages:
   color-name@1.1.4:
     resolution: {integrity: sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA==}
 
-  d3-format@3.1.0:
-    resolution: {integrity: sha512-YyUI6AEuY/Wpt8KWLgZHsIU86atmikuoOmCfommt0LYHiQSPjvX2AcFc38PX0CBpr2RCyZhjex+NS/LPOv6YqA==}
+  d3-format@3.1.2:
+    resolution: {integrity: sha512-AJDdYOdnyRDV5b6ArilzCPPwc1ejkHcoyFarqlPqT7zRYjhavcT3uSrqcMvsgh2CgoPbK3RCwyHaVyxYcP2Arg==}
     engines: {node: '>=12'}
 
   data-uri-to-buffer@4.0.0:
@@ -468,7 +468,7 @@ snapshots:
 
   color-name@1.1.4: {}
 
-  d3-format@3.1.0: {}
+  d3-format@3.1.2: {}
 
   data-uri-to-buffer@4.0.0: {}
 
