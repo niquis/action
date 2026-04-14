@@ -21,8 +21,8 @@ importers:
         specifier: ^22.19.15
         version: 22.19.15
       '@vercel/ncc':
-        specifier: ^0.34.0
-        version: 0.34.0
+        specifier: ^0.38.4
+        version: 0.38.4
       d3-format:
         specifier: ^3.1.2
         version: 3.1.2
@@ -108,8 +108,8 @@ packages:
   '@types/node@22.19.15':
     resolution: {integrity: sha512-F0R/h2+dsy5wJAUe3tAU6oqa2qbWY5TpNfL/RGmo1y38hiyO1w3x2jPtt76wmuaJI4DQnOBu21cNXQ2STIUUWg==}
 
-  '@vercel/ncc@0.34.0':
-    resolution: {integrity: sha512-G9h5ZLBJ/V57Ou9vz5hI8pda/YQX5HQszCs3AmIus3XzsmRn/0Ptic5otD3xVST8QLKk7AMk7AqpsyQGN7MZ9A==}
+  '@vercel/ncc@0.38.4':
+    resolution: {integrity: sha512-8LwjnlP39s08C08J5NstzriPvW1SP8Zfpp1BvC2sI35kPeZnHfxVkCwu4/+Wodgnd60UtT1n8K8zw+Mp7J9JmQ==}
     hasBin: true
 
   ansi-styles@4.3.0:
@@ -375,7 +375,7 @@ snapshots:
     dependencies:
       undici-types: 6.21.0
 
-  '@vercel/ncc@0.34.0': {}
+  '@vercel/ncc@0.38.4': {}
 
   ansi-styles@4.3.0:
     dependencies:
