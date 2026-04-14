@@ -1,7 +1,6 @@
 import { context, getOctokit } from "@actions/github";
 import { WebhookPayload } from "@actions/github/lib/interfaces";
 import { format } from "d3-format";
-import fetch from "node-fetch";
 import { array, ord } from "fp-ts";
 import * as base58 from "./base58";
 
@@ -111,7 +110,7 @@ function makeCommentBody(dataSet: string, base: string, head: string, observatio
   const sortedObservations = array.sortBy([ordByRelativeDiff])(observations);
 
   return `
-**👋 Hi there!** Here are details how metrics have changed (either increased or decreased). Metrics for which there is no difference between baseline and this pull request are omitted. 
+**👋 Hi there!** Here are details how metrics have changed (either increased or decreased). Metrics for which there is no difference between baseline and this pull request are omitted.
 
 | series | base | value | diff | % |
 | ------ | ---- | ----- | ---- | - |
