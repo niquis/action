@@ -1,4 +1,4 @@
-import * as fg from "fast-glob";
+import fg from "fast-glob";
 import * as fs from "fs";
 import * as t from "io-ts";
 import * as path from "path";
