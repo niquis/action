@@ -12,8 +12,8 @@ importers:
         specifier: ^3.0.0
         version: 3.0.0
       '@actions/github':
-        specifier: ^5.0.3
-        version: 5.0.3
+        specifier: ^5.1.1
+        version: 5.1.1
       '@types/d3-format':
         specifier: ^3.0.4
         version: 3.0.4
@@ -53,8 +53,8 @@ packages:
   '@actions/exec@3.0.0':
     resolution: {integrity: sha512-6xH/puSoNBXb72VPlZVm7vQ+svQpFyA96qdDBvhB8eNZOE8LtPf9L4oAsfzK/crCL8YZ+19fKYVnM63Sl+Xzlw==}
 
-  '@actions/github@5.0.3':
-    resolution: {integrity: sha512-myjA/pdLQfhUGLtRZC/J4L1RXOG4o6aYdiEq+zr5wVVKljzbFld+xv10k1FX6IkIJtNxbAq44BdwSNpQ015P0A==}
+  '@actions/github@5.1.1':
+    resolution: {integrity: sha512-Nk59rMDoJaV+mHCOJPXuvB1zIbomlKS0dmSIqPGxd0enAXBnOfn4VWF+CGtRCwXZG9Epa54tZA7VIRlJDS8A6g==}
 
   '@actions/http-client@2.0.1':
     resolution: {integrity: sha512-PIXiMVtz6VvyaRsGY268qvj57hXQEpsYogYOu2nrQhlf+XCGmZstmuZBbAybUl1nQGnvS1k1eEsQ69ZoD7xlSw==}
@@ -293,7 +293,7 @@ snapshots:
     dependencies:
       '@actions/io': 3.0.2
 
-  '@actions/github@5.0.3':
+  '@actions/github@5.1.1':
     dependencies:
       '@actions/http-client': 2.0.1
       '@octokit/core': 3.6.0
