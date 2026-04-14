@@ -48,8 +48,8 @@ importers:
         specifier: ^4.7.4
         version: 4.7.4
       yaml:
-        specifier: ^2.1.1
-        version: 2.1.1
+        specifier: ^2.8.3
+        version: 2.8.3
 
 packages:
 
@@ -327,9 +327,10 @@ packages:
   wrappy@1.0.2:
     resolution: {integrity: sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==}
 
-  yaml@2.1.1:
-    resolution: {integrity: sha512-o96x3OPo8GjWeSLF+wOAbrPfhFOGY0W00GNaxCDv+9hkcDJEnev1yh8S7pgHF0ik6zc8sQLuL8hjHjJULZp8bw==}
-    engines: {node: '>= 14'}
+  yaml@2.8.3:
+    resolution: {integrity: sha512-AvbaCLOO2Otw/lW5bmh9d/WEdcDFdQp2Z2ZUH3pX9U2ihyUY0nvLv7J6TrWowklRGPYbB/IuIMfYgxaCPg5Bpg==}
+    engines: {node: '>= 14.6'}
+    hasBin: true
 
 snapshots:
 
@@ -614,4 +615,4 @@ snapshots:
 
   wrappy@1.0.2: {}
 
-  yaml@2.1.1: {}
+  yaml@2.8.3: {}
