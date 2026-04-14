@@ -16,7 +16,7 @@
     "glob": "^8.0.3",
     "io-ts": "^2.2.22",
     "node-sloc": "^0.2.1",
-    "typescript": "^4.7.4",
+    "typescript": "^4.9.5",
     "yaml": "^2.8.3"
   }
 }
