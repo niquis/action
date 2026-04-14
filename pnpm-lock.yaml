@@ -30,14 +30,14 @@ importers:
         specifier: ^3.2.12
         version: 3.2.12
       fp-ts:
-        specifier: ^2.12.1
-        version: 2.12.1
+        specifier: ^2.16.11
+        version: 2.16.11
       glob:
         specifier: ^8.0.3
         version: 8.0.3
       io-ts:
         specifier: ^2.2.16
-        version: 2.2.16(fp-ts@2.12.1)
+        version: 2.2.16(fp-ts@2.16.11)
       node-fetch:
         specifier: ^3.2.10
         version: 3.2.10
@@ -182,8 +182,8 @@ packages:
     resolution: {integrity: sha512-buewHzMvYL29jdeQTVILecSaZKnt/RJWjoZCF5OW60Z67/GmSLBkOFM7qh1PI3zFNtJbaZL5eQu1vLfazOwj4g==}
     engines: {node: '>=12.20.0'}
 
-  fp-ts@2.12.1:
-    resolution: {integrity: sha512-oxvgqUYR6O9VkKXrxkJ0NOyU0FrE705MeqgBUMEPWyTu6Pwn768cJbHChw2XOBlgFLKfIHxjr2OOBFpv2mUGZw==}
+  fp-ts@2.16.11:
+    resolution: {integrity: sha512-LaI+KaX2NFkfn1ZGHoKCmcfv7yrZsC3b8NtWsTVQeHkq4F27vI5igUuO53sxqDEa2gNQMHFPmpojDw/1zmUK7w==}
 
   fs.realpath@1.0.0:
     resolution: {integrity: sha512-OO0pH2lK6a0hZnAdau5ItzHPI6pUlvI7jMVnxUQRtw4owF2wk8lOSabtGDCTP4Ggrg2MbGnWO9X8K1t4+fGMDw==}
@@ -498,7 +498,7 @@ snapshots:
     dependencies:
       fetch-blob: 3.1.5
 
-  fp-ts@2.12.1: {}
+  fp-ts@2.16.11: {}
 
   fs.realpath@1.0.0: {}
 
@@ -525,9 +525,9 @@ snapshots:
 
   inherits@2.0.4: {}
 
-  io-ts@2.2.16(fp-ts@2.12.1):
+  io-ts@2.2.16(fp-ts@2.16.11):
     dependencies:
-      fp-ts: 2.12.1
+      fp-ts: 2.16.11
 
   is-extglob@2.1.1: {}
 
