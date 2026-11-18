@@ -2,5 +2,3 @@ packages:
   - .
 
 minimumReleaseAge: 21600
-minimumReleaseAgeExclude:
-  - 'undici@6.29.1'
